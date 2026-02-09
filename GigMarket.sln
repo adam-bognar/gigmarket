@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GigMarket.Domain", "GigMarket.Domain\GigMarket.Domain.csproj", "{33E05626-6F19-4DAF-904C-4B423E1EC7ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GigMarket.Application", "GigMarket.Application\GigMarket.Application.csproj", "{B0DD5C07-3565-45BA-84F1-C6D3FE2B0968}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GigMarket.Infrastructure", "GigMarket.Infrastructure\GigMarket.Infrastructure.csproj", "{93C62222-BBB9-4EB9-A13E-CE33372186EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GigMarket.Api", "GigMarket.Api\GigMarket.Api.csproj", "{79715925-7944-4C7A-98FC-E2EF4643D00F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{33E05626-6F19-4DAF-904C-4B423E1EC7ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33E05626-6F19-4DAF-904C-4B423E1EC7ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33E05626-6F19-4DAF-904C-4B423E1EC7ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33E05626-6F19-4DAF-904C-4B423E1EC7ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0DD5C07-3565-45BA-84F1-C6D3FE2B0968}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0DD5C07-3565-45BA-84F1-C6D3FE2B0968}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0DD5C07-3565-45BA-84F1-C6D3FE2B0968}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0DD5C07-3565-45BA-84F1-C6D3FE2B0968}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93C62222-BBB9-4EB9-A13E-CE33372186EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93C62222-BBB9-4EB9-A13E-CE33372186EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93C62222-BBB9-4EB9-A13E-CE33372186EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93C62222-BBB9-4EB9-A13E-CE33372186EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79715925-7944-4C7A-98FC-E2EF4643D00F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79715925-7944-4C7A-98FC-E2EF4643D00F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79715925-7944-4C7A-98FC-E2EF4643D00F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79715925-7944-4C7A-98FC-E2EF4643D00F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
