@@ -1,3 +1,6 @@
+using GigMarket.Api.Services;
+using GigMarket.Application;
+using GigMarket.Application.Common.Interfaces;
 using GigMarket.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +13,20 @@ builder.Services.AddSwaggerGen();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.WithOrigins("https://localhost:4200", "http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
@@ -24,6 +41,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 

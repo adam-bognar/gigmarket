@@ -1,5 +1,7 @@
+using GigMarket.Application.Common.Interfaces;
 using GigMarket.Domain.Entities;
 using GigMarket.Infrastructure.Data;
+using GigMarket.Infrastructure.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +17,10 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddIdentity<User, IdentityRole>(options =>
+        services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
+        services.AddScoped<IIdentityService, IdentityService>();
+
+        services.AddIdentity<User, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
@@ -35,10 +40,6 @@ public static class DependencyInjection
             options.Cookie.SameSite = SameSiteMode.Strict;
             options.ExpireTimeSpan = TimeSpan.FromDays(7);
             options.SlidingExpiration = true;
-
-            options.LoginPath = "/api/auth/login";
-            options.LogoutPath = "/api/auth/logout";
-            options.AccessDeniedPath = "/api/auth/access-denied";
 
             options.Events.OnRedirectToLogin = context =>
             {
