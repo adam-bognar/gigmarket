@@ -1,0 +1,55 @@
+<nav class="sticky top-0 z-50 bg-white border-b-3 border-b-[#1DBF73] shadow-sm" aria-label="Main navigation">
+    <div class="flex items-center gap-6 max-w-[1400px] mx-auto px-6 py-3">
+        <!-- Logo -->
+        <a routerLink="/" class="flex items-center gap-2 no-underline shrink-0" aria-label="GigMarket home">
+            <svg class="w-7 h-7" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect width="12" height="12" rx="2" fill="#1DBF73" />
+                <rect x="16" width="12" height="12" rx="2" fill="#FBBF24" />
+                <rect y="16" width="12" height="12" rx="2" fill="#8B5CF6" />
+                <rect x="16" y="16" width="12" height="12" rx="2" fill="#3B82F6" />
+            </svg>
+            <span class="text-xl font-bold text-slate-800 tracking-tight">GigMarket</span>
+        </a>
+
+        <!-- Search bar -->
+        <form class="flex flex-1 max-w-[540px]" role="search" (ngSubmit)="onSearch()">
+            <label for="navbar-search" class="sr-only">Search services</label>
+            <div
+                class="flex items-center flex-1 gap-2 border border-gray-300 border-r-0 rounded-l-md px-3 bg-white transition-colors focus-within:border-[#1DBF73]">
+                <svg class="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input id="navbar-search" type="search"
+                    class="w-full border-none outline-none py-2 text-sm text-gray-700 bg-transparent font-[inherit] placeholder:text-gray-400"
+                    placeholder="What service are you looking for today?" [ngModel]="searchQuery()"
+                    (ngModelChange)="searchQuery.set($event)" />
+            </div>
+            <button type="submit"
+                class="px-5 bg-[#1DBF73] text-white border-none rounded-r-md text-sm font-semibold cursor-pointer transition-colors hover:bg-[#19a463] focus-visible:outline-2 focus-visible:outline-[#1DBF73] focus-visible:outline-offset-2 whitespace-nowrap font-[inherit]">
+                Search
+            </button>
+        </form>
+
+        <!-- Nav links -->
+        <div class="flex items-center gap-5 shrink-0">
+            <a routerLink="/explore"
+                class="text-sm font-medium text-slate-500 no-underline whitespace-nowrap transition-colors hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-[#1DBF73] focus-visible:outline-offset-2 focus-visible:rounded-sm">
+                Explore
+            </a>
+            <a routerLink="/become-seller"
+                class="text-sm font-medium text-slate-500 no-underline whitespace-nowrap transition-colors hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-[#1DBF73] focus-visible:outline-offset-2 focus-visible:rounded-sm">
+                Become a Seller
+            </a>
+            <a routerLink="/sign-in"
+                class="text-sm font-semibold text-slate-800 no-underline whitespace-nowrap transition-colors hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-[#1DBF73] focus-visible:outline-offset-2 focus-visible:rounded-sm">
+                Sign In
+            </a>
+            <a routerLink="/join"
+                class="text-sm font-semibold text-[#1DBF73] no-underline whitespace-nowrap py-1.5 px-4 border-2 border-[#1DBF73] rounded-md transition-all hover:bg-[#1DBF73] hover:text-white focus-visible:outline-2 focus-visible:outline-[#1DBF73] focus-visible:outline-offset-2">
+                Join
+            </a>
+        </div>
+    </div>
+</nav>
