@@ -19,8 +19,4 @@
     <ProjectReference Include="..\GigMarket.Infrastructure\GigMarket.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Middleware\" />
-  </ItemGroup>
-
 </Project>

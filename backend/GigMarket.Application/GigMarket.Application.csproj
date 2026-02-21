@@ -17,4 +17,8 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Common\Models\" />
+    </ItemGroup>
+
 </Project>
