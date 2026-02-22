@@ -15,11 +15,11 @@
 
         <!-- Search bar: hidden on mobile, visible md+ -->
         <form class="hidden md:flex flex-1 items-center" role="search" (ngSubmit)="onSearch()">
-            <div class="flex items-center w-1/2 border border-divider bg-gray-900/10 rounded-md overflow-hidden focus-within:border-primary transition-colors">
+            <div class="flex items-center flex-1 max-w-xl border border-divider bg-gray-500/10 rounded-md overflow-hidden focus-within:border-primary transition-colors">
                 <input type="search"
                     class="flex-1 px-4 py-2 text-sm text-heading placeholder-muted bg-transparent outline-none"
                     placeholder="What service are you looking for today?" aria-label="Search services"
-                    [(ngModel)]="searchQuery" name="search" />
+                    [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" name="search" />
                 <button type="submit"
                     class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer"
                     aria-label="Search">
@@ -34,16 +34,16 @@
 
         <!-- Auth buttons: hidden on mobile, visible md+ -->
         <div class="hidden md:flex items-center gap-3 ml-auto shrink-0">
-            <button class="px-4 py-2 text-sm font-medium text-heading hover:text-primary transition-colors cursor-pointer">
+            <button type="button" class="px-4 py-2 text-sm font-medium text-heading hover:text-primary transition-colors cursor-pointer">
                 Sign In
             </button>
-            <button class="px-4 py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">
+            <button type="button" class="px-4 py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">
                 Join
             </button>
         </div>
 
         <!-- Hamburger button: visible only on mobile -->
-        <button class="md:hidden ml-auto p-2 rounded-md text-heading hover:text-primary transition-colors cursor-pointer"
+        <button type="button" class="md:hidden ml-auto p-2 rounded-md text-heading hover:text-primary transition-colors cursor-pointer"
             (click)="toggleMobileMenu()"
             [attr.aria-expanded]="mobileMenuOpen()"
             aria-label="Toggle navigation menu">
@@ -72,7 +72,7 @@
                     <input type="search"
                         class="flex-1 px-4 py-2 text-sm text-heading placeholder-muted bg-transparent outline-none"
                         placeholder="What service are you looking for today?" aria-label="Search services"
-                        [(ngModel)]="searchQuery" name="searchMobile" />
+                        [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" name="searchMobile" />
                     <button type="submit"
                         class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer"
                         aria-label="Search">
