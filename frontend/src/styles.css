@@ -5,51 +5,42 @@
  *  GigMarket Color Palette
  * ===========================
  *
+ * Fiverr-inspired clean, professional palette.
+ *
  * Usage in Tailwind v4 (CSS-based config):
- *   - Background:  bg-primary, bg-primary-light, bg-surface, bg-surface-alt
- *   - Text:        text-primary, text-on-primary, text-muted
- *   - Border:      border-primary, border-surface-alt
- *   - Arbitrary:   text-[var(--color-accent)]
+ *   - Background:  bg-primary, bg-surface, bg-surface-alt
+ *   - Text:        text-primary, text-heading, text-muted
+ *   - Border:      border-primary, border-divider
+ *   - Arbitrary:   text-[var(--color-warning)]
  */
 
 @theme {
-  /* Primary brand colors */
-  --color-primary: #6C3CE1;
-  --color-primary-light: #8B5CF6;
-  --color-primary-dark: #5226BE;
-
-  /* Accent / CTA */
-  --color-accent: #F59E0B;
-  --color-accent-light: #FBBF24;
-  --color-accent-dark: #D97706;
-
-  /* Surfaces (dark theme oriented) */
-  --color-surface: #0F172A;
-  --color-surface-alt: #1E293B;
-  --color-surface-elevated: #334155;
+  /* Primary action (Green) */
+  --color-primary: #1DBF73;
+  --color-primary-light: #38D68B;
+  --color-primary-dark: #19A463;
 
   /* Text */
+  --color-heading: #404145;
+  --color-muted: #74767E;
   --color-on-primary: #FFFFFF;
-  --color-on-surface: #F1F5F9;
-  --color-muted: #94A3B8;
 
-  /* Semantic */
-  --color-success: #22C55E;
+  /* Surfaces (light theme) */
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #FAFAFA;
+  --color-surface-elevated: #FFFFFF;
+
+  /* Borders / Dividers */
+  --color-divider: #E4E5E7;
+
+  /* Semantic / Status */
+  --color-success: #1DBF73;
+  --color-warning: #FFBE5B;
+  --color-info: #4A90E2;
   --color-error: #EF4444;
-  --color-warning: #F59E0B;
-  --color-info: #3B82F6;
 
   /* Font family */
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-}
-
-/* Global resets */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html {
@@ -61,6 +52,6 @@ html {
 body {
   font-family: var(--font-sans);
   background-color: var(--color-surface);
-  color: var(--color-on-surface);
+  color: var(--color-heading);
   line-height: 1.6;
 }
