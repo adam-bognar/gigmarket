@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 import { Navbar } from './shared/components/navbar/navbar';
 
 @Component({
@@ -9,4 +9,10 @@ import { Navbar } from './shared/components/navbar/navbar';
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App { }
+export class App { 
+  private readonly router = inject(Router);
+
+  get showNavbar(): boolean {
+    return !this.router.url.startsWith('/login');
+  }
+}
