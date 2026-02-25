@@ -15,6 +15,8 @@ export class Login {
   protected readonly password = signal('');
   protected readonly keepSignedIn = signal(false);
   protected readonly showPassword = signal(false);
+  protected readonly firstName = signal('');
+  protected readonly lastName = signal('');
 
   setTab(tab: 'signin' | 'join'): void {
     this.activeTab.set(tab);
