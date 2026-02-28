@@ -3,7 +3,7 @@ import {computed, inject, Injectable, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {AuthUser, LoginRequest, RegisterRequest} from '../models/auth.model';
-import {Observable, tap} from 'rxjs';
+import {catchError, Observable, of, tap} from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
@@ -19,19 +19,25 @@ export class AuthService {
   login(request: LoginRequest): Observable<AuthUser> {
     return this.http
       .post<AuthUser>(`${this.baseUrl}/login`, request)
-      .pipe(tap({ next: (user) => this.currentUser.set(user) }));
+      .pipe(tap({next: (user) => this.currentUser.set(user)}));
   }
 
   register(request: RegisterRequest): Observable<AuthUser> {
     return this.http
       .post<AuthUser>(`${this.baseUrl}/register`, request)
-      .pipe(tap({ next: (user) => this.currentUser.set(user) }));
+      .pipe(tap({next: (user) => this.currentUser.set(user)}));
   }
 
-  getMe(): Observable<AuthUser> {
+  getMe(): Observable<AuthUser | null> {
     return this.http
       .get<AuthUser>(`${this.baseUrl}/me`)
-      .pipe(tap({ next: (user) => this.currentUser.set(user) }));
+      .pipe(
+        tap({next: (user) => this.currentUser.set(user)}),
+        catchError(() => {
+          this.currentUser.set(null);
+          return of(null);
+        })
+      );
   }
 
   logout(): Observable<void> {
