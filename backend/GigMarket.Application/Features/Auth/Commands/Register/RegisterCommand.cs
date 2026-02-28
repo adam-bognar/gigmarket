@@ -6,5 +6,5 @@ using System.Text;
 
 namespace GigMarket.Application.Features.Auth.Commands.Register
 {
-    public sealed record RegisterCommand(string Email, string Password) : IRequest<AuthUserDto>;
+    public sealed record RegisterCommand(string Firstname, string Lastname, string Email, string Password) : IRequest<AuthUserDto>;
 }

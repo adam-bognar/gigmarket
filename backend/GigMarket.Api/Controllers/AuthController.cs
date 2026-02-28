@@ -22,7 +22,7 @@ namespace GigMarket.Api.Controllers
         [ProducesResponseType(typeof(AuthUserDto), StatusCodes.Status200OK)]
         public async Task<ActionResult<AuthUserDto>> Register([FromBody] RegisterRequest request, CancellationToken ct)
         {
-            var result = await mediator.Send(new RegisterCommand(request.Email, request.Password), ct);
+            var result = await mediator.Send(new RegisterCommand(request.FirstName, request.LastName,request.Email, request.Password), ct);
             return Ok(result);
         }
 
@@ -55,6 +55,6 @@ namespace GigMarket.Api.Controllers
     }
 
 
-    public sealed record RegisterRequest(string Email, string Password);
+    public sealed record RegisterRequest(string FirstName, string LastName, string Email, string Password);
     public sealed record LoginRequest(string Email, string Password, bool RememberMe);
 }

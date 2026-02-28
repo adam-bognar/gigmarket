@@ -7,7 +7,7 @@ namespace GigMarket.Application.Common.Interfaces
 {
     public interface IIdentityService
     {
-        Task<AuthUserDto> RegisterAsync(string email, string password, CancellationToken ct);
+        Task<AuthUserDto> RegisterAsync(string firstname, string lastname, string email, string password, CancellationToken ct);
         Task<AuthUserDto> LoginAsync(string email, string password, bool isPersistent, CancellationToken ct);
         Task LogoutAsync(CancellationToken ct);
         Task<AuthUserDto> GetByIdAsync(Guid userId, CancellationToken ct);
