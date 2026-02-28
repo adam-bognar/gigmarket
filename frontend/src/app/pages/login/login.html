@@ -179,14 +179,28 @@
         }
 
         <!--Submit button-->
+        @if (errorMessage()){
+          <div role="alert" class="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">
+            {{ errorMessage() }}
+          </div>
+        }
+
         <button type="submit"
                 class="w-full py-3 bg-primary hover:bg-primary-dark text-on-primary text-sm font-semibold rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-2 mt-1">
-          Continue
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12 5 19 12 12 19"/>
-          </svg>
+          @if (loading()) {
+            <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            Please wait…
+          } @else {
+            Continue
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          }
         </button>
       </form>
 
