@@ -8,19 +8,21 @@
 
 **Week 1:**
 - [x] Project Setup (Solution, 4 Layers, Git).
-- [ ] Database: Design AppUser and SellerProfile entities (MSSQL).
-- [ ] Infrastructure: Implement Identity with cookie-based authentication.
-- [ ] API: Create AuthController (Register/Login endpoints).
+- [x] Database: Design AppUser and SellerProfile entities (MSSQL).
+- [x] Infrastructure: Implement Identity with cookie-based authentication.
+- [x] API: Create AuthController (Register/Login endpoints).
 
 **Week 2:**
-- [ ] Frontend: Setup Angular with HTTP interceptors (auth cookies).
-- [ ] Feature: "Become a Seller" page (Form to create SellerProfile).
-- [ ] UI: Basic Navbar (Login/Logout state) and Dashboard layout.
+- [x] Frontend: Setup Angular with HTTP interceptors (auth cookies).
+- [x] Frontend: Create login and registreation page.
+- [x] Frontend and backend communication.
 
 #### Sprint 2: The "Gig" Engine
 **Goal:** A Seller can create, edit, and delete Gigs with images.
 
 **Week 3:**
+- [ ] Feature: "Become a Seller" page (Form to create SellerProfile).
+- [ ] UI: Basic Navbar (Login/Logout state) and Dashboard layout.
 - [ ] Database: Create Gig entity (Title, Description, Category) and GigPackage (Basic/Std/Prem pricing).
 - [ ] API: GigsController (CRUD endpoints).
 - [ ] Infrastructure: Implement IPhotoService (Upload images to AWS or Azure — TBD).
