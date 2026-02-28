@@ -10,6 +10,6 @@ namespace GigMarket.Application.Features.Auth.Commands.Register
     public sealed class RegisterCommandHandler(IIdentityService identityService) : IRequestHandler<RegisterCommand, AuthUserDto>
     {
         public Task<AuthUserDto> Handle(RegisterCommand request, CancellationToken ct)
-            => identityService.RegisterAsync(request.Email, request.Password, ct);
+            => identityService.RegisterAsync(request.Firstname, request.Lastname,request.Email, request.Password, ct);
     }
 }

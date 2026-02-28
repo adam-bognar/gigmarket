@@ -1,3 +1,4 @@
+using GigMarket.Api.Middleware;
 using GigMarket.Api.Services;
 using GigMarket.Application;
 using GigMarket.Application.Common.Interfaces;
@@ -26,10 +27,14 @@ builder.Services.AddCors(opt =>
     });
 });
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

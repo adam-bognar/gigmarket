@@ -15,12 +15,12 @@ namespace GigMarket.Infrastructure.Identity
     SignInManager<User> signInManager,
     IApplicationDbContext db) : IIdentityService
     {
-        public async Task<AuthUserDto> RegisterAsync(string email, string password, CancellationToken ct)
+        public async Task<AuthUserDto> RegisterAsync(string firstname, string lastname, string email, string password, CancellationToken ct)
         {
             var existing = await userManager.FindByEmailAsync(email);
             if (existing is not null) throw new BadRequestException("Email is already taken.");
-
-            var user = new User { UserName = email, Email = email };
+            
+            var user = new User { UserName = email, Email = email, FirstName = firstname, LastName = lastname };
 
             var result = await userManager.CreateAsync(user, password);
             if (!result.Succeeded)
