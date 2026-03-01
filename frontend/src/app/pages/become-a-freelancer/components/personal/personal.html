@@ -1,0 +1,168 @@
+<div class="flex flex-col w-full rounded-2xl border p-6 border-muted/20 bg-white">
+  <div class="flex flex-col gap-1">
+    <h2 class="text-2xl font-bold">Personal Information</h2>
+    <p class="text-muted text-sm">Tell us a bit about yourself. This information will appear on your public profile,
+      so make sure it is accurate.</p>
+  </div>
+
+  <form [formGroup]="form" class="flex flex-col gap-4 mt-6">
+
+    <!--First and last name-->
+    <div class="flex flex-col lg:flex-row gap-4">
+      <div class="flex flex-col flex-1 gap-1">
+        <label for="firstName" class="text-sm font-medium">
+          First Name
+          <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+        </label>
+        <div class="flex items-center border rounded-lg overflow-hidden transition-colors"
+             [class.border-red-400]="form.controls.firstName.invalid && form.controls.firstName.touched"
+             [class.border-divider]="!(form.controls.firstName.invalid && form.controls.firstName.touched)"
+             [class.focus-within:border-primary]="!(form.controls.firstName.invalid && form.controls.firstName.touched)">
+          <input id="firstName" type="text" formControlName="firstName"
+                 required aria-required="true"
+                 class="flex-1 px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                 placeholder="Enter your first name"/>
+        </div>
+        @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
+          <p class="text-xs text-red-500 mt-0.5">First name is required.</p>
+        }
+      </div>
+
+      <div class="flex flex-col flex-1 gap-1">
+        <label for="lastName" class="text-sm font-medium">
+          Last Name
+          <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+        </label>
+        <div class="flex items-center border rounded-lg overflow-hidden transition-colors"
+             [class.border-red-400]="form.controls.lastName.invalid && form.controls.lastName.touched"
+             [class.border-divider]="!(form.controls.lastName.invalid && form.controls.lastName.touched)"
+             [class.focus-within:border-primary]="!(form.controls.lastName.invalid && form.controls.lastName.touched)">
+          <input id="lastName" type="text" formControlName="lastName"
+                 required aria-required="true"
+                 class="flex-1 px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                 placeholder="Enter your last name"/>
+        </div>
+        @if (form.controls.lastName.invalid && form.controls.lastName.touched) {
+          <p class="text-xs text-red-500 mt-0.5">Last name is required.</p>
+        }
+      </div>
+    </div>
+
+    <!--Profile picture-->
+    <div class="flex flex-col gap-4">
+
+      <label class="text-sm font-medium">
+        Profile Picture
+        <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+      </label>
+
+      <div class="flex flex-row gap-4">
+        <button type="button" (click)="fileInput.click()"
+                class="size-20 rounded-full bg-muted/10 border border-muted/50 border-dashed flex items-center justify-center overflow-hidden"
+                [attr.aria-label]="profilePicPreview() ? 'Change profile picture' : 'Upload profile picture'">
+          @if (profilePicPreview()) {
+            <img [src]="profilePicPreview()" alt="Profile preview" class="size-full object-cover"/>
+          } @else {
+            <lucide-icon [img]="icons.Camera" class="text-muted" [size]="32" aria-hidden="true"/>
+          }
+        </button>
+        <input #fileInput type="file" accept="image/jpeg,image/png" class="hidden"
+               (change)="onFileSelected($event)" aria-label="Profile picture file input"/>
+
+        <div class="flex flex-col items-start justify-center gap-2">
+          <button type="button" (click)="fileInput.click()"
+                  class="border border-muted/50 rounded-lg p-2 text-xs font-medium hover:bg-muted/10 transition-colors cursor-pointer">
+            Upload Photo
+          </button>
+          <p class="text-xs text-muted">Supported formats: JPG, PNG. Max size: 5MB.</p>
+        </div>
+      </div>
+
+      @if (form.controls.profilePic.invalid && form.controls.profilePic.touched) {
+        <p class="text-xs text-red-500">Profile picture is required.</p>
+      }
+    </div>
+
+    <!--Description-->
+    <div class="flex flex-col gap-1">
+      <label for="description" class="text-sm font-medium">
+        Description
+        <span class="text-red-500 ml-0.5" aria-hidden="true">*</span>
+      </label>
+      <textarea id="description" formControlName="description" rows="5"
+                [maxlength]="maxDescriptionLength"
+                (input)="onDescriptionInput($event)"
+                placeholder="Tell clients about yourself, your experience, and what makes you unique..."
+                class="w-full px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent border rounded-lg outline-none resize-none transition-colors"
+                [class.border-red-400]="form.controls.description.invalid && form.controls.description.touched"
+                [class.border-divider]="!(form.controls.description.invalid && form.controls.description.touched)"
+                aria-required="true"></textarea>
+      <div class="flex justify-between items-center mt-0.5">
+        @if (form.controls.description.invalid && form.controls.description.touched) {
+          @if (form.controls.description.hasError('required')) {
+            <p class="text-xs text-red-500">Description is required.</p>
+          } @else if (form.controls.description.hasError('minlength')) {
+            <p class="text-xs text-red-500">Description must be at least {{ minDescriptionLength }} characters.</p>
+          } @else if (form.controls.description.hasError('maxlength')) {
+            <p class="text-xs text-red-500">Description cannot exceed {{ maxDescriptionLength }} characters.</p>
+          }
+        }
+        <p class="text-xs text-muted ml-auto">{{ descriptionLength() }} / {{ maxDescriptionLength }}</p>
+      </div>
+    </div>
+
+    <hr class="border-divider">
+
+    <div class="flex flex-col gap-4">
+      <h3 class="text-sm font-bold text-heading">Languages</h3>
+
+      <div formArrayName="languages" class="flex flex-col gap-3">
+        @for (lang of languages.controls; track $index) {
+          <div class="flex flex-row gap-3 items-center">
+            <div class="relative flex items-center flex-1 border rounded-lg overflow-hidden transition-colors"
+                 [class.border-red-400]="lang.invalid && lang.touched"
+                 [class.border-divider]="!(lang.invalid && lang.touched)"
+                 [class.focus-within:border-primary]="!(lang.invalid && lang.touched)">
+              <select type="text" [formControlName]="$index"
+                      class="flex-1 px-4 py-2.5 text-sm text-heading bg-transparent outline-none appearance-none cursor-pointer">
+                <option value="" disabled selected>Select a language</option>
+                @for (language of availableLanguages; track language) {
+                  <option [value]="language">{{ language }}</option>
+                }
+              </select>
+
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                <lucide-icon [img]="icons.ChevronDown" [size]="16" aria-hidden="true"></lucide-icon>
+              </div>
+            </div>
+            <button type="button" (click)="removeLanguage($index)"
+                    [disabled]="languages.length === 1"
+                    class="p-2.5 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    aria-label="Remove language">
+              <lucide-icon [img]="icons.Trash2" [size]="20" aria-hidden="true"></lucide-icon>
+            </button>
+          </div>
+          @if (lang.invalid && lang.touched) {
+            <p class="text-xs text-red-500">Language is required.</p>
+          }
+        }
+      </div>
+      <button type="button" (click)="addLanguage()"
+              class="text-sm text-primary font-medium flex items-center self-start hover:underline cursor-pointer">
+        + Add New Language
+      </button>
+
+    </div>
+
+    <hr class="border-divider">
+
+    <div class="flex justify-end">
+      <button type="submit"
+              [disabled]="form.invalid"
+              class="px-8 py-2.5 bg-primary hover:bg-primary-dark text-on-primary text-sm font-semibold rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+        Continue
+      </button>
+    </div>
+
+  </form>
+</div>
