@@ -1,0 +1,40 @@
+<div class="flex items-start w-full min-h-screen bg-muted/5">
+  <div class="flex flex-col items-center w-full md:w-2/3 border border-red-500 p-5 mx-auto gap-6">
+
+    <!--Step indicator-->
+    <div class="flex flex-row items-center gap-6 w-full">
+      <app-step-indicator [step]="1" label="asd" [currentStep]="currentStep()"/>
+
+      <div class="flex-1 h-px"
+           [class.bg-green-500]="currentStep() >= 2"
+           [class.bg-divider]="currentStep() < 2"></div>
+
+      <app-step-indicator [step]="2" label="asd2" [currentStep]="currentStep()"/>
+
+      <div class="flex-1 h-px"
+           [class.bg-green-500]="currentStep() >= 3"
+           [class.bg-divider]="currentStep() < 3"></div>
+
+      <app-step-indicator [step]="3" label="asd3" [currentStep]="currentStep()"/>
+
+      <div class="flex-1 h-px"
+           [class.bg-green-500]="currentStep() >= 4"
+           [class.bg-divider]="currentStep() < 4"></div>
+
+      <app-step-indicator [step]="4" label="asd4" [currentStep]="currentStep()"/>
+    </div>
+
+    <div class="w-full">
+      @switch (currentStep()) {
+        @case (1) {
+          <app-personal/>
+        }
+        @case (2) {
+          <app-professional/>
+        }
+      }
+    </div>
+
+  </div>
+
+</div>
