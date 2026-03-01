@@ -26,15 +26,13 @@ namespace GigMarket.Application.Features.SellerProfiles.Commands.CreateSellerPro
             {
                 Id = Guid.NewGuid(),
                 UserId = (Guid)userId,
-                DisplayName = request.DisplayName.Trim(),
-                Bio = string.IsNullOrWhiteSpace(request.Bio) ? null : request.Bio.Trim(),
                 CreatedAtUtc = DateTime.UtcNow
             };
 
             db.SellerProfiles.Add(entity);
             await db.SaveChangesAsync(ct);
 
-            return new SellerProfileDto(entity.Id, entity.UserId.ToString(), entity.DisplayName, entity.Bio, entity.CreatedAtUtc);
+            return new SellerProfileDto(entity.Id, entity.UserId.ToString(), entity.CreatedAtUtc);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace GigMarket.Application.Features.SellerProfiles.Queries.GetMySellerProfi
 
             if (entity is null) throw new NotFoundException("Seller profile not found.");
 
-            return new SellerProfileDto(entity.Id, entity.UserId.ToString(), entity.DisplayName, entity.Bio, entity.CreatedAtUtc);
+            return new SellerProfileDto(entity.Id, entity.UserId.ToString(), entity.CreatedAtUtc);
         }
     }
 }
