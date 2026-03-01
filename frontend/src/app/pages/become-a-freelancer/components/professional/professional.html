@@ -1,0 +1,97 @@
+<div class="flex flex-col w-full rounded-2xl border p-6 border-muted/20 bg-white gap-4">
+
+  <div class="flex flex-col gap-1">
+    <h2 class="text-2xl font-bold">Professional Information</h2>
+    <p class="text-muted text-sm">Tell us about your professional experience.</p>
+  </div>
+
+  <hr class="border-divider">
+
+  <form [formGroup]="form" class="flex flex-col gap-4">
+
+    <div class="flex flex-row w-full">
+      <div class="flex flex-col gap-1 w-2/5">
+        <h1 class="font-bold text-heading">
+          Your Occupation
+          <span class="text-red-500">*</span>
+        </h1>
+        <p class="text-xs font-light text-muted">Select your primary field of expertise</p>
+      </div>
+
+      <div class="flex flex-col gap-2 w-3/5">
+        <div class="relative flex items-center flex-1 border rounded-lg overflow-hidden transition-colors"
+             [class.border-red-400]="form.controls.occupation.invalid && form.controls.occupation.touched"
+             [class.border-divider]="!(form.controls.occupation.invalid && form.controls.occupation.touched)"
+             [class.focus-within:border-primary]="!(form.controls.occupation.invalid && form.controls.occupation.touched)">
+          <input type="text" id="occupation" formControlName="occupation" required
+                 class="flex-1 px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                 placeholder="Enter your occupation"/>
+        </div>
+        @if (form.controls.occupation.invalid && form.controls.occupation.touched) {
+          <p class="text-xs text-red-500 mt-0.5">Occupation is required.</p>
+        }
+
+        <div class="flex flex-row gap-4">
+
+          <!-- From -->
+          <div class="flex flex-col gap-1 flex-1">
+            <label for="ofrom" class="text-sm font-medium">
+              From
+            </label>
+            <div class="flex items-center border rounded-lg overflow-hidden transition-colors"
+                 [class.border-red-400]="form.controls.ofrom.invalid && form.controls.ofrom.touched"
+                 [class.border-divider]="!(form.controls.ofrom.invalid && form.controls.ofrom.touched)">
+              <div class="relative flex-1">
+                <select id="ofrom" formControlName="ofrom" required aria-required="true"
+                        class="w-full px-4 py-2.5 text-sm text-heading bg-transparent outline-none appearance-none cursor-pointer pr-10">
+                  <option value="" disabled>Select year</option>
+                  @for (year of years(); track year) {
+                    <option [value]="year">{{ year }}</option>
+                  }
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <lucide-icon [img]="icons.ChevronDown" [size]="16" aria-hidden="true"></lucide-icon>
+                </div>
+              </div>
+            </div>
+            @if (form.controls.ofrom.invalid && form.controls.ofrom.touched) {
+              <p class="text-xs text-red-500 mt-0.5">From year is required.</p>
+            }
+          </div>
+
+          <!-- To -->
+          <div class="flex flex-col gap-1 flex-1">
+            <label for="oto" class="text-sm font-medium">
+              To
+            </label>
+            <div class="flex items-center border rounded-lg overflow-hidden transition-colors"
+                 [class.border-red-400]="form.controls.oto.invalid && form.controls.oto.touched || yearRangeError"
+                 [class.border-divider]="!(form.controls.oto.invalid && form.controls.oto.touched || yearRangeError)">
+              <div class="relative flex-1">
+                <select id="oto" formControlName="oto" required aria-required="true"
+                        class="w-full px-4 py-2.5 text-sm text-heading bg-transparent outline-none appearance-none cursor-pointer pr-10">
+                  <option value="" disabled>Select year</option>
+                  @for (year of years(); track year) {
+                    <option [value]="year">{{ year }}</option>
+                  }
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                  <lucide-icon [img]="icons.ChevronDown" [size]="16" aria-hidden="true"></lucide-icon>
+                </div>
+              </div>
+            </div>
+            @if (form.controls.oto.invalid && form.controls.oto.touched) {
+              <p class="text-xs text-red-500 mt-0.5">To year is required.</p>
+            } @else if (yearRangeError) {
+              <p class="text-xs text-red-500 mt-0.5">"To" cannot be earlier than "From".</p>
+            }
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </form>
+
+</div>
