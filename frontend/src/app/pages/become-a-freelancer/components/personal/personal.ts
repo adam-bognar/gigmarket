@@ -1,19 +1,22 @@
-import {Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, output, signal} from '@angular/core';
 import {FormArray, FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Camera, ChevronDown, LucideAngularModule, Trash2} from "lucide-angular";
 
 @Component({
   selector: 'app-personal',
-    imports: [
-        FormsModule,
-        LucideAngularModule,
-        ReactiveFormsModule
-    ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    FormsModule,
+    LucideAngularModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './personal.html',
   styleUrl: './personal.css',
 })
 export class Personal {
   private fb = inject(FormBuilder);
+
+  readonly continue = output<void>();
 
   readonly icons = { Camera, Trash2, ChevronDown };
   readonly maxDescriptionLength = 1000;
@@ -64,6 +67,13 @@ export class Personal {
       reader.readAsDataURL(file);
     } else {
       this.profilePicPreview.set(null);
+    }
+  }
+
+  onContinue(): void {
+    this.form.markAllAsTouched();
+    if (this.form.valid) {
+      this.continue.emit();
     }
   }
 }

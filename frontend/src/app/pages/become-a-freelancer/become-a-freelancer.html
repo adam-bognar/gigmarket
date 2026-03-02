@@ -1,40 +1,53 @@
+<nav class="sticky top-0 z-50 bg-white shadow-sm w-full" aria-label="Main navigation">
+  <!-- Main row -->
+  <div class="flex items-center gap-4 px-6 py-3">
+    <!-- Logo -->
+    <a routerLink="/" class="flex items-center gap-2 no-underline shrink-0" aria-label="GigMarket home">
+      <svg class="w-7 h-7" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="12" height="12" rx="2" fill="#1DBF73" />
+        <rect x="16" width="12" height="12" rx="2" fill="#FBBF24" />
+        <rect y="16" width="12" height="12" rx="2" fill="#8B5CF6" />
+        <rect x="16" y="16" width="12" height="12" rx="2" fill="#3B82F6" />
+      </svg>
+      <span class="text-xl font-bold text-slate-800 tracking-tight">GigMarket</span>
+    </a>
+  </div>
+</nav>
+
+
 <div class="flex items-start w-full min-h-screen bg-muted/5">
-  <div class="flex flex-col items-center w-full md:w-2/3 border border-red-500 p-5 mx-auto gap-6">
+  <div class="flex flex-col items-center w-full max-w-3xl p-5 mx-auto gap-6">
 
     <!--Step indicator-->
     <div class="flex flex-row items-center gap-6 w-full">
-      <app-step-indicator [step]="1" label="asd" [currentStep]="currentStep()"/>
+      <app-step-indicator [step]="1" label="Personal" [currentStep]="currentStep()"/>
 
       <div class="flex-1 h-px"
            [class.bg-green-500]="currentStep() >= 2"
            [class.bg-divider]="currentStep() < 2"></div>
 
-      <app-step-indicator [step]="2" label="asd2" [currentStep]="currentStep()"/>
+      <app-step-indicator [step]="2" label="Professional" [currentStep]="currentStep()"/>
 
       <div class="flex-1 h-px"
            [class.bg-green-500]="currentStep() >= 3"
            [class.bg-divider]="currentStep() < 3"></div>
 
-      <app-step-indicator [step]="3" label="asd3" [currentStep]="currentStep()"/>
-
-      <div class="flex-1 h-px"
-           [class.bg-green-500]="currentStep() >= 4"
-           [class.bg-divider]="currentStep() < 4"></div>
-
-      <app-step-indicator [step]="4" label="asd4" [currentStep]="currentStep()"/>
+      <app-step-indicator [step]="3" label="Trust & Security" [currentStep]="currentStep()"/>
     </div>
 
     <div class="w-full">
       @switch (currentStep()) {
         @case (1) {
-          <app-personal/>
+          <app-personal (continue)="goNext()"/>
         }
         @case (2) {
-          <app-professional/>
+          <app-professional (back)="goBack()" (continue)="goNext()"/>
+        }
+        @case (3) {
+          <app-security (back)="goBack()"/>
         }
       }
     </div>
 
   </div>
-
 </div>

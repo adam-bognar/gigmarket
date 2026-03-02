@@ -19,6 +19,6 @@ export class App {
   }
 
   get showNavbar(): boolean {
-    return !this.router.url.startsWith('/login');
+    return !this.router.url.startsWith('/login') && !this.router.url.startsWith('/become');
   }
 }
