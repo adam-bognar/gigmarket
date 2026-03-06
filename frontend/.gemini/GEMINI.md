@@ -20,7 +20,6 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 ## Accessibility Requirements
 
 - It MUST pass all AXE checks.
-- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
 
 ### Components
 
@@ -54,3 +53,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Preferences
+
+- Never use `aria-` attributes
