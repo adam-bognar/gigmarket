@@ -1,0 +1,291 @@
+<section class="mx-auto w-full max-w-295 px-5 py-8 text-heading md:px-8 md:pb-12">
+  <header class="flex flex-col gap-4 border-b border-divider pb-6 md:flex-row md:items-start md:justify-between">
+    <div>
+      <h1 class="m-0 text-4xl font-bold leading-none tracking-tight text-heading md:text-5xl">Requirements</h1>
+      <p class="mt-2 text-base text-muted">
+        Tell buyers what you need to get started. Add questions or file requests so they can brief you right away.
+      </p>
+    </div>
+  </header>
+
+  <div class="mt-8 grid items-start gap-6 lg:grid-cols-3">
+    <div class="grid gap-6 lg:col-span-2">
+
+      <!-- Existing requirements list -->
+      @if (hasRequirements()) {
+        <section class="rounded-3xl border border-divider bg-surface p-6">
+          <h2 class="m-0 mb-5 text-xl font-bold leading-tight text-heading">Your Questions</h2>
+          <ol class="grid list-none gap-4 p-0">
+            @for (req of requirements(); track req.id; let i = $index) {
+              <li class="flex flex-col gap-3 rounded-2xl border border-divider bg-surface-alt p-4 sm:flex-row sm:items-start sm:justify-between">
+                <div class="flex min-w-0 flex-1 flex-col gap-1.5">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="inline-flex items-center justify-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary-dark">
+                      {{ requirementTypeLabels[req.type] }}
+                    </span>
+                    @if (req.required) {
+                      <span class="inline-flex items-center justify-center rounded-full bg-warning/10 px-2.5 py-0.5 text-xs font-semibold text-warning">
+                        Required
+                      </span>
+                    }
+                  </div>
+                  <p class="m-0 text-sm font-semibold text-heading">{{ req.question }}</p>
+                  @if (req.type === 'multiple_choice' && req.choices.length > 0) {
+                    <ul class="mt-1 grid list-none gap-1 p-0">
+                      @for (choice of req.choices; track $index) {
+                        <li class="flex items-center gap-2 text-sm text-muted">
+                          <span class="size-1.5 shrink-0 rounded-full bg-muted/50"></span>
+                          {{ choice }}
+                        </li>
+                      }
+                    </ul>
+                  }
+                </div>
+
+                <div class="flex shrink-0 items-center gap-1">
+                  <button
+                    class="inline-grid size-8 place-items-center rounded-full text-muted transition hover:bg-surface hover:text-heading disabled:opacity-30"
+                    type="button"
+                    [attr.disabled]="i === 0 ? true : null"
+                    (click)="moveUp(i)"
+                    title="Move up"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    class="inline-grid size-8 place-items-center rounded-full text-muted transition hover:bg-surface hover:text-heading disabled:opacity-30"
+                    type="button"
+                    [attr.disabled]="i === requirements().length - 1 ? true : null"
+                    (click)="moveDown(i)"
+                    title="Move down"
+                  >
+                    ↓
+                  </button>
+                  <button
+                    class="inline-grid size-8 place-items-center rounded-full text-muted transition hover:bg-surface hover:text-heading"
+                    type="button"
+                    (click)="editRequirement(req)"
+                    title="Edit"
+                  >
+                    ✎
+                  </button>
+                  <button
+                    class="inline-grid size-8 place-items-center rounded-full text-muted transition hover:bg-surface hover:text-warning"
+                    type="button"
+                    (click)="removeRequirement(req.id)"
+                    title="Remove"
+                  >
+                    ×
+                  </button>
+                </div>
+              </li>
+            }
+          </ol>
+        </section>
+      }
+
+      <!-- Add / Edit requirement form -->
+      @if (isFormVisible()) {
+        <section class="rounded-3xl border border-primary/30 bg-surface p-6" [formGroup]="addForm">
+          <h2 class="m-0 mb-5 text-xl font-bold leading-tight text-heading">
+            {{ editingId() ? 'Edit Question' : 'New Question' }}
+          </h2>
+
+          <div class="grid gap-5">
+
+            <!-- Type selector -->
+            <div>
+              <p class="mb-3 text-sm font-semibold text-heading">Answer type</p>
+              <div class="flex flex-wrap gap-3">
+                @for (type of requirementTypes; track type) {
+                  <label
+                    class="flex cursor-pointer items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition"
+                    [class.border-primary]="currentType() === type"
+                    [class.bg-primary]="currentType() === type"
+                    [class.text-primary-dark]="currentType() === type"
+                    [class.border-divider]="currentType() !== type"
+                    [class.text-heading]="currentType() !== type"
+                  >
+                    <input class="sr-only" type="radio" formControlName="type" [value]="type" (change)="setType(type)" />
+                    {{ requirementTypeLabels[type] }}
+                  </label>
+                }
+              </div>
+            </div>
+
+            <!-- Question input -->
+            <div>
+              <label class="mb-2 inline-block text-sm font-semibold text-heading" for="req-question">
+                @switch (currentType()) {
+                  @case ('free_text') { What would you like to ask the buyer? }
+                  @case ('file_upload') { What files should the buyer provide? }
+                  @case ('multiple_choice') { What should the buyer choose from? }
+                }
+              </label>
+              <input
+                id="req-question"
+                class="min-h-14 w-full rounded-2xl border border-divider bg-surface-alt px-4 text-base text-heading outline-none transition placeholder:text-muted/70 focus:border-primary/50 focus:bg-surface focus:ring-4 focus:ring-primary/15"
+                type="text"
+                formControlName="question"
+                [placeholder]="currentType() === 'free_text'
+                  ? 'e.g. What colours do you prefer?'
+                  : currentType() === 'file_upload'
+                  ? 'e.g. Please provide your brand logo (PNG or SVG)'
+                  : 'e.g. Which style do you prefer?'"
+              />
+              @if (showErrors() && addForm.controls.question.invalid) {
+                <p class="mt-2 text-sm font-medium text-warning">Please enter a question (at least 5 characters).</p>
+              }
+            </div>
+
+            <!-- Multiple choice options -->
+            @if (currentType() === 'multiple_choice') {
+              <div>
+                <p class="mb-3 text-sm font-semibold text-heading">Answer options <span class="font-normal text-muted">(minimum 2)</span></p>
+
+                @if (choiceBuffer().length > 0) {
+                  <ul class="mb-3 grid list-none gap-2 p-0">
+                    @for (choice of choiceBuffer(); track $index) {
+                      <li class="flex items-center gap-3 rounded-2xl border border-divider bg-surface-alt px-4 py-2.5 text-sm text-heading">
+                        <span class="flex-1">{{ choice }}</span>
+                        <button
+                          class="inline-grid size-6 shrink-0 place-items-center rounded-full text-muted transition hover:text-warning"
+                          type="button"
+                          (click)="removeChoice($index)"
+                        >×</button>
+                      </li>
+                    }
+                  </ul>
+                }
+
+                <div class="flex gap-3">
+                  <label class="sr-only" for="choice-input">Add an answer option</label>
+                  <input
+                    id="choice-input"
+                    class="min-h-12 flex-1 rounded-2xl border border-divider bg-surface-alt px-4 text-sm text-heading outline-none transition placeholder:text-muted/70 focus:border-primary/50 focus:bg-surface focus:ring-4 focus:ring-primary/15"
+                    type="text"
+                    placeholder="Add an option..."
+                    [value]="getNewChoiceInput()"
+                    (input)="updateNewChoiceInput($any($event.target).value)"
+                    (keydown.enter)="addChoice(); $event.preventDefault()"
+                  />
+                  <button
+                    class="inline-flex shrink-0 items-center justify-center rounded-full border border-heading/10 px-5 py-2 text-sm font-medium text-heading transition hover:bg-surface"
+                    type="button"
+                    (click)="addChoice()"
+                  >
+                    Add
+                  </button>
+                </div>
+
+                @if (showErrors() && currentType() === 'multiple_choice' && choiceBuffer().length < 2) {
+                  <p class="mt-2 text-sm font-medium text-warning">Add at least 2 answer options.</p>
+                }
+              </div>
+            }
+
+            <!-- Required toggle -->
+            <label class="flex cursor-pointer items-center gap-3 self-start rounded-2xl border border-divider px-4 py-3">
+              <span
+                class="relative inline-flex h-7 w-12 items-center rounded-full p-1 transition"
+                [class.bg-divider]="!addForm.controls.required.value"
+                [class.bg-primary]="addForm.controls.required.value"
+              >
+                <input class="sr-only" type="checkbox" formControlName="required" />
+                <span
+                  class="size-5 rounded-full bg-surface shadow-sm transition"
+                  [class.translate-x-5]="addForm.controls.required.value"
+                ></span>
+              </span>
+              <span class="text-sm font-medium text-heading">Make this question required</span>
+            </label>
+          </div>
+
+          <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+            <button
+              class="inline-flex items-center justify-center px-4 py-3 font-semibold text-heading transition"
+              type="button"
+              (click)="cancelAdd()"
+            >
+              Cancel
+            </button>
+            <button
+              class="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 font-bold text-on-primary transition hover:bg-primary-dark"
+              type="button"
+              (click)="saveRequirement()"
+            >
+              {{ editingId() ? 'Save changes' : 'Add question' }}
+            </button>
+          </div>
+        </section>
+      }
+
+      <!-- Add question button -->
+      @if (!isFormVisible()) {
+        <button
+          class="flex w-full items-center justify-center gap-3 rounded-3xl border-2 border-dashed border-divider bg-surface px-6 py-8 text-sm font-semibold text-muted transition hover:border-primary/40 hover:text-primary"
+          type="button"
+          (click)="showAddForm()"
+        >
+          <span class="inline-grid size-8 place-items-center rounded-full border-2 border-current text-lg leading-none">+</span>
+          Add a question or file request
+        </button>
+      }
+    </div>
+
+    <!-- Sidebar guide -->
+    <aside class="overflow-hidden rounded-3xl border border-divider bg-linear-to-b from-primary/10 to-white lg:col-span-1 lg:top-6">
+      <div class="p-7">
+        <h2 class="m-0 text-xl font-bold leading-tight text-heading">Tips for great briefs</h2>
+        <p class="mt-2 text-sm text-muted">
+          The more specific your questions, the faster you can start — and the fewer back-and-forth messages you'll need.
+        </p>
+        <ul class="mt-5 grid list-none gap-4 p-0">
+          <li class="flex items-start gap-3 text-sm text-heading">
+            <span class="mt-0.5 inline-grid size-5 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-semibold text-primary-dark">✓</span>
+            <span>Ask one thing per question to keep it easy for buyers.</span>
+          </li>
+          <li class="flex items-start gap-3 text-sm text-heading">
+            <span class="mt-0.5 inline-grid size-5 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-semibold text-primary-dark">✓</span>
+            <span>Use file upload prompts for logos, brand assets, or reference images.</span>
+          </li>
+          <li class="flex items-start gap-3 text-sm text-heading">
+            <span class="mt-0.5 inline-grid size-5 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-semibold text-primary-dark">✓</span>
+            <span>Multiple-choice options reduce ambiguity and speed up decisions.</span>
+          </li>
+          <li class="flex items-start gap-3 text-sm text-heading">
+            <span class="mt-0.5 inline-grid size-5 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-semibold text-primary-dark">✓</span>
+            <span>Mark only truly essential questions as required — optional ones encourage richer briefs.</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-8 flex flex-col gap-4 border-t border-divider pt-6 md:flex-row md:items-center md:justify-between">
+    <p class="m-0 text-sm text-muted">
+      @if (hasRequirements()) {
+        {{ requirements().length }} question{{ requirements().length === 1 ? '' : 's' }} added. You can always edit these later.
+      } @else {
+        Questions are optional — buyers can place an order without answering any.
+      }
+    </p>
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+      <button
+        class="inline-flex items-center justify-center px-4 py-3 font-semibold text-heading transition"
+        type="button"
+        (click)="back.emit()"
+      >
+        Back
+      </button>
+      <button
+        class="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-3 font-bold text-on-primary shadow-sm transition hover:bg-primary-dark"
+        type="button"
+        (click)="submitPublish()"
+      >
+        Continue
+      </button>
+    </div>
+  </footer>
+</section>
