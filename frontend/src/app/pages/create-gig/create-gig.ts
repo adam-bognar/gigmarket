@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Overview } from './overview/overview';
 import { Pricing } from './pricing/pricing';
 import { Requirements } from './requirements/requirements';
+import {Gallery} from './gallery/gallery';
 
 @Component({
   selector: 'app-create-gig',
-  imports: [Overview, Pricing, Requirements],
+  imports: [Overview, Pricing, Requirements, Gallery],
   templateUrl: './create-gig.html',
   styleUrl: './create-gig.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,7 +30,7 @@ export class CreateGig {
     },
   ] as const;
 
-  readonly currentStep = signal(3);
+  readonly currentStep = signal(4);
   readonly maxUnlockedStep = signal(1);
 
 

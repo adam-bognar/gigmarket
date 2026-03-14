@@ -6,6 +6,8 @@
       <app-pricing (back)="goBack()" (continue)="goNext()" />
     } @else if (currentStep() === 3) {
       <app-requirements (back)="goBack()" (publish)="goNext()" />
+    } @else if (currentStep() === 4) {
+      <app-gallery (back)="goBack()" (continue)="goNext()" />
     }
   </div>
 </div>
