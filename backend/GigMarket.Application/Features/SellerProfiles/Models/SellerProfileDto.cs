@@ -6,6 +6,6 @@ namespace GigMarket.Application.Features.SellerProfiles.Models
 {
     public sealed record SellerProfileDto(
     Guid Id,
-    string UserId,
+    Guid UserId,
     DateTime CreatedAtUtc);
 }

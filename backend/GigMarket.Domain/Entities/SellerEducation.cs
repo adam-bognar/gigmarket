@@ -9,6 +9,6 @@ public class SellerEducation
     public string Country { get; set; }
     public string InstitutionName { get; set; }
     public string Degree { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
+    public string Major { get; set; }
+    public int GraduationYear { get; set; } 
 }

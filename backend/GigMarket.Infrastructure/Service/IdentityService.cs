@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GigMarket.Infrastructure.Identity
+namespace GigMarket.Infrastructure.Service
 {
     public sealed class IdentityService(
     UserManager<User> userManager,

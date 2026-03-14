@@ -1,7 +1,7 @@
 using GigMarket.Application.Common.Interfaces;
 using GigMarket.Domain.Entities;
 using GigMarket.Infrastructure.Data;
-using GigMarket.Infrastructure.Identity;
+using GigMarket.Infrastructure.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
