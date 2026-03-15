@@ -23,5 +23,6 @@ namespace GigMarket.Domain.Entities
         public virtual ICollection<SellerSkill> Skills { get; set; } = new List<SellerSkill>();
         public virtual ICollection<SellerEducation> Educations { get; set; } = new List<SellerEducation>();
         public virtual ICollection<SellerCertification> Certifications { get; set; } =  new List<SellerCertification>();
+        public virtual ICollection<Gig> Gigs { get; set; } = new List<Gig>();
     }
 }

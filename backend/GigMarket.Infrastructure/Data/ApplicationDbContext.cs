@@ -21,6 +21,14 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     public DbSet<SellerEducation> SellerEducations => Set<SellerEducation>();
     public DbSet<SellerCertification> SellerCertifications => Set<SellerCertification>();
     public DbSet<SellerOccupation> SellerOccupations => Set<SellerOccupation>();
+    
+    public DbSet<Gig> Gigs => Set<Gig>();
+    public DbSet<GigTag> GigTags => Set<GigTag>();
+    public DbSet<GigPackage> GigPackages => Set<GigPackage>();
+    public DbSet<GigRequirement> GigRequirements => Set<GigRequirement>();
+    public DbSet<GigRequirementChoice> GigRequirementChoices => Set<GigRequirementChoice>();
+    public DbSet<GigPhoto> GigPhotos => Set<GigPhoto>();
+    public DbSet<GigVideo> GigVideos => Set<GigVideo>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -81,6 +89,72 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
                 .WithMany()
                 .HasForeignKey(ss => ss.SkillId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        builder.Entity<Gig>(entity =>
+        {
+            entity.HasKey(g => g.Id);
+
+            entity.Property(g => g.Status)
+                .HasConversion<string>();
+
+            entity.HasOne(g => g.SellerProfile)
+                .WithMany(sp => sp.Gigs)
+                .HasForeignKey(g => g.SellerProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(g => g.Tags)
+                .WithOne(t => t.Gig)
+                .HasForeignKey(t => t.GigId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(g => g.Packages)
+                .WithOne(p => p.Gig)
+                .HasForeignKey(p => p.GigId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(g => g.Requirements)
+                .WithOne(r => r.Gig)
+                .HasForeignKey(r => r.GigId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(g => g.Photos)
+                .WithOne(p => p.Gig)
+                .HasForeignKey(p => p.GigId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(g => g.Video)
+                .WithOne(v => v.Gig)
+                .HasForeignKey<GigVideo>(v => v.GigId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<GigPackage>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+            entity.Property(p => p.Tier).HasConversion<string>();
+            entity.Property(p => p.Price).HasColumnType("decimal(18,2)");
+        });
+
+        builder.Entity<GigRequirement>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.Type).HasConversion<string>();
+
+            entity.HasMany(r => r.Choices)
+                .WithOne(c => c.GigRequirement)
+                .HasForeignKey(c => c.GigRequirementId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<GigPhoto>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+        });
+
+        builder.Entity<GigVideo>(entity =>
+        {
+            entity.HasKey(v => v.Id);
         });
         
         builder.Entity<Language>().HasData(

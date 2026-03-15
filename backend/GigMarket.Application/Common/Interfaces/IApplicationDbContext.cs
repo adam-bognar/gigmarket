@@ -15,7 +15,16 @@ namespace GigMarket.Application.Common.Interfaces
         DbSet<Skill> Skills { get; }
         DbSet<SellerEducation> SellerEducations { get; }
         DbSet<SellerCertification> SellerCertifications { get; }
-        public DbSet<SellerOccupation> SellerOccupations { get; }
+        DbSet<SellerOccupation> SellerOccupations { get; }
+        
+        DbSet<Gig> Gigs { get; }
+        DbSet<GigTag> GigTags { get; }
+        DbSet<GigPackage> GigPackages { get; }
+        DbSet<GigRequirement> GigRequirements { get; }
+        DbSet<GigRequirementChoice> GigRequirementChoices { get; }
+        DbSet<GigPhoto> GigPhotos { get; }
+        DbSet<GigVideo> GigVideos { get; }
+        
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
