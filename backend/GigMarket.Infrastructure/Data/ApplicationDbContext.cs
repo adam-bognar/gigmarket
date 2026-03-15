@@ -20,6 +20,7 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     public DbSet<Skill> Skills => Set<Skill>();
     public DbSet<SellerEducation> SellerEducations => Set<SellerEducation>();
     public DbSet<SellerCertification> SellerCertifications => Set<SellerCertification>();
+    public DbSet<SellerOccupation> SellerOccupations => Set<SellerOccupation>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -37,13 +38,18 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
                 .OnDelete(DeleteBehavior.Cascade);
             
             entity.HasMany(sp => sp.Certifications)
-                .WithOne()
-                .HasForeignKey(sp => sp.SellerProfileId)
+                .WithOne(c => c.SellerProfile)
+                .HasForeignKey(c => c.SellerProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(sp => sp.Educations)
+                .WithOne(e => e.SellerProfile)
+                .HasForeignKey(e => e.SellerProfileId)
                 .OnDelete(DeleteBehavior.Cascade);
             
-            entity.HasMany(sp => sp.Educations)
-                .WithOne()
-                .HasForeignKey(sp => sp.SellerProfileId)
+            entity.HasOne(sp => sp.Occupation)
+                .WithOne(o => o.SellerProfile)
+                .HasForeignKey<SellerOccupation>(o => o.SellerProfileId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
@@ -78,11 +84,11 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
         });
         
         builder.Entity<Language>().HasData(
-            new Language { Id = Guid.NewGuid(), Name = "English" },
-            new Language { Id = Guid.NewGuid(), Name = "Spanish" },
-            new Language { Id = Guid.NewGuid(), Name = "French" },
-            new Language { Id = Guid.NewGuid(), Name = "German" },
-            new Language { Id = Guid.NewGuid(), Name = "Chinese" }
+            new Language { Id = new Guid("11111111-1111-1111-1111-111111111111"), Name = "English" },
+            new Language { Id = new Guid("22222222-2222-2222-2222-222222222222"), Name = "Spanish" },
+            new Language { Id = new Guid("33333333-3333-3333-3333-333333333333"), Name = "French" },
+            new Language { Id = new Guid("44444444-4444-4444-4444-444444444444"), Name = "German" },
+            new Language { Id = new Guid("55555555-5555-5555-5555-555555555555"), Name = "Chinese" }
         );
     }
 }

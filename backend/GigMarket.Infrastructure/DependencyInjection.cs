@@ -19,6 +19,7 @@ public static class DependencyInjection
 
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<ISellerService, SellerService>();
 
         services.AddIdentity<User, IdentityRole<Guid>>(options =>
             {

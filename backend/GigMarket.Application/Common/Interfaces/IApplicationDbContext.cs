@@ -15,6 +15,7 @@ namespace GigMarket.Application.Common.Interfaces
         DbSet<Skill> Skills { get; }
         DbSet<SellerEducation> SellerEducations { get; }
         DbSet<SellerCertification> SellerCertifications { get; }
+        public DbSet<SellerOccupation> SellerOccupations { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
