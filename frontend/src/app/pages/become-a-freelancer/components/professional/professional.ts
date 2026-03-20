@@ -10,6 +10,16 @@ import {
 } from '@angular/forms';
 import {ChevronDown, LucideAngularModule, Plus, Trash2, X} from 'lucide-angular';
 
+export interface ProfessionalFormValue {
+  occupation: string;
+  ofrom: number;
+  oto: number;
+  skills: string[];
+  educations: { country: string; institutionName: string; degree: string; major: string; graduationYear: number }[];
+  certifications: { name: string; issuingOrganization: string; year: number }[];
+  personalWebsite: string | null;
+}
+
 function yearRangeValidator(control: AbstractControl): ValidationErrors | null {
   const from = Number(control.get('ofrom')?.value);
   const to = Number(control.get('oto')?.value);
@@ -34,7 +44,7 @@ export class Professional {
   private fb = inject(FormBuilder);
 
   readonly back = output<void>();
-  readonly continue = output<void>();
+  readonly continue = output<ProfessionalFormValue>();
 
   private readonly CURRENT_YEAR = 2026;
   readonly icons = { ChevronDown, Plus, Trash2, X };
@@ -164,7 +174,26 @@ export class Professional {
   onContinue(): void {
     this.form.markAllAsTouched();
     if (this.form.valid && this.skillsArray.length > 0) {
-      this.continue.emit();
+      const v = this.form.getRawValue();
+      this.continue.emit({
+        occupation: v.occupation!,
+        ofrom: Number(v.ofrom),
+        oto: Number(v.oto),
+        skills: this.skillsArray.value as string[],
+        educations: (v.education ?? []).map((e: any) => ({
+          country: e.country,
+          institutionName: e.institution,
+          degree: e.title,
+          major: e.major,
+          graduationYear: Number(e.graduationYear)
+        })),
+        certifications: (v.certifications ?? []).map((c: any) => ({
+          name: c.name,
+          issuingOrganization: c.certifiedFrom,
+          year: Number(c.year)
+        })),
+        personalWebsite: v.personalWebsite || null
+      });
     }
   }
 }

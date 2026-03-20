@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 type SubcategoryOption = {
   value: string;
@@ -42,6 +43,14 @@ const CATEGORY_OPTIONS: readonly CategoryOption[] = [
   },
 ];
 
+export interface OverviewFormValue {
+  title: string;
+  category: string;
+  subcategory: string;
+  tags: string[];
+  description: string;
+}
+
 const MIN_DESCRIPTION_LENGTH = 120;
 const MAX_DESCRIPTION_LENGTH = 1200;
 const MAX_TITLE_LENGTH = 80;
@@ -56,11 +65,12 @@ const MAX_TAGS = 5;
 export class Overview {
   private readonly fb = inject(FormBuilder);
 
-  readonly continue = output<void>();
+  readonly continue = output<OverviewFormValue>();
   readonly minDescriptionLength = MIN_DESCRIPTION_LENGTH;
   readonly maxDescriptionLength = MAX_DESCRIPTION_LENGTH;
   readonly maxTitleLength = MAX_TITLE_LENGTH;
   readonly maxTags = MAX_TAGS;
+
   readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(MAX_TITLE_LENGTH)]],
     description: [
@@ -72,16 +82,25 @@ export class Overview {
     tagInput: [''],
   });
 
-  readonly titleLength = computed(() => this.form.controls.title.value.length);
-  readonly descriptionLength = computed(() => this.form.controls.description.value.length);
+  // Bridge reactive form valueChanges into signals so computed() can track them
+  private readonly titleValue = toSignal(this.form.controls.title.valueChanges, { initialValue: '' });
+  private readonly descriptionValue = toSignal(this.form.controls.description.valueChanges, { initialValue: '' });
+  private readonly categoryValue = toSignal(this.form.controls.category.valueChanges, { initialValue: '' });
+
+  readonly titleLength = computed(() => this.titleValue().length);
+  readonly descriptionLength = computed(() => this.descriptionValue().length);
+
   readonly tags = signal<string[]>([]);
+
   readonly availableSubcategories = computed(() => {
-    const category = this.form.controls.category.value;
+    const category = this.categoryValue();
     return CATEGORY_OPTIONS.find((option) => option.value === category)?.subcategories ?? [];
   });
+
   readonly remainingTags = computed(() => this.maxTags - this.tags().length);
+
   readonly guideItems = computed<GuideItem[]>(() => {
-    const title = this.form.controls.title.value.trim();
+    const title = this.titleValue().trim();
 
     return [
       {
@@ -138,7 +157,13 @@ export class Overview {
       this.form.markAllAsTouched();
       return;
     }
-
-    this.continue.emit();
+    const v = this.form.getRawValue();
+    this.continue.emit({
+      title: v.title,
+      category: v.category,
+      subcategory: v.subcategory,
+      tags: this.tags(),
+      description: v.description,
+    });
   }
 }

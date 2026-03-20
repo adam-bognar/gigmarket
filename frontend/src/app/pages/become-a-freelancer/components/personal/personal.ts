@@ -1,6 +1,16 @@
-import {ChangeDetectionStrategy, Component, inject, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, output, signal} from '@angular/core';
 import {FormArray, FormBuilder, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Camera, ChevronDown, LucideAngularModule, Trash2} from "lucide-angular";
+import {SellerProfileService} from '../../../../shared/services/seller-profile.service';
+import {LanguageOption} from '../../../../shared/models/seller.model';
+
+export interface PersonalFormValue {
+  firstName: string;
+  lastName: string;
+  description: string;
+  profilePic: File;
+  languageNames: string[];
+}
 
 @Component({
   selector: 'app-personal',
@@ -13,16 +23,18 @@ import {Camera, ChevronDown, LucideAngularModule, Trash2} from "lucide-angular";
   templateUrl: './personal.html',
   styleUrl: './personal.css',
 })
-export class Personal {
+export class Personal implements OnInit {
   private fb = inject(FormBuilder);
+  private sellerProfileService = inject(SellerProfileService);
 
-  readonly continue = output<void>();
+  readonly continue = output<PersonalFormValue>();
 
   readonly icons = { Camera, Trash2, ChevronDown };
   readonly maxDescriptionLength = 1000;
   readonly minDescriptionLength = 150;
   readonly descriptionLength = signal(0);
   readonly profilePicPreview = signal<string | null>(null);
+  readonly availableLanguages = signal<LanguageOption[]>([]);
 
   form = this.fb.group({
     firstName: ['', Validators.required],
@@ -34,11 +46,11 @@ export class Personal {
     ])
   });
 
-  readonly availableLanguages = [
-    'English',
-    'Spanish',
-    'French',
-  ];
+  ngOnInit(): void {
+    this.sellerProfileService.getLanguages().subscribe(langs => {
+      this.availableLanguages.set(langs);
+    });
+  }
 
   get languages() {
     return this.form.controls.languages as FormArray;
@@ -73,7 +85,14 @@ export class Personal {
   onContinue(): void {
     this.form.markAllAsTouched();
     if (this.form.valid) {
-      this.continue.emit();
+      const v = this.form.getRawValue();
+      this.continue.emit({
+        firstName: v.firstName!,
+        lastName: v.lastName!,
+        description: v.description!,
+        profilePic: v.profilePic!,
+        languageNames: v.languages as string[],
+      });
     }
   }
 }

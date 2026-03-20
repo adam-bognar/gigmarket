@@ -38,13 +38,19 @@
     <div class="w-full">
       @switch (currentStep()) {
         @case (1) {
-          <app-personal (continue)="goNext()"/>
+          <app-personal (continue)="onPersonalContinue($event)"/>
         }
         @case (2) {
-          <app-professional (back)="goBack()" (continue)="goNext()"/>
+          <app-professional (back)="goBack()" (continue)="onProfessionalContinue($event)"/>
         }
         @case (3) {
-          <app-security (back)="goBack()"/>
+          <app-security (back)="goBack()" (finish)="onFinish()"/>
+          @if (error()) {
+            <p class="mt-4 text-sm text-red-500 text-center">{{ error() }}</p>
+          }
+          @if (isSubmitting()) {
+            <p class="mt-4 text-sm text-muted text-center">Submitting...</p>
+          }
         }
       }
     </div>

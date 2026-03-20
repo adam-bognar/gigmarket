@@ -1,7 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {GigRequirementPayload} from '../../../shared/models/gig.model';
 
 export type RequirementType = 'free_text' | 'file_upload' | 'multiple_choice';
+
+export interface RequirementsFormValue {
+  requirements: GigRequirementPayload[];
+}
 
 export interface RequirementField {
   id: string;
@@ -33,7 +38,7 @@ export class Requirements {
   private readonly fb = inject(FormBuilder);
 
   readonly back = output<void>();
-  readonly publish = output<void>();
+  readonly publish = output<RequirementsFormValue>();
 
   readonly requirements = signal<RequirementField[]>([]);
   readonly showErrors = signal(false);
@@ -167,7 +172,24 @@ export class Requirements {
     });
   }
 
+  private mapType(type: RequirementType): string {
+    const map: Record<RequirementType, string> = {
+      free_text: 'FreeText',
+      file_upload: 'FileUpload',
+      multiple_choice: 'MultipleChoice',
+    };
+    return map[type];
+  }
+
   submitPublish(): void {
-    this.publish.emit();
+    const requirements: GigRequirementPayload[] = this.requirements().map((r, i) => ({
+      type: this.mapType(r.type) as any,
+      question: r.question,
+      isRequired: r.required,
+      sortOrder: i,
+      choices: r.choices.length > 0 ? r.choices : null,
+    }));
+
+    this.publish.emit({ requirements });
   }
 }

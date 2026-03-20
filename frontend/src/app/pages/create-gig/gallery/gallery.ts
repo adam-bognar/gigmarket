@@ -7,6 +7,11 @@ interface GigPhoto {
   previewUrl: string | null;
 }
 
+export interface GalleryFormValue {
+  photos: File[];
+  video: File | null;
+}
+
 const MAX_PHOTOS = 3;
 const MAX_VIDEO_SIZE_MB = 75;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png'];
@@ -22,7 +27,7 @@ const ACCEPTED_VIDEO_TYPES = ['video/mp4'];
 })
 export class Gallery {
   readonly back = output<void>();
-  readonly continue = output<void>();
+  readonly continue = output<GalleryFormValue>();
 
   readonly photos = signal<GigPhoto[]>([
     {file: null, previewUrl: null},
@@ -116,11 +121,15 @@ export class Gallery {
 
   submit(): void {
     this.showErrors.set(true);
+    if (!this.hasPrimaryPhoto()) return;
 
-    if (!this.hasPrimaryPhoto()) {
-      return;
-    }
+    const photoFiles = this.photos()
+      .filter(p => p.file !== null)
+      .map(p => p.file!);
 
-    this.continue.emit();
+    this.continue.emit({
+      photos: photoFiles,
+      video: this.video().file,
+    });
   }
 }

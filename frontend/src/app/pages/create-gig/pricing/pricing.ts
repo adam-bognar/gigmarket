@@ -1,5 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, output, signal } from '@angular/core';
+import {GigPackagePayload, PackageTier} from '../../../shared/models/gig.model';
 
+export interface PricingFormValue {
+  packages: GigPackagePayload[];
+}
 
 interface GuideItem {
   label: string;
@@ -27,7 +31,7 @@ interface PricingPackage {
 })
 export class Pricing {
   readonly back = output<void>();
-  readonly continue = output<void>();
+  readonly continue = output<PricingFormValue>();
 
   readonly showErrors = signal(false);
   readonly showTips = signal(false);
@@ -182,19 +186,27 @@ export class Pricing {
     );
   }
 
+  private deliveryStringToDays(value: string): number {
+    return parseInt(value);
+  }
+
+  private revisionStringToNumber(value: string): number {
+    return value === 'Unlimited' ? 999 : parseInt(value);
+  }
+
   submit(): void {
     this.showErrors.set(true);
+    if (this.visiblePackages().some(pkg => this.isPackageInvalid(pkg))) return;
 
-    const hasInvalidPackage = this.visiblePackages().some((pkg) =>
-      this.isPackageInvalid(pkg),
-    );
+    const packages: GigPackagePayload[] = this.visiblePackages().map(pkg => ({
+      tier: pkg.label as PackageTier,
+      name: pkg.name,
+      description: pkg.description,
+      deliveryDays: this.deliveryStringToDays(pkg.deliveryTime),
+      revisions: this.revisionStringToNumber(pkg.revisions),
+      price: pkg.price!,
+    }));
 
-    if (hasInvalidPackage) {
-      return;
-    }
-
-    console.log('Pricing payload:', this.visiblePackages());
-
-    this.continue.emit();
+    this.continue.emit({ packages });
   }
 }

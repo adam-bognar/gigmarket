@@ -21,16 +21,13 @@
 **Goal:** A Seller can create, edit, and delete Gigs with images.
 
 **Week 3:**
-- [ ] Feature: "Become a Seller" page (Form to create SellerProfile).
-- [ ] UI: Basic Navbar (Login/Logout state) and Dashboard layout.
-- [ ] Database: Create Gig entity (Title, Description, Category) and GigPackage (Basic/Std/Prem pricing).
-- [ ] API: GigsController (CRUD endpoints).
-- [ ] Infrastructure: Implement IPhotoService (Upload images to AWS or Azure — TBD).
+- [x] Feature: "Become a Seller" page (Form to create SellerProfile).
+- [x] UI: Basic Navbar (Login/Logout state).
+
 
 **Week 4 (03.12):**
-- [ ] Frontend: "Create Gig" Wizard (Multi-step form).
-- [ ] Feature: Image Drag & Drop component.
-- [ ] UI: "My Gigs" dashboard card (Edit/Delete buttons).
+- [x] Frontend: "Create Gig" Wizard (Multi-step form).
+- [x] Feature: Image Drag & Drop component.
 
 ### Phase 2: The Marketplace (Weeks 5-8)
 #### Sprint 3: Discovery & Search
@@ -38,11 +35,14 @@
 
 **Week 5:**
 - [ ] Frontend: Search Results page with filters (Price slider, Dropdowns).
+- [x] Database: Create Gig entity (Title, Description, Category) and GigPackage (Basic/Std/Prem pricing).
+- [x] API: GigsController (CRUD endpoints).
+- [x] Infrastructure: Implement Azure Blobstorage.
 
 **Week 6 (03.26):**
 - [ ] Frontend: Gig Detail Page (The most important page).
 - [ ] UI: Pricing Package Selector (Tabs for Basic/Standard/Premium).
-- [ ] Feature: "Contact Seller" button (Drafts a message).
+- [ ] UI: "My Gigs" dashboard card (Edit/Delete buttons).
 
 #### Sprint 4: The Order System (Complex)
 **Goal:** A Buyer can "purchase" a gig, creating an Order.
@@ -53,6 +53,7 @@
 - [ ] Feature: Stripe payment integration (Checkout flow + webhook handling).
 
 **Week 8 (04.16):**
+- [ ] Feature: "Contact Seller" button (Drafts a message).
 - [ ] Real-time: Setup SignalR for Notifications.
 - [ ] Frontend: Order Page (Timeline view: "Order Started" -> "Delivery Submitted").
 

@@ -7,7 +7,5 @@ namespace GigMarket.Application.Features.Gigs.Commands.CreateGig;
 public class CreateGigCommandHandler(IGigService gigService) : IRequestHandler<CreateGigCommand, GigDto>
 {
     public Task<GigDto> Handle(CreateGigCommand request, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
+        => gigService.CreateGigAsync(request.GigRequest, cancellationToken);
 }

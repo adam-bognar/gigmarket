@@ -11,7 +11,7 @@ namespace GigMarket.Api.Controllers;
 public class SellerController(IMediator mediator) : ControllerBase
 {
     [HttpPost("create")]
-    public async Task<ActionResult<bool>> Create([FromBody] CreateSellerProfileRequest request, CancellationToken ct)
+    public async Task<IActionResult> Create([FromBody] CreateSellerProfileRequest request, CancellationToken ct)
     {
         var result = await mediator.Send(new CreateSellerProfileCommand(request), ct);
         return Ok(result);

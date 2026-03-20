@@ -126,8 +126,8 @@
               <select type="text" [formControlName]="$index"
                       class="flex-1 px-4 py-2.5 text-sm text-heading bg-transparent outline-none appearance-none cursor-pointer">
                 <option value="" disabled selected>Select a language</option>
-                @for (language of availableLanguages; track language) {
-                  <option [value]="language">{{ language }}</option>
+                @for (language of availableLanguages(); track language) {
+                  <option [value]="language.id">{{ language.name }}</option>
                 }
               </select>
 

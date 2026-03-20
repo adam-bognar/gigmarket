@@ -1,13 +1,20 @@
 <div class="min-h-screen bg-muted/5 pb-10">
   <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 px-5 py-6 md:px-8">
     @if (currentStep() === 1) {
-      <app-overview (continue)="goNext()" />
+      <app-overview (continue)="onOverviewContinue($event)" />
     } @else if (currentStep() === 2) {
-      <app-pricing (back)="goBack()" (continue)="goNext()" />
+      <app-pricing (back)="goBack()" (continue)="onPricingContinue($event)" />
     } @else if (currentStep() === 3) {
-      <app-requirements (back)="goBack()" (publish)="goNext()" />
+      <app-requirements (back)="goBack()" (publish)="onRequirementsContinue($event)" />
     } @else if (currentStep() === 4) {
-      <app-gallery (back)="goBack()" (continue)="goNext()" />
+      <app-gallery (back)="goBack()" (continue)="onGalleryContinue($event)" />
+    }
+
+    @if (error()) {
+      <p class="text-sm text-red-500 text-center">{{ error() }}</p>
+    }
+    @if (isSubmitting()) {
+      <p class="text-sm text-muted text-center">Uploading and creating your Gig...</p>
     }
   </div>
 </div>
