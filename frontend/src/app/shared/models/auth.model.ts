@@ -15,4 +15,6 @@ export interface AuthUser {
   email: string;
   firstName: string;
   lastName: string;
+  profilePicUrl?: string;
+  isSeller?: boolean;
 }

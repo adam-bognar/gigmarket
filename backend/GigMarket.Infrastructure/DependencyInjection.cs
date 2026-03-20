@@ -1,7 +1,7 @@
 using GigMarket.Application.Common.Interfaces;
 using GigMarket.Domain.Entities;
 using GigMarket.Infrastructure.Data;
-using GigMarket.Infrastructure.Identity;
+using GigMarket.Infrastructure.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +19,9 @@ public static class DependencyInjection
 
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<ISellerService, SellerService>();
+        services.AddScoped<IGigService, GigService>();
+        services.AddScoped<IBlobStorageService, BlobStorageService>();
 
         services.AddIdentity<User, IdentityRole<Guid>>(options =>
             {

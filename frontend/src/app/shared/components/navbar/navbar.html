@@ -32,14 +32,82 @@
             </div>
         </form>
 
-        <!-- Auth buttons: hidden on mobile, visible md+ -->
+        <!-- User actions: hidden on mobile, visible md+ -->
         <div class="hidden md:flex items-center gap-3 ml-auto shrink-0">
-            <button type="button" class="px-4 py-2 text-sm font-medium text-heading hover:text-primary transition-colors cursor-pointer">
-                Sign In
-            </button>
-            <button type="button" class="px-4 py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">
-                Join
-            </button>
+            @if (isAuthenticated()) {
+                @if (!isSeller()) {
+                    <a routerLink="/become-seller"
+                       class="px-4 py-2 text-sm font-medium text-heading hover:text-primary transition-colors no-underline">
+                        Become a Seller
+                    </a>
+                }
+
+                <!-- Messages -->
+                <a routerLink="/messages" class="relative p-2 rounded-full text-heading hover:text-primary transition-colors"
+                   aria-label="Messages">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                </a>
+
+                <!-- Notifications -->
+                <a routerLink="/notifications" class="relative p-2 rounded-full text-heading hover:text-primary transition-colors"
+                   aria-label="Notifications">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
+                </a>
+
+                <!-- Profile avatar with dropdown -->
+                <div class="relative">
+                    <button type="button"
+                            class="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border-2 border-primary cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                            (click)="toggleProfileMenu()"
+                            [attr.aria-expanded]="profileMenuOpen()"
+                            aria-haspopup="true"
+                            aria-label="User menu">
+                        @if (user()?.profilePicUrl) {
+                            <img [src]="user()?.profilePicUrl" [alt]="(user()?.firstName ?? '') + ' ' + (user()?.lastName ?? '')"
+                                 class="w-full h-full object-cover" />
+                        } @else {
+                            <span class="text-xs font-bold text-on-primary bg-primary w-full h-full flex items-center justify-center">
+                                {{ userInitials() }}
+                            </span>
+                        }
+                    </button>
+
+                    @if (profileMenuOpen()) {
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-divider py-1 z-50"
+                             role="menu" aria-label="User menu">
+                            <a routerLink="/profile" (click)="closeProfileMenu()" role="menuitem"
+                               class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
+                                Profile
+                            </a>
+                            <a routerLink="/dashboard" (click)="closeProfileMenu()" role="menuitem"
+                               class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
+                                Dashboard
+                            </a>
+                            <hr class="my-1 border-divider" />
+                            <button type="button" (click)="onLogout()" role="menuitem"
+                                    class="w-full text-left px-4 py-2 text-sm text-heading hover:bg-gray-100 cursor-pointer">
+                                Logout
+                            </button>
+                        </div>
+                    }
+                </div>
+            } @else {
+                <button type="button" routerLink="/login"
+                        class="px-4 py-2 text-sm font-medium text-heading hover:text-primary transition-colors cursor-pointer">
+                    Sign In
+                </button>
+                <button type="button" routerLink="/login"
+                        class="px-4 py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">
+                    Join
+                </button>
+            }
         </div>
 
         <!-- Hamburger button: visible only on mobile -->
@@ -85,12 +153,62 @@
                 </div>
             </form>
             <div class="flex flex-col gap-2">
-                <button class="w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors cursor-pointer">
-                    Sign In
-                </button>
-                <button class="w-full py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">
-                    Join
-                </button>
+                @if (isAuthenticated()) {
+                    <!-- User info -->
+                    <div class="flex items-center gap-3 py-2">
+                        <span class="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border-2 border-primary shrink-0">
+                            @if (user()?.profilePicUrl) {
+                                <img [src]="user()?.profilePicUrl" [alt]="(user()?.firstName ?? '') + ' ' + (user()?.lastName ?? '')"
+                                     class="w-full h-full object-cover" />
+                            } @else {
+                                <span class="text-xs font-bold text-on-primary bg-primary w-full h-full flex items-center justify-center">
+                                    {{ userInitials() }}
+                                </span>
+                            }
+                        </span>
+                        <span class="text-sm font-medium text-heading">{{ user()?.firstName }} {{ user()?.lastName }}</span>
+                    </div>
+
+                    @if (!isSeller()) {
+                        <a routerLink="/become-seller" (click)="closeMobileMenu()"
+                           class="w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline text-center">
+                            Become a Seller
+                        </a>
+                    }
+
+                    <a routerLink="/messages" (click)="closeMobileMenu()"
+                       class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                        Messages
+                    </a>
+
+                    <a routerLink="/notifications" (click)="closeMobileMenu()"
+                       class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                        Notifications
+                    </a>
+
+                    <button type="button" (click)="onLogout()"
+                            class="w-full py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">
+                        Logout
+                    </button>
+                } @else {
+                    <button routerLink="/login" (click)="closeMobileMenu()"
+                            class="w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors cursor-pointer">
+                        Sign In
+                    </button>
+                    <button routerLink="/login" (click)="closeMobileMenu()"
+                            class="w-full py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">
+                        Join
+                    </button>
+                }
             </div>
         </div>
     }

@@ -21,16 +21,13 @@
 **Goal:** A Seller can create, edit, and delete Gigs with images.
 
 **Week 3:**
-- [ ] Feature: "Become a Seller" page (Form to create SellerProfile).
-- [ ] UI: Basic Navbar (Login/Logout state) and Dashboard layout.
-- [ ] Database: Create Gig entity (Title, Description, Category) and GigPackage (Basic/Std/Prem pricing).
-- [ ] API: GigsController (CRUD endpoints).
-- [ ] Infrastructure: Implement IPhotoService (Upload images to AWS or Azure — TBD).
+- [x] Feature: "Become a Seller" page (Form to create SellerProfile).
+- [x] UI: Basic Navbar (Login/Logout state).
 
-**Week 4:**
-- [ ] Frontend: "Create Gig" Wizard (Multi-step form).
-- [ ] Feature: Image Drag & Drop component.
-- [ ] UI: "My Gigs" dashboard card (Edit/Delete buttons).
+
+**Week 4 (03.12):**
+- [x] Frontend: "Create Gig" Wizard (Multi-step form).
+- [x] Feature: Image Drag & Drop component.
 
 ### Phase 2: The Marketplace (Weeks 5-8)
 #### Sprint 3: Discovery & Search
@@ -38,11 +35,14 @@
 
 **Week 5:**
 - [ ] Frontend: Search Results page with filters (Price slider, Dropdowns).
+- [x] Database: Create Gig entity (Title, Description, Category) and GigPackage (Basic/Std/Prem pricing).
+- [x] API: GigsController (CRUD endpoints).
+- [x] Infrastructure: Implement Azure Blobstorage.
 
-**Week 6:**
+**Week 6 (03.26):**
 - [ ] Frontend: Gig Detail Page (The most important page).
 - [ ] UI: Pricing Package Selector (Tabs for Basic/Standard/Premium).
-- [ ] Feature: "Contact Seller" button (Drafts a message).
+- [ ] UI: "My Gigs" dashboard card (Edit/Delete buttons).
 
 #### Sprint 4: The Order System (Complex)
 **Goal:** A Buyer can "purchase" a gig, creating an Order.
@@ -52,7 +52,8 @@
 - [ ] API: OrdersController (Create Order, Mark as Delivered).
 - [ ] Feature: Stripe payment integration (Checkout flow + webhook handling).
 
-**Week 8:**
+**Week 8 (04.16):**
+- [ ] Feature: "Contact Seller" button (Drafts a message).
 - [ ] Real-time: Setup SignalR for Notifications.
 - [ ] Frontend: Order Page (Timeline view: "Order Started" -> "Delivery Submitted").
 
@@ -65,7 +66,7 @@
 - [ ] Database: Messages table.
 - [ ] Frontend: Inbox UI (Left list, Right chat window).
 
-**Week 10:**
+**Week 10 (04.30):**
 - [ ] Feature: Review System (Stars + Comment).
 - [ ] Logic: Only allow review if Order Status == Completed.
 - [ ] Logic: Calculate Seller's average rating automatically.
@@ -77,7 +78,7 @@
 - Option A (AI): Add an "AI Brief Generator" button on the search bar (Connects to OpenAI API).
 - Option B (Video): Add "Video Call" button to Chat (using WebRTC/PeerJS).
 
-**Week 12:**
+**Week 12 (05.14):**
 - [ ] Bug Fixes: Handle edge cases (404 errors, Empty states).
 - [ ] Docs: Generate Architecture Diagrams, ER Diagrams, and Screenshots.
 - [ ] Deploy: Publish to chosen cloud (AWS or Azure — TBD).

@@ -18,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Common\Models\" />
+      <Folder Include="Features\SellerProfiles\Commands\UpdateSeller\" />
     </ItemGroup>
 
 </Project>
