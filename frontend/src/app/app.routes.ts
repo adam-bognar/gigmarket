@@ -6,6 +6,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/landing/landing').then((m) => m.Landing),
   },
   {
+    path: 'browse',
+    loadComponent: () => import('./pages/browse/browse').then((m) => m.Browse),
+  },
+  {
     path: 'login',
     loadComponent: () => import('./pages/login/login').then((m) => m.Login),
   },
@@ -16,5 +20,13 @@ export const routes: Routes = [
   {
     path: 'create-gig',
     loadComponent: () => import('./pages/create-gig/create-gig').then((m) => m.CreateGig),
-  }
+  },
+  {
+    path: 'gigs/:id',
+    loadComponent: () => import('./pages/gig-details/gig-details').then((m) => m.GigDetails),
+  },
+  // {
+  //   path: 'gigs/c2c84ec0-cd3c-4227-b627-29debdeeff45',
+  //   loadComponent: () => import('./pages/gig-details/gig-details').then((m) => m.GigDetails),
+  // },
 ];

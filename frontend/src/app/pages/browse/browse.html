@@ -1,0 +1,59 @@
+<section class="mx-auto grid max-w-7xl gap-10 px-5 py-12 md:px-8 md:py-16">
+  <div class="grid gap-3">
+	<p class="m-0 text-sm font-bold uppercase tracking-wide text-primary">Browse services</p>
+	<h1 class="m-0 max-w-4xl text-4xl leading-tight tracking-tight text-heading md:text-5xl">
+	  Discover polished gig cards for your marketplace
+	</h1>
+	<p class="m-0 max-w-2xl text-base text-muted md:text-lg">
+	  Browse by category, price, delivery time, and rating with a clean sidebar layout.
+	</p>
+  </div>
+
+  <div class="grid items-start gap-8 lg:grid-cols-[17rem_minmax(0,1fr)] xl:grid-cols-[18rem_minmax(0,1fr)]">
+	<app-filter
+	  [state]="filters()"
+	  [categoryOptions]="categoryOptions"
+	  [minAllowedPrice]="minPrice"
+	  [maxAllowedPrice]="maxPrice"
+	  (stateChange)="updateFilters($event)"
+	/>
+
+	<div class="grid gap-6">
+	  <div class="flex flex-col gap-2 border-b border-divider pb-4 sm:flex-row sm:items-center sm:justify-between">
+		<p class="m-0 text-sm font-medium text-heading">
+		  {{ availableServicesCount() | number: '1.0-0' }} services available
+		</p>
+		<p class="m-0 text-sm text-muted">Sort by: <span class="font-semibold text-heading">Recommended</span></p>
+	  </div>
+
+    @if (isLoading()) {
+      <div class="rounded-3xl border border-divider bg-surface p-8 text-center shadow-sm">
+        <p class="m-0 text-lg font-semibold text-heading">Loading gigs…</p>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="rounded-3xl border border-red-200 bg-red-50 p-8 text-center shadow-sm">
+        <p class="m-0 text-lg font-semibold text-red-700">{{ error() }}</p>
+      </div>
+    }
+
+    @if (!isLoading() && !error()) {
+      @if (filteredCards().length > 0) {
+        <div class="grid grid-cols-1 gap-7 md:grid-cols-2 xl:grid-cols-3">
+          @for (card of filteredCards(); track card.title + card.sellerName) {
+            <a [routerLink]="['/gigs', card.id]">
+              <app-card [item]="card" />
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="rounded-3xl border border-divider bg-surface p-8 text-center shadow-sm">
+          <p class="m-0 text-lg font-semibold text-heading">No gigs match these filters right now.</p>
+          <p class="mt-2 text-sm text-muted">Try widening the price range or switching to all categories.</p>
+        </div>
+      }
+    }
+	</div>
+  </div>
+</section>

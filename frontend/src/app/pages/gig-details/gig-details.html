@@ -1,0 +1,180 @@
+@if (isLoading()) {
+  <div class="p-12 text-muted">Loading gig details...</div>
+} @else if (error()) {
+  <div class="p-12 text-danger">{{ error() }}</div>
+} @else {
+  @let gigData = gig();
+  @if (gigData) {
+    <div class="flex h-full w-full flex-row">
+      <div class="flex w-6/10 flex-col p-12">
+        <div class="flex flex-col gap-5">
+          <h1 class="text-3xl font-bold text-heading">{{ gigData.title }}</h1>
+
+          <div class="flex flex-row flex-wrap items-center gap-4 text-sm">
+            <div class="flex flex-row items-center gap-2">
+              <img
+                [src]="gigData.sellerAvatarUrl"
+                [alt]="sellerName() + ' avatar'"
+                class="h-9 w-9 rounded-full object-cover ring-2 ring-divider"
+              >
+              <span class="font-semibold text-heading">{{ sellerName() }}</span>
+            </div>
+
+            <span class="select-none text-divider">|</span>
+
+            <div class="flex flex-row items-center gap-1.5">
+              <svg class="h-4 w-4 shrink-0 text-warning" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09L5.64 12.545 1.28 7.91l6.09-.885L10 1l2.63 6.025 6.09.885-4.36 4.635 1.41 5.545z"/>
+              </svg>
+              <span class="font-semibold text-heading">{{ gigData.averageRating | number: '1.1-1' }}</span>
+              <span class="text-muted">({{ gigData.totalReviews | number: '1.0-0' }} reviews)</span>
+            </div>
+
+            <span class="select-none text-divider">|</span>
+            <span class="text-muted">{{ gigData.categoryName }} / {{ gigData.subcategoryName }}</span>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <img [src]="activeImage()" [alt]="gigData.title + ' main image'" class="h-96 w-full rounded-xl object-cover">
+
+            @if (displayedThumbnails().length) {
+              <div class="flex flex-row gap-3">
+                @for (image of displayedThumbnails(); track image; let i = $index) {
+                  <img
+                    [src]="image"
+                    [alt]="gigData.title + ' image ' + (i + 2)"
+                    class="h-28 w-1/3 cursor-pointer rounded-lg object-cover opacity-80 transition-opacity hover:opacity-100"
+                    (click)="selectImage(i + 1)"
+                  >
+                }
+              </div>
+            }
+          </div>
+
+          <div class="flex flex-col gap-3 pt-2">
+            <h2 class="text-xl font-bold text-heading">About this gig</h2>
+            <p class="wrap-break-word whitespace-pre-line leading-relaxed text-muted">{{ gigData.description }}</p>
+          </div>
+
+          <hr class="border-0 border-t border-divider">
+
+          <div class="flex flex-col gap-4 pt-2">
+            <h2 class="text-xl font-bold text-heading">About the seller</h2>
+
+            <div class="flex flex-col gap-4 rounded-xl border border-divider p-5">
+              <div class="flex flex-row items-center justify-between gap-4">
+                <div class="flex min-w-0 flex-row items-center gap-3">
+                  <img
+                    [src]="gigData.sellerAvatarUrl"
+                    [alt]="sellerName() + ' profile picture'"
+                    class="h-12 w-12 rounded-full object-cover ring-2 ring-divider"
+                  >
+                  <div class="flex min-w-0 flex-col">
+                    <span class="truncate text-base font-semibold text-heading">{{ sellerName() }}</span>
+                    <span class="truncate text-sm text-muted">{{ sellerOccupation() }}</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  class="shrink-0 rounded-md border border-divider px-4 py-2 text-sm font-medium text-heading transition-colors hover:bg-surface-alt"
+                >
+                  Contact me
+                </button>
+              </div>
+
+              <p class="text-sm text-muted">{{ sellerMeta() }}</p>
+              <p class="wrap-break-word whitespace-pre-line leading-relaxed text-muted">{{ sellerBio() }}</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-5 pt-2">
+            <h2 class="text-xl font-bold text-heading">Reviews ({{ gigData.totalReviews | number: '1.0-0' }})</h2>
+
+            @if (gigData.reviews.length) {
+              @for (review of gigData.reviews; track review.id) {
+                <div class="flex flex-col gap-3 border-b border-divider pb-4">
+                  <div class="flex flex-row items-center justify-between gap-3">
+                    <span class="text-base font-semibold text-heading">{{ review.reviewerName }}</span>
+                    <div class="flex flex-row items-center gap-1.5">
+                      <svg class="h-4 w-4 text-warning" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09L5.64 12.545 1.28 7.91l6.09-.885L10 1l2.63 6.025 6.09.885-4.36 4.635 1.41 5.545z"/>
+                      </svg>
+                      <span class="text-sm font-medium text-heading">{{ review.rating | number: '1.1-1' }}</span>
+                    </div>
+                  </div>
+                  <p class="leading-relaxed text-muted">{{ review.comment }}</p>
+                  <p class="text-sm text-muted">Reviewed on {{ review.createdAtUtc | date: 'MMM d, y' }}</p>
+                </div>
+              }
+            } @else {
+              <p class="text-muted">No reviews yet.</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="w-4/10 p-12">
+        <div class="sticky top-20 flex flex-col overflow-hidden rounded-xl border border-divider bg-surface">
+          <div class="grid grid-cols-3 border-b border-divider">
+            <button
+              type="button"
+              (click)="setSelectedPackageTier('basic')"
+              class="px-3 py-3 text-sm font-semibold transition-colors"
+              [class.bg-primary]="selectedPackageTier() === 'basic'"
+              [class.text-on-primary]="selectedPackageTier() === 'basic'"
+              [class.text-heading]="selectedPackageTier() !== 'basic'"
+            >
+              Basic
+            </button>
+            <button
+              type="button"
+              (click)="setSelectedPackageTier('standard')"
+              class="border-x border-divider px-3 py-3 text-sm font-semibold transition-colors"
+              [class.bg-primary]="selectedPackageTier() === 'standard'"
+              [class.text-on-primary]="selectedPackageTier() === 'standard'"
+              [class.text-heading]="selectedPackageTier() !== 'standard'"
+            >
+              Standard
+            </button>
+            <button
+              type="button"
+              (click)="setSelectedPackageTier('premium')"
+              class="px-3 py-3 text-sm font-semibold transition-colors"
+              [class.bg-primary]="selectedPackageTier() === 'premium'"
+              [class.text-on-primary]="selectedPackageTier() === 'premium'"
+              [class.text-heading]="selectedPackageTier() !== 'premium'"
+            >
+              Premium
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-4 p-5">
+            @if (selectedPackage(); as pkg) {
+              <div class="flex items-start justify-between gap-3">
+                <h3 class="text-base font-semibold text-heading">{{ pkg.name }}</h3>
+                <span class="text-xl font-bold text-heading">${{ pkg.price | number: '1.0-0' }}</span>
+              </div>
+
+              <p class="text-sm leading-relaxed text-muted">{{ pkg.description }}</p>
+
+              <div class="flex items-center gap-5 text-sm text-muted">
+                <span>{{ pkg.deliveryDays }} day delivery</span>
+                <span>{{ pkg.revisions }} revisions</span>
+              </div>
+
+              <button
+                type="button"
+                class="rounded-md bg-primary px-4 py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-dark"
+              >
+                Continue (${{ pkg.price | number: '1.0-0' }})
+              </button>
+            } @else {
+              <p class="text-sm text-muted">No package details available for this gig.</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+}
