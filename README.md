@@ -34,14 +34,13 @@
 **Goal:** A Buyer can find gigs using search text and filters.
 
 **Week 5:**
-- [ ] Frontend: Search Results page with filters (Price slider, Dropdowns).
+- [x] Frontend: Search Results page with filters.
 - [x] Database: Create Gig entity (Title, Description, Category) and GigPackage (Basic/Std/Prem pricing).
 - [x] API: GigsController (CRUD endpoints).
 - [x] Infrastructure: Implement Azure Blobstorage.
 
 **Week 6 (03.26):**
-- [ ] Frontend: Gig Detail Page (The most important page).
-- [ ] UI: Pricing Package Selector (Tabs for Basic/Standard/Premium).
+- [x] Frontend: Gig Detail Page.
 - [ ] UI: "My Gigs" dashboard card (Edit/Delete buttons).
 
 #### Sprint 4: The Order System (Complex)

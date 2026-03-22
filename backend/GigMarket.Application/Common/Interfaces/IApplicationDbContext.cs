@@ -8,6 +8,7 @@ namespace GigMarket.Application.Common.Interfaces
 {
     public interface IApplicationDbContext
     {
+        DbSet<User> Users { get; }
         DbSet<SellerProfile> SellerProfiles { get; }
         DbSet<Language> Languages { get; }
         DbSet<SellerLanguage> SellerLanguages { get; }
@@ -18,12 +19,15 @@ namespace GigMarket.Application.Common.Interfaces
         DbSet<SellerOccupation> SellerOccupations { get; }
         
         DbSet<Gig> Gigs { get; }
+        DbSet<GigCategory> GigCategories { get; }
+        DbSet<GigSubcategory> GigSubcategories { get; }
         DbSet<GigTag> GigTags { get; }
         DbSet<GigPackage> GigPackages { get; }
         DbSet<GigRequirement> GigRequirements { get; }
         DbSet<GigRequirementChoice> GigRequirementChoices { get; }
         DbSet<GigPhoto> GigPhotos { get; }
         DbSet<GigVideo> GigVideos { get; }
+        DbSet<GigReview> GigReviews { get; }
         
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

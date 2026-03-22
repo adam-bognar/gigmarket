@@ -14,6 +14,7 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     }
 
     public DbSet<SellerProfile> SellerProfiles => Set<SellerProfile>();
+    DbSet<User> IApplicationDbContext.Users => Users;
     public DbSet<Language> Languages => Set<Language>();
     public DbSet<SellerLanguage> SellerLanguages => Set<SellerLanguage>();
     public DbSet<SellerSkill> SellerSkills => Set<SellerSkill>();
@@ -23,12 +24,15 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     public DbSet<SellerOccupation> SellerOccupations => Set<SellerOccupation>();
     
     public DbSet<Gig> Gigs => Set<Gig>();
+    public DbSet<GigCategory> GigCategories => Set<GigCategory>();
+    public DbSet<GigSubcategory> GigSubcategories => Set<GigSubcategory>();
     public DbSet<GigTag> GigTags => Set<GigTag>();
     public DbSet<GigPackage> GigPackages => Set<GigPackage>();
     public DbSet<GigRequirement> GigRequirements => Set<GigRequirement>();
     public DbSet<GigRequirementChoice> GigRequirementChoices => Set<GigRequirementChoice>();
     public DbSet<GigPhoto> GigPhotos => Set<GigPhoto>();
     public DbSet<GigVideo> GigVideos => Set<GigVideo>();
+    public DbSet<GigReview> GigReviews => Set<GigReview>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -103,6 +107,16 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
                 .HasForeignKey(g => g.SellerProfileId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            entity.HasOne(g => g.Category)
+                .WithMany(c => c.Gigs)
+                .HasForeignKey(g => g.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(g => g.Subcategory)
+                .WithMany(s => s.Gigs)
+                .HasForeignKey(g => g.SubcategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             entity.HasMany(g => g.Tags)
                 .WithOne(t => t.Gig)
                 .HasForeignKey(t => t.GigId)
@@ -136,6 +150,42 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
             entity.Property(p => p.Price).HasColumnType("decimal(18,2)");
         });
 
+        builder.Entity<GigCategory>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+            entity.Property(c => c.Name).HasMaxLength(100).IsRequired();
+            entity.HasIndex(c => c.Name).IsUnique();
+
+            entity.HasData(
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "Graphics & Design" },
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"), Name = "Digital Marketing" },
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"), Name = "Writing & Translation" },
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Programming & Tech" },
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), Name = "Video & Animation" }
+            );
+        });
+
+        builder.Entity<GigSubcategory>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.Name).HasMaxLength(100).IsRequired();
+            entity.HasIndex(s => new { s.CategoryId, s.Name }).IsUnique();
+
+            entity.HasOne(s => s.Category)
+                .WithMany(c => c.Subcategories)
+                .HasForeignKey(s => s.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasData(
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb001"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "Logo Design" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb002"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "Brand Style Guides" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb003"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Web Development" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb004"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Mobile Apps" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb005"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"), Name = "SEO" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb006"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), Name = "Video Editing" }
+            );
+        });
+
         builder.Entity<GigRequirement>(entity =>
         {
             entity.HasKey(r => r.Id);
@@ -155,6 +205,25 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
         builder.Entity<GigVideo>(entity =>
         {
             entity.HasKey(v => v.Id);
+        });
+
+        builder.Entity<GigReview>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.Rating).IsRequired();
+            entity.Property(r => r.Description).HasMaxLength(2000).IsRequired();
+
+            entity.HasOne(r => r.Gig)
+                .WithMany(g => g.Reviews)
+                .HasForeignKey(r => r.GigId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(r => r.Reviewer)
+                .WithMany()
+                .HasForeignKey(r => r.ReviewerUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(r => new { r.GigId, r.ReviewerUserId }).IsUnique();
         });
         
         builder.Entity<Language>().HasData(

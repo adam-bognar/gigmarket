@@ -8,8 +8,8 @@ public sealed record CreateGigCommand(CreateGigRequest GigRequest) : IRequest<Gi
 
 public sealed record CreateGigRequest(
     string Title,
-    string Category,
-    string Subcategory,
+    Guid CategoryId,
+    Guid SubcategoryId,
     List<string> Tags,
     string Description,
 

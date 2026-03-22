@@ -1,0 +1,47 @@
+<article class="group grid h-full gap-4 text-heading cursor-pointer transition-transform duration-200 ease-out hover:scale-101">
+  <div class="overflow-hidden rounded-3xl bg-slate-100 shadow-md">
+	<img
+	  class="block h-auto w-full object-cover transition-transform duration-200 ease-out group-hover:scale-105 group-focus-within:scale-105"
+	  [ngSrc]="item().coverImageSrc"
+	  [alt]="item().coverImageAlt"
+	  width="384"
+	  height="240"
+	  sizes="(max-width: 767px) 100vw, (max-width: 1199px) 50vw, 33vw"
+	/>
+  </div>
+
+  <div class="grid gap-3">
+	<div class="flex items-center gap-3">
+	  <img
+		class="h-9 w-9 rounded-full object-cover"
+		[ngSrc]="item().sellerAvatarUrl"
+		[alt]="item().sellerName"
+		width="36"
+		height="36"
+	  />
+
+	  <p class="m-0 text-base font-bold leading-tight text-heading">
+		{{ item().sellerName }}
+	  </p>
+	</div>
+
+	<h3
+	  class="m-0 text-xl font-medium leading-snug tracking-tight text-heading md:text-2xl"
+	>
+	  {{ item().title }}
+	</h3>
+
+	<p class="m-0 flex items-center gap-1 text-sm font-semibold sm:text-base">
+	  <span class="text-base text-warning">★</span>
+	  <span class="text-heading">{{ item().rating | number: '1.1-1' }}</span>
+	  <span class="font-medium text-muted"
+		>({{ item().reviewCount | number: '1.0-0' }})</span
+	  >
+	</p>
+
+	<div class="flex items-end justify-between gap-3 border-t border-divider pt-3">
+	  <p class="m-0 text-xs font-semibold uppercase tracking-wide text-muted">Starting at</p>
+	  <p class="m-0 text-lg font-bold text-heading">${{ item().basePrice | number: '1.0-0' }}</p>
+	</div>
+  </div>
+</article>

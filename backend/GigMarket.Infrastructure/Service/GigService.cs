@@ -20,14 +20,27 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
                                 .FirstOrDefaultAsync(x => x.UserId == userId, ct)
                             ?? throw new BadRequestException("You must complete your seller profile first.");
 
+        var category = await db.GigCategories
+                           .AsNoTracking()
+                           .FirstOrDefaultAsync(x => x.Id == request.CategoryId, ct)
+                       ?? throw new BadRequestException("Invalid category.");
+
+        var subcategory = await db.GigSubcategories
+                              .AsNoTracking()
+                              .FirstOrDefaultAsync(x => x.Id == request.SubcategoryId, ct)
+                          ?? throw new BadRequestException("Invalid subcategory.");
+
+        if (subcategory.CategoryId != category.Id)
+            throw new BadRequestException("Subcategory does not belong to the selected category.");
+
         var gig = new Gig
         {
             Id = Guid.NewGuid(),
             SellerProfileId = sellerProfile.Id,
+            CategoryId = category.Id,
+            SubcategoryId = subcategory.Id,
             Title = request.Title,
             Description = request.Description,
-            Category = request.Category,
-            Subcategory = request.Subcategory,
             Tags = request.Tags.Select(t => new GigTag { Name = t }).ToList(),
             Packages = request.Packages.Select(p => new GigPackage
             {
@@ -68,8 +81,8 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
             Id: gig.Id,
             SellerProfileId: gig.SellerProfileId,
             Title: gig.Title,
-            Category: gig.Category,
-            Subcategory: gig.Subcategory,
+            Category: category.Name,
+            Subcategory: subcategory.Name,
             Status: gig.Status.ToString(),
             CreatedAtUtc: gig.CreatedAtUtc,
             Tags: gig.Tags.Select(t => t.Name).ToList(),
