@@ -1,0 +1,38 @@
+<section class="border-b border-divider bg-surface py-16">
+  <div class="mx-auto max-w-7xl px-5 md:px-8">
+    <div class="mb-10 flex items-end justify-between">
+      <div>
+        <p class="mb-2 text-xs font-bold uppercase tracking-widest text-primary">Explore</p>
+        <h2 class="m-0 text-3xl font-black tracking-tight text-heading md:text-4xl">Popular categories</h2>
+      </div>
+      <a routerLink="/browse" class="text-sm font-semibold text-primary transition hover:text-primary-dark">Browse all →</a>
+    </div>
+
+    @if (isLoading()) {
+      <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        @for (_ of [1,2,3,4,5,6]; track $index) {
+          <div class="h-32 animate-pulse rounded-2xl bg-surface-alt"></div>
+        }
+      </div>
+    } @else {
+      <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        @for (cat of categories(); track cat.id) {
+          <a
+            routerLink="/browse"
+            [queryParams]="{ categoryId: cat.id }"
+            class="group relative flex flex-col items-start gap-3 overflow-hidden rounded-2xl border border-divider bg-surface-alt p-5 transition hover:border-primary/40 hover:shadow-lg"
+          >
+            <div class="flex size-12 items-center justify-center rounded-xl transition group-hover:scale-110" [class]="cat.bgClass">
+              <lucide-icon [img]="cat.icon" [size]="22" [class]="cat.colorClass" aria-hidden="true"/>
+            </div>
+            <div>
+              <p class="m-0 text-sm font-bold leading-tight text-heading">{{ cat.name }}</p>
+            </div>
+            <!-- Hover underline -->
+            <div class="absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-primary transition group-hover:scale-x-100"></div>
+          </a>
+        }
+      </div>
+    }
+  </div>
+</section>

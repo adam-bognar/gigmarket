@@ -1,0 +1,19 @@
+.cta-section {
+  background-color: #070d07;
+}
+
+.cta-bg {
+  background:
+    radial-gradient(ellipse 70% 60% at 20% 50%, rgba(29, 191, 115, 0.15) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 80% 20%, rgba(59, 130, 246, 0.07) 0%, transparent 60%);
+}
+
+.cta-float-card {
+  animation: floatCard 6s ease-in-out infinite alternate;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@keyframes floatCard {
+  from { transform: translateY(0px); }
+  to   { transform: translateY(-10px); }
+}

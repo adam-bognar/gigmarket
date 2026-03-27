@@ -1,0 +1,57 @@
+<section
+  class="relative overflow-hidden py-24 md:py-32"
+  style="background: radial-gradient(ellipse 70% 60% at 20% 50%, rgba(29,191,115,0.15) 0%, transparent 65%), radial-gradient(ellipse 50% 40% at 80% 20%, rgba(59,130,246,0.07) 0%, transparent 60%), #070d07;"
+>
+  <div class="relative z-10 mx-auto max-w-7xl px-5 md:px-8">
+    <div class="grid items-center gap-12 lg:grid-cols-2">
+      <!-- Left -->
+      <div>
+        <p class="mb-4 text-xs font-bold uppercase tracking-widest text-primary">For freelancers</p>
+        <h2 class="m-0 mb-6 text-4xl font-black leading-tight tracking-tight text-white md:text-6xl">
+          Talent needed.<br/>
+          <span class="text-primary">Earn doing</span><br/>
+          what you love.
+        </h2>
+        <p class="mb-10 max-w-md text-lg leading-relaxed text-white/60">
+          Join over 3 million freelancers and start selling your services today. Set your own rates. Work on your own terms.
+        </p>
+        <div class="flex flex-col gap-4 sm:flex-row">
+          <a
+            routerLink="/become-a-seller"
+            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-8 py-4 text-base font-bold text-on-primary transition hover:bg-primary-dark hover:scale-105 active:scale-95"
+          >
+            <lucide-icon [img]="icons.ArrowRight" [size]="18" aria-hidden="true"/>
+            Become a Seller
+          </a>
+          <a
+            routerLink="/browse"
+            class="inline-flex items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-8 py-4 text-base font-bold text-white/80 backdrop-blur-sm transition hover:bg-white/10"
+          >
+            Browse services
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: floating service cards -->
+      <div class="relative hidden h-72 lg:block">
+        @for (card of floatingCards; track card.label; let i = $index) {
+          <div
+            class="absolute flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-4 backdrop-blur-md animate-bounce"
+            [style.top]="card.top"
+            [style.left]="card.left"
+            [style.animation-delay]="card.delay"
+            [style.animation-duration]="card.duration"
+          >
+            <div class="flex size-10 items-center justify-center rounded-xl" [class]="card.bgClass">
+              <lucide-icon [img]="card.icon" [size]="20" [class]="card.iconClass" aria-hidden="true"/>
+            </div>
+            <div>
+              <p class="m-0 text-sm font-bold text-white">{{ card.label }}</p>
+              <p class="m-0 text-xs text-white/50">{{ card.sub }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</section>
