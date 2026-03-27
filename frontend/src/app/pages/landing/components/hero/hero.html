@@ -1,1 +1,78 @@
-<p>hero works!</p>
+<section
+  class="relative min-h-[82vh] flex flex-col justify-center overflow-hidden bg-[#0a0f0a]"
+  style="background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(29,191,115,0.18) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 90% 80%, rgba(29,191,115,0.08) 0%, transparent 60%), #0a0f0a;"
+>
+  <!-- Grid overlay -->
+  <div
+    class="absolute inset-0 pointer-events-none"
+    style="background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 60px 60px;"
+  ></div>
+
+  <div class="relative z-10 mx-auto max-w-7xl px-5 pb-24 pt-20 md:px-8 md:pb-32 md:pt-28">
+    <!-- Eyebrow -->
+    <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-sm">
+      <span class="inline-block size-2 rounded-full bg-primary animate-pulse"></span>
+      <span class="text-xs font-semibold uppercase tracking-widest text-white/70">The freelance marketplace</span>
+    </div>
+
+    <!-- Headline -->
+    <h1 class="mb-6 max-w-4xl text-5xl font-black leading-[1.05] tracking-tight text-white md:text-7xl lg:text-8xl">
+      Find talent that<br/>
+      <span
+        class="bg-clip-text text-transparent"
+        style="background-image: linear-gradient(135deg, #1DBF73 0%, #16a05f 50%, #22d87a 100%); -webkit-background-clip: text;"
+      >delivers.</span>
+    </h1>
+
+    <p class="mb-10 max-w-xl text-lg font-light leading-relaxed text-white/60 md:text-xl">
+      Thousands of skilled freelancers, one marketplace. Post a job or sell your skills — starting today.
+    </p>
+
+    <!-- Search -->
+    <div class="mb-8 flex max-w-2xl flex-col gap-3 sm:flex-row">
+      <div class="flex flex-1 items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-4 backdrop-blur-md transition focus-within:border-primary/60 focus-within:bg-white/10">
+        <lucide-icon [img]="icons.Search" [size]="20" class="shrink-0 text-white/40" aria-hidden="true"/>
+        <input
+          class="flex-1 border-0 bg-transparent text-base text-white outline-none placeholder:text-white/30"
+          type="text"
+          placeholder="Try 'logo design' or 'video editing'…"
+          [(ngModel)]="searchQuery"
+          (keydown.enter)="onSearch()"
+        />
+      </div>
+      <button
+        class="shrink-0 rounded-2xl bg-primary px-8 py-4 text-base font-bold text-on-primary transition hover:bg-primary-dark hover:scale-105 active:scale-95"
+        type="button"
+        (click)="onSearch()"
+      >
+        Search
+      </button>
+    </div>
+
+    <!-- Popular tags -->
+    <div class="flex flex-wrap items-center gap-3">
+      <span class="text-sm font-medium text-white/40">Popular:</span>
+      @for (tag of popularTags; track tag) {
+        <button
+          type="button"
+          class="rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm font-medium text-white/70 backdrop-blur-sm transition hover:border-primary/60 hover:text-primary"
+          (click)="onTagClick(tag)"
+        >
+          {{ tag }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Stats strip -->
+  <div class="relative z-10 border-t border-white/[0.08]">
+    <div class="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-white/[0.08] px-5 md:grid-cols-4 md:px-8">
+      @for (stat of stats; track stat.label) {
+        <div class="flex flex-col items-center gap-1 px-6 py-6">
+          <span class="text-2xl font-black text-white md:text-3xl">{{ stat.value }}</span>
+          <span class="text-xs font-medium uppercase tracking-wider text-white/40">{{ stat.label }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</section>
