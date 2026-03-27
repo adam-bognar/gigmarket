@@ -4,8 +4,7 @@ public sealed record ReviewDto(
     Guid Id,
     Guid GigId,
     Guid ReviewerUserId,
-    string ReviewerFirstName,
-    string ReviewerLastName,
+    string ReviewerUsername,
     int Rating,
     string Description,
     DateTime CreatedAtUtc

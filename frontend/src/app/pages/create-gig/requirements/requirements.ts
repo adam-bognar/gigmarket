@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, OnInit, output, signal} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {GigRequirementPayload} from '../../../shared/models/gig.model';
 
@@ -34,8 +34,9 @@ function generateId(): string {
   styleUrl: './requirements.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Requirements {
+export class Requirements implements OnInit {
   private readonly fb = inject(FormBuilder);
+  readonly initialValue = input<RequirementsFormValue | null>(null);
 
   readonly back = output<void>();
   readonly publish = output<RequirementsFormValue>();
@@ -67,6 +68,30 @@ export class Requirements {
   readonly hasRequirements = computed(() => this.requirements().length > 0);
 
   readonly choiceBuffer = signal<string[]>([]);
+
+  ngOnInit(): void {
+    const v = this.initialValue();
+    if (!v || v.requirements.length === 0) return;
+
+    this.requirements.set(
+      v.requirements.map((r, i) => ({
+        id: generateId(),
+        type: this.reverseMapType(r.type as string),
+        question: r.question,
+        required: r.isRequired,
+        choices: r.choices ?? [],
+      })),
+    );
+  }
+
+  private reverseMapType(type: string): RequirementType {
+    const map: Record<string, RequirementType> = {
+      FreeText: 'free_text',
+      FileUpload: 'file_upload',
+      MultipleChoice: 'multiple_choice',
+    };
+    return map[type] ?? 'free_text';
+  }
 
   showAddForm(): void {
     this.isFormVisible.set(true);

@@ -3,12 +3,9 @@ using GigMarket.Application.Features.Auth.Commands.Logout;
 using GigMarket.Application.Features.Auth.Commands.Register;
 using GigMarket.Application.Features.Auth.Models;
 using GigMarket.Application.Features.Auth.Queries.Me;
-using GigMarket.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GigMarket.Api.Controllers
@@ -22,7 +19,7 @@ namespace GigMarket.Api.Controllers
         [ProducesResponseType(typeof(AuthUserDto), StatusCodes.Status200OK)]
         public async Task<ActionResult<AuthUserDto>> Register([FromBody] RegisterRequest request, CancellationToken ct)
         {
-            var result = await mediator.Send(new RegisterCommand(request.FirstName, request.LastName,request.Email, request.Password), ct);
+            var result = await mediator.Send(new RegisterCommand(request.CustomUsername, request.Email, request.Password), ct);
             return Ok(result);
         }
 
@@ -55,6 +52,6 @@ namespace GigMarket.Api.Controllers
     }
 
 
-    public sealed record RegisterRequest(string FirstName, string LastName, string Email, string Password);
+    public sealed record RegisterRequest(string CustomUsername, string Email, string Password);
     public sealed record LoginRequest(string Email, string Password, bool RememberMe);
 }

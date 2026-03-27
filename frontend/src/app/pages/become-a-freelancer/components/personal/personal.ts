@@ -3,6 +3,7 @@ import {FormArray, FormBuilder, FormsModule, ReactiveFormsModule, Validators} fr
 import {Camera, ChevronDown, LucideAngularModule, Trash2} from "lucide-angular";
 import {SellerProfileService} from '../../../../shared/services/seller-profile.service';
 import {LanguageOption} from '../../../../shared/models/seller.model';
+import {SellerDraftService} from '../../../../shared/services/seller-draft.service';
 
 export interface PersonalFormValue {
   firstName: string;
@@ -26,6 +27,7 @@ export interface PersonalFormValue {
 export class Personal implements OnInit {
   private fb = inject(FormBuilder);
   private sellerProfileService = inject(SellerProfileService);
+  private readonly draft = inject(SellerDraftService);
 
   readonly continue = output<PersonalFormValue>();
 
@@ -49,6 +51,26 @@ export class Personal implements OnInit {
   ngOnInit(): void {
     this.sellerProfileService.getLanguages().subscribe(langs => {
       this.availableLanguages.set(langs);
+
+      const saved = this.draft.personal();
+      if (!saved) return;
+
+      this.form.patchValue({
+        firstName: saved.firstName,
+        lastName: saved.lastName,
+        description: saved.description,
+        profilePic: saved.profilePic,
+      });
+
+      this.descriptionLength.set(saved.description.length);
+
+      const preview = this.draft.profilePicPreviewUrl();
+      if (preview) this.profilePicPreview.set(preview);
+
+      const languagesArray = this.languages;
+      languagesArray.clear();
+      const ids = saved.languageNames.length > 0 ? saved.languageNames : [''];
+      ids.forEach(id => languagesArray.push(this.fb.control(id, Validators.required)));
     });
   }
 
@@ -86,13 +108,15 @@ export class Personal implements OnInit {
     this.form.markAllAsTouched();
     if (this.form.valid) {
       const v = this.form.getRawValue();
-      this.continue.emit({
+      const value: PersonalFormValue = {
         firstName: v.firstName!,
         lastName: v.lastName!,
         description: v.description!,
         profilePic: v.profilePic!,
         languageNames: v.languages as string[],
-      });
+      };
+      this.draft.setPersonal(value, this.profilePicPreview() ?? '');
+      this.continue.emit(value);
     }
   }
 }

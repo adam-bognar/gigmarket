@@ -1,55 +1,20 @@
-import { ChangeDetectionStrategy, Component, computed, inject, output, signal } from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, OnInit, output, signal} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-
-type SubcategoryOption = {
-  value: string;
-};
-
-type CategoryOption = {
-  value: string;
-  subcategories: readonly SubcategoryOption[];
-};
-
-type GuideItem = {
-  label: string;
-  done: boolean;
-};
-
-const CATEGORY_OPTIONS: readonly CategoryOption[] = [
-  {
-    value: 'graphics-design',
-    subcategories: [
-      { value: 'logo-design' },
-      { value: 'brand-style-guides' },
-      { value: 'social-media-design' },
-    ],
-  },
-  {
-    value: 'digital-marketing',
-    subcategories: [
-      { value: 'social-media-marketing' },
-      { value: 'seo' },
-      { value: 'email-marketing' },
-    ],
-  },
-  {
-    value: 'writing-translation',
-    subcategories: [
-      { value: 'website-copy' },
-      { value: 'blog-posts' },
-      { value: 'technical-writing' },
-    ],
-  },
-];
+import {CategoriesService} from '../../../shared/services/categories.service';
+import {GigCategoryDto, GigSubcategoryDto} from '../../../shared/models/gig.model';
 
 export interface OverviewFormValue {
   title: string;
-  category: string;
-  subcategory: string;
+  categoryId: string;
+  subcategoryId: string;
+  categoryName: string;
+  subcategoryName: string;
   tags: string[];
   description: string;
 }
+
+type GuideItem = { label: string; done: boolean };
 
 const MIN_DESCRIPTION_LENGTH = 120;
 const MAX_DESCRIPTION_LENGTH = 1200;
@@ -62,8 +27,10 @@ const MAX_TAGS = 5;
   imports: [ReactiveFormsModule],
   templateUrl: './overview.html',
 })
-export class Overview {
+export class Overview implements OnInit {
+  readonly initialValue = input<OverviewFormValue | null>(null);
   private readonly fb = inject(FormBuilder);
+  private readonly categoriesService = inject(CategoriesService);
 
   readonly continue = output<OverviewFormValue>();
   readonly minDescriptionLength = MIN_DESCRIPTION_LENGTH;
@@ -71,32 +38,31 @@ export class Overview {
   readonly maxTitleLength = MAX_TITLE_LENGTH;
   readonly maxTags = MAX_TAGS;
 
+  readonly categories = signal<GigCategoryDto[]>([]);
+  readonly subcategories = signal<GigSubcategoryDto[]>([]);
+  readonly isLoadingCategories = signal(false);
+  readonly isLoadingSubcategories = signal(false);
+
   readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(MAX_TITLE_LENGTH)]],
-    description: [
-      '',
-      [Validators.required, Validators.minLength(MIN_DESCRIPTION_LENGTH), Validators.maxLength(MAX_DESCRIPTION_LENGTH)],
-    ],
-    category: ['', Validators.required],
-    subcategory: ['', Validators.required],
+    description: ['', [
+      Validators.required,
+      Validators.minLength(MIN_DESCRIPTION_LENGTH),
+      Validators.maxLength(MAX_DESCRIPTION_LENGTH),
+    ]],
+    categoryId: ['', Validators.required],
+    subcategoryId: ['', Validators.required],
     tagInput: [''],
   });
 
-  // Bridge reactive form valueChanges into signals so computed() can track them
   private readonly titleValue = toSignal(this.form.controls.title.valueChanges, { initialValue: '' });
   private readonly descriptionValue = toSignal(this.form.controls.description.valueChanges, { initialValue: '' });
-  private readonly categoryValue = toSignal(this.form.controls.category.valueChanges, { initialValue: '' });
+  private readonly categoryIdValue = toSignal(this.form.controls.categoryId.valueChanges, { initialValue: '' });
 
   readonly titleLength = computed(() => this.titleValue().length);
   readonly descriptionLength = computed(() => this.descriptionValue().length);
 
   readonly tags = signal<string[]>([]);
-
-  readonly availableSubcategories = computed(() => {
-    const category = this.categoryValue();
-    return CATEGORY_OPTIONS.find((option) => option.value === category)?.subcategories ?? [];
-  });
-
   readonly remainingTags = computed(() => this.maxTags - this.tags().length);
 
   readonly guideItems = computed<GuideItem[]>(() => {
@@ -118,16 +84,57 @@ export class Overview {
     ];
   });
 
-  protected readonly CATEGORY_OPTIONS = CATEGORY_OPTIONS;
+  ngOnInit(): void {
+    this.isLoadingCategories.set(true);
+    this.categoriesService.getCategories().subscribe({
+      next: (cats) => {
+        this.categories.set(cats);
+        this.isLoadingCategories.set(false);
+        this.seedFromDraft();
+      },
+      error: () => this.isLoadingCategories.set(false),
+    });
+  }
+
+  private seedFromDraft(): void {
+    const v = this.initialValue();
+    if (!v) return;
+
+    this.form.patchValue({
+      title: v.title,
+      categoryId: v.categoryId,
+      description: v.description,
+    });
+    this.tags.set(v.tags);
+
+    if (v.categoryId) {
+      this.isLoadingSubcategories.set(true);
+      this.categoriesService.getSubcategories(v.categoryId).subscribe({
+        next: (subs) => {
+          this.subcategories.set(subs);
+          this.isLoadingSubcategories.set(false);
+          this.form.patchValue({ subcategoryId: v.subcategoryId });
+        },
+        error: () => this.isLoadingSubcategories.set(false),
+      });
+    }
+  }
 
   onCategoryChange(): void {
-    const hasSelectedSubcategory = this.availableSubcategories().some(
-      (subcategory) => subcategory.value === this.form.controls.subcategory.value,
-    );
+    const categoryId = this.form.controls.categoryId.value;
+    this.form.controls.subcategoryId.setValue('');
+    this.subcategories.set([]);
 
-    if (!hasSelectedSubcategory) {
-      this.form.controls.subcategory.setValue('');
-    }
+    if (!categoryId) return;
+
+    this.isLoadingSubcategories.set(true);
+    this.categoriesService.getSubcategories(categoryId).subscribe({
+      next: (subs) => {
+        this.subcategories.set(subs);
+        this.isLoadingSubcategories.set(false);
+      },
+      error: () => this.isLoadingSubcategories.set(false),
+    });
   }
 
   addTag(): void {
@@ -158,10 +165,15 @@ export class Overview {
       return;
     }
     const v = this.form.getRawValue();
+    const selectedCategory = this.categories().find(c => c.id === v.categoryId);
+    const selectedSubcategory = this.subcategories().find(s => s.id === v.subcategoryId);
+
     this.continue.emit({
       title: v.title,
-      category: v.category,
-      subcategory: v.subcategory,
+      categoryId: v.categoryId,
+      subcategoryId: v.subcategoryId,
+      categoryName: selectedCategory?.name ?? '',
+      subcategoryName: selectedSubcategory?.name ?? '',
       tags: this.tags(),
       description: v.description,
     });

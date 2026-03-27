@@ -3,7 +3,7 @@
     <div class="flex items-center gap-4 px-6 py-3">
 
         <!-- Logo -->
-        <a routerLink="/" class="flex items-center gap-2 no-underline shrink-0" aria-label="GigMarket home">
+        <a routerLink="/browse" class="flex items-center gap-2 no-underline shrink-0" aria-label="GigMarket home">
             <svg class="w-7 h-7" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <rect width="12" height="12" rx="2" fill="#1DBF73" />
                 <rect x="16" width="12" height="12" rx="2" fill="#FBBF24" />
@@ -13,53 +13,83 @@
             <span class="text-xl font-bold text-slate-800 tracking-tight">GigMarket</span>
         </a>
 
-        <!-- Search bar: hidden on mobile, visible md+ -->
-        <form class="hidden md:flex flex-1 items-center" role="search" (ngSubmit)="onSearch()">
-            <div class="flex items-center flex-1 max-w-xl border border-divider bg-gray-500/10 rounded-md overflow-hidden focus-within:border-primary transition-colors">
-                <input type="search"
-                    class="flex-1 px-4 py-2 text-sm text-heading placeholder-muted bg-transparent outline-none"
-                    placeholder="What service are you looking for today?" aria-label="Search services"
-                    [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" name="search" />
-                <button type="submit"
-                    class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer"
-                    aria-label="Search">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="11" cy="11" r="8" />
-                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
-                </button>
+        @if (isDashboard()) {
+            <!-- Dashboard label + nav links -->
+            <div class="hidden md:flex items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-px h-5 bg-divider"></div>
+                    <span class="text-sm font-semibold text-muted tracking-wide uppercase">Seller Dashboard</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <a routerLink="/dashboard/seller/manage-gigs"
+                       class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+                        My Gigs
+                    </a>
+                    <a routerLink="/dashboard/orders"
+                       class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+                        Orders
+                    </a>
+                    <a routerLink="/dashboard/messages"
+                       class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+                        Messages
+                    </a>
+                    <a routerLink="/dashboard/earnings"
+                       class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+                        Earnings
+                    </a>
+                </div>
             </div>
-        </form>
+        } @else {
+            <!-- Search bar: hidden on mobile -->
+            <form class="hidden md:flex flex-1 items-center" role="search" (ngSubmit)="onSearch()">
+                <div class="flex items-center flex-1 max-w-xl border border-divider bg-gray-500/10 rounded-md overflow-hidden focus-within:border-primary transition-colors">
+                    <input type="search"
+                        class="flex-1 px-4 py-2 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                        placeholder="What service are you looking for today?" aria-label="Search services"
+                        [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" name="search" />
+                    <button type="submit"
+                        class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer"
+                        aria-label="Search">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        }
 
-        <!-- User actions: hidden on mobile, visible md+ -->
+        <!-- User actions: hidden on mobile -->
         <div class="hidden md:flex items-center gap-3 ml-auto shrink-0">
             @if (isAuthenticated()) {
-                @if (!isSeller()) {
-                    <a routerLink="/become-seller"
+                @if (!isSeller() && !isDashboard()) {
+                    <a routerLink="/become"
                        class="px-4 py-2 text-sm font-medium text-heading hover:text-primary transition-colors no-underline">
                         Become a Seller
                     </a>
                 }
 
-                <!-- Messages -->
-                <a routerLink="/messages" class="relative p-2 rounded-full text-heading hover:text-primary transition-colors"
-                   aria-label="Messages">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                    </svg>
-                </a>
+                @if (!isDashboard()) {
+                    <!-- Messages -->
+                    <a routerLink="/messages" class="relative p-2 rounded-full text-heading hover:text-primary transition-colors"
+                       aria-label="Messages">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                    </a>
 
-                <!-- Notifications -->
-                <a routerLink="/notifications" class="relative p-2 rounded-full text-heading hover:text-primary transition-colors"
-                   aria-label="Notifications">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                    </svg>
-                </a>
+                    <!-- Notifications -->
+                    <a routerLink="/notifications" class="relative p-2 rounded-full text-heading hover:text-primary transition-colors"
+                       aria-label="Notifications">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                    </a>
+                }
 
                 <!-- Profile avatar with dropdown -->
                 <div class="relative">
@@ -69,8 +99,8 @@
                             [attr.aria-expanded]="profileMenuOpen()"
                             aria-haspopup="true"
                             aria-label="User menu">
-                        @if (user()?.profilePicUrl) {
-                            <img [src]="user()?.profilePicUrl" [alt]="(user()?.firstName ?? '') + ' ' + (user()?.lastName ?? '')"
+                        @if (user()?.profileUrl) {
+                            <img [src]="user()?.profileUrl" [alt]="user()?.customUsername ?? ''"
                                  class="w-full h-full object-cover" />
                         } @else {
                             <span class="text-xs font-bold text-on-primary bg-primary w-full h-full flex items-center justify-center">
@@ -86,7 +116,7 @@
                                class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
                                 Profile
                             </a>
-                            <a routerLink="/dashboard" (click)="closeProfileMenu()" role="menuitem"
+                            <a routerLink="/dashboard/seller/manage-gigs" (click)="closeProfileMenu()" role="menuitem"
                                class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
                                 Dashboard
                             </a>
@@ -132,33 +162,61 @@
         </button>
     </div>
 
-    <!-- Mobile drawer: search + auth buttons -->
+    <!-- Mobile drawer -->
     @if (mobileMenuOpen()) {
         <div class="md:hidden border-t border-divider px-6 py-4 flex flex-col gap-4">
-            <form role="search" (ngSubmit)="onSearch()">
-                <div class="flex items-center border border-divider bg-gray-500/10 rounded-md overflow-hidden focus-within:border-primary transition-colors">
-                    <input type="search"
-                        class="flex-1 px-4 py-2 text-sm text-heading placeholder-muted bg-transparent outline-none"
-                        placeholder="What service are you looking for today?" aria-label="Search services"
-                        [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" name="searchMobile" />
-                    <button type="submit"
-                        class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer"
-                        aria-label="Search">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <circle cx="11" cy="11" r="8" />
-                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                        </svg>
-                    </button>
+
+            @if (isDashboard()) {
+                <!-- Dashboard label + links on mobile -->
+                <div class="flex items-center gap-3 pb-1 border-b border-divider">
+                    <div class="w-px h-4 bg-primary"></div>
+                    <span class="text-xs font-semibold text-muted tracking-wide uppercase">Seller Dashboard</span>
                 </div>
-            </form>
+                <div class="flex flex-col gap-1">
+                    <a routerLink="/dashboard/gigs" (click)="closeMobileMenu()"
+                       class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+                        My Gigs
+                    </a>
+                    <a routerLink="/dashboard/orders" (click)="closeMobileMenu()"
+                       class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+                        Orders
+                    </a>
+                    <a routerLink="/dashboard/messages" (click)="closeMobileMenu()"
+                       class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+                        Messages
+                    </a>
+                    <a routerLink="/dashboard/earnings" (click)="closeMobileMenu()"
+                       class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+                        Earnings
+                    </a>
+                </div>
+            } @else {
+                <form role="search" (ngSubmit)="onSearch()">
+                    <div class="flex items-center border border-divider bg-gray-500/10 rounded-md overflow-hidden focus-within:border-primary transition-colors">
+                        <input type="search"
+                            class="flex-1 px-4 py-2 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                            placeholder="What service are you looking for today?" aria-label="Search services"
+                            [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" name="searchMobile" />
+                        <button type="submit"
+                            class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer"
+                            aria-label="Search">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="11" cy="11" r="8" />
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            }
+
             <div class="flex flex-col gap-2">
                 @if (isAuthenticated()) {
                     <!-- User info -->
                     <div class="flex items-center gap-3 py-2">
                         <span class="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border-2 border-primary shrink-0">
-                            @if (user()?.profilePicUrl) {
-                                <img [src]="user()?.profilePicUrl" [alt]="(user()?.firstName ?? '') + ' ' + (user()?.lastName ?? '')"
+                            @if (user()?.profileUrl) {
+                                <img [src]="user()?.profileUrl" [alt]="user()?.customUsername ?? ''"
                                      class="w-full h-full object-cover" />
                             } @else {
                                 <span class="text-xs font-bold text-on-primary bg-primary w-full h-full flex items-center justify-center">
@@ -166,34 +224,36 @@
                                 </span>
                             }
                         </span>
-                        <span class="text-sm font-medium text-heading">{{ user()?.firstName }} {{ user()?.lastName }}</span>
+                        <span class="text-sm font-medium text-heading">{{ user()?.customUsername }}</span>
                     </div>
 
-                    @if (!isSeller()) {
-                        <a routerLink="/become-seller" (click)="closeMobileMenu()"
+                    @if (!isSeller() && !isDashboard()) {
+                        <a routerLink="/become" (click)="closeMobileMenu()"
                            class="w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline text-center">
                             Become a Seller
                         </a>
                     }
 
-                    <a routerLink="/messages" (click)="closeMobileMenu()"
-                       class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                        </svg>
-                        Messages
-                    </a>
+                    @if (!isDashboard()) {
+                        <a routerLink="/messages" (click)="closeMobileMenu()"
+                           class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                            </svg>
+                            Messages
+                        </a>
 
-                    <a routerLink="/notifications" (click)="closeMobileMenu()"
-                       class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                        </svg>
-                        Notifications
-                    </a>
+                        <a routerLink="/notifications" (click)="closeMobileMenu()"
+                           class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                            </svg>
+                            Notifications
+                        </a>
+                    }
 
                     <button type="button" (click)="onLogout()"
                             class="w-full py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">

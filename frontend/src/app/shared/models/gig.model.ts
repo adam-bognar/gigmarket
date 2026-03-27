@@ -1,6 +1,17 @@
 export type PackageTier = 'Basic' | 'Standard' | 'Premium';
 export type RequirementType = 'FreeText' | 'FileUpload' | 'MultipleChoice';
 
+export interface GigCategoryDto {
+  id: string;
+  name: string;
+}
+
+export interface GigSubcategoryDto {
+  id: string;
+  categoryId: string;
+  name: string;
+}
+
 export interface GigPackagePayload {
   tier: PackageTier;
   name: string;
@@ -20,8 +31,8 @@ export interface GigRequirementPayload {
 
 export interface CreateGigPayload {
   title: string;
-  category: string;
-  subcategory: string;
+  categoryId: string;
+  subcategoryId: string;
   tags: string[];
   description: string;
   packages: GigPackagePayload[];
@@ -30,6 +41,8 @@ export interface CreateGigPayload {
   additionalPhotoUrls: string[] | null;
   videoUrl: string | null;
 }
+
+export type UpdateGigPayload = CreateGigPayload;
 
 export interface GigSummaryDto {
   id: string;
@@ -41,6 +54,7 @@ export interface GigSummaryDto {
   sellerFirstName: string;
   sellerLastName: string;
   sellerAvatarUrl: string;
+  categoryId: string;
   categoryName: string;
   subcategoryName: string;
   averageRating: number;

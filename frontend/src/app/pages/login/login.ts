@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
 import {Component, inject, signal} from '@angular/core';
-import {FormGroup, FormsModule} from '@angular/forms';
+import {FormsModule} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {AuthService} from '../../shared/services/auth.service';
@@ -20,8 +20,7 @@ export class Login {
   protected readonly password = signal('');
   protected readonly keepSignedIn = signal(false);
   protected readonly showPassword = signal(false);
-  protected readonly firstName = signal('');
-  protected readonly lastName = signal('');
+  protected readonly customUsername = signal('');
   protected readonly loading = signal(false);
   protected readonly errorMessage = signal('');
 
@@ -52,8 +51,7 @@ export class Login {
         .register({
           email: this.email(),
           password: this.password(),
-          firstName: this.firstName(),
-          lastName: this.lastName(),
+          customUsername: this.customUsername(),
         })
         .subscribe({
           next: () => {

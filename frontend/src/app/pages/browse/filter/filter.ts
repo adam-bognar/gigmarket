@@ -1,24 +1,13 @@
 import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, input, OnInit, output, signal} from '@angular/core';
+import {GigCategoryDto} from '../../../shared/models/gig.model';
+import {CategoriesService} from '../../../shared/services/categories.service';
 
-export const ALL_CATEGORIES = 'All categories';
-
-export const BROWSE_CATEGORY_OPTIONS = [
-  'Graphics & Design',
-  'Digital Marketing',
-  'Writing & Translation',
-  'Video & Animation',
-  'Music & Audio',
-  'Programming & Tech',
-] as const;
-
-export type BrowseCategory = (typeof BROWSE_CATEGORY_OPTIONS)[number];
-export type BrowseCategorySelection = BrowseCategory | typeof ALL_CATEGORIES;
 export type DeliveryTimeFilter = 'any' | '24h' | '3days' | '7days';
 export type RatingFilter = 0 | 4.5 | 4.8 | 4.9 | 5;
 
 export interface BrowseFilterState {
-  category: BrowseCategorySelection;
+  categoryId: string | null;
   minPrice: number;
   maxPrice: number;
   deliveryTime: DeliveryTimeFilter;
@@ -26,7 +15,7 @@ export interface BrowseFilterState {
 }
 
 export const DEFAULT_BROWSE_FILTERS: BrowseFilterState = {
-  category: ALL_CATEGORIES,
+  categoryId: null,
   minPrice: 0,
   maxPrice: 300,
   deliveryTime: 'any',
@@ -52,19 +41,17 @@ const RATING_OPTIONS: ReadonlyArray<{ value: RatingFilter; label: string }> = [
   selector: 'app-filter',
   imports: [DecimalPipe],
   templateUrl: './filter.html',
-  host: {
-    class: 'block',
-  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Filter {
+export class Filter implements OnInit {
+  private readonly categoriesService = inject(CategoriesService);
+
   readonly state = input<BrowseFilterState>(DEFAULT_BROWSE_FILTERS);
-  readonly categoryOptions = input<readonly BrowseCategory[]>(BROWSE_CATEGORY_OPTIONS);
+  readonly categories = signal<GigCategoryDto[]>([]);
   readonly minAllowedPrice = input(0);
   readonly maxAllowedPrice = input(300);
   readonly stateChange = output<BrowseFilterState>();
 
-  readonly allCategories = ALL_CATEGORIES;
   readonly deliveryTimeOptions = DELIVERY_TIME_OPTIONS;
   readonly ratingOptions = RATING_OPTIONS;
 
@@ -88,11 +75,12 @@ export class Filter {
     return ((this.state().maxPrice - this.state().minPrice) / range) * 100;
   });
 
-  selectCategory(category: BrowseCategorySelection): void {
-    this.emitState({
-      ...this.state(),
-      category,
-    });
+  ngOnInit() {
+    this.categoriesService.getCategories().subscribe(cats => this.categories.set(cats));
+  }
+
+  selectCategory(categoryId: string | null): void {
+    this.emitState({ ...this.state(), categoryId });
   }
 
   updateMinPrice(event: Event): void {
@@ -133,7 +121,7 @@ export class Filter {
 
   resetFilters(): void {
     this.emitState({
-      category: ALL_CATEGORIES,
+      categoryId: null,
       minPrice: this.minAllowedPrice(),
       maxPrice: this.maxAllowedPrice(),
       deliveryTime: 'any',

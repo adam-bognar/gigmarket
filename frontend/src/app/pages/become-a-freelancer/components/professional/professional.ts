@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, signal, computed, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal, computed, output, OnInit} from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -9,6 +9,7 @@ import {
   Validators
 } from '@angular/forms';
 import {ChevronDown, LucideAngularModule, Plus, Trash2, X} from 'lucide-angular';
+import {SellerDraftService} from '../../../../shared/services/seller-draft.service';
 
 export interface ProfessionalFormValue {
   occupation: string;
@@ -40,8 +41,9 @@ function yearRangeValidator(control: AbstractControl): ValidationErrors | null {
   templateUrl: './professional.html',
   styleUrl: './professional.css',
 })
-export class Professional {
+export class Professional implements OnInit {
   private fb = inject(FormBuilder);
+  private readonly draft = inject(SellerDraftService);
 
   readonly back = output<void>();
   readonly continue = output<ProfessionalFormValue>();
@@ -87,6 +89,45 @@ export class Professional {
     certifications: this.fb.array<ReturnType<typeof this.createCertificationGroup>>([]),
     personalWebsite: [''],
   }, { validators: yearRangeValidator });
+
+  ngOnInit(): void {
+    const saved = this.draft.professional();
+    if (!saved) return;
+
+    this.form.patchValue({
+      occupation: saved.occupation,
+      ofrom: String(saved.ofrom),
+      oto: String(saved.oto),
+      personalWebsite: saved.personalWebsite ?? '',
+    });
+
+    this.skillsArray.clear();
+    saved.skills.forEach(s => this.skillsArray.push(this.fb.control(s, Validators.required)));
+
+    this.educationArray.clear();
+    saved.educations.forEach(e => {
+      const group = this.createEducationGroup();
+      group.patchValue({
+        country: e.country,
+        institution: e.institutionName,
+        title: e.degree,
+        major: e.major,
+        graduationYear: String(e.graduationYear),
+      });
+      this.educationArray.push(group);
+    });
+
+    this.certificationsArray.clear();
+    saved.certifications.forEach(c => {
+      const group = this.createCertificationGroup();
+      group.patchValue({
+        name: c.name,
+        certifiedFrom: c.issuingOrganization,
+        year: String(c.year),
+      });
+      this.certificationsArray.push(group);
+    });
+  }
 
   get yearRangeError() {
     return this.form.errors?.['yearRange'] &&
@@ -175,7 +216,7 @@ export class Professional {
     this.form.markAllAsTouched();
     if (this.form.valid && this.skillsArray.length > 0) {
       const v = this.form.getRawValue();
-      this.continue.emit({
+      const value: ProfessionalFormValue = {
         occupation: v.occupation!,
         ofrom: Number(v.ofrom),
         oto: Number(v.oto),
@@ -185,15 +226,18 @@ export class Professional {
           institutionName: e.institution,
           degree: e.title,
           major: e.major,
-          graduationYear: Number(e.graduationYear)
+          graduationYear: Number(e.graduationYear),
         })),
         certifications: (v.certifications ?? []).map((c: any) => ({
           name: c.name,
           issuingOrganization: c.certifiedFrom,
-          year: Number(c.year)
+          year: Number(c.year),
         })),
-        personalWebsite: v.personalWebsite || null
-      });
+        personalWebsite: v.personalWebsite || null,
+      };
+      this.draft.setProfessional(value);
+      this.continue.emit(value);
     }
   }
+
 }

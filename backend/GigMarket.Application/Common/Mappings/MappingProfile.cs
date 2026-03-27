@@ -37,8 +37,7 @@ public sealed class MappingProfile : Profile
         CreateMap<SellerProfile, SellerProfileDto>();
 
         CreateMap<GigReview, ReviewDto>()
-            .ForCtorParam(nameof(ReviewDto.ReviewerFirstName), opt => opt.MapFrom(src => src.Reviewer.FirstName))
-            .ForCtorParam(nameof(ReviewDto.ReviewerLastName),  opt => opt.MapFrom(src => src.Reviewer.LastName));
+            .ForCtorParam(nameof(ReviewDto.ReviewerUsername), opt => opt.MapFrom(src => src.Reviewer.CustomUsername));
     }
 }
 

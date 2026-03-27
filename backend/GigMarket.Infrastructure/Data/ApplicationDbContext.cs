@@ -161,7 +161,14 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
                 new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"), Name = "Digital Marketing" },
                 new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"), Name = "Writing & Translation" },
                 new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Programming & Tech" },
-                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), Name = "Video & Animation" }
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), Name = "Video & Animation" },
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6"), Name = "Music & Audio" },
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7"), Name = "Business" },
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8"), Name = "Finance" },
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa9"), Name = "AI Services" },
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa10"), Name = "Photography" },
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa11"), Name = "Data" },
+                new GigCategory { Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa12"), Name = "Lifestyle" }
             );
         });
 
@@ -179,10 +186,93 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
             entity.HasData(
                 new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb001"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "Logo Design" },
                 new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb002"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "Brand Style Guides" },
-                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb003"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Web Development" },
-                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb004"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Mobile Apps" },
-                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb005"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"), Name = "SEO" },
-                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb006"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), Name = "Video Editing" }
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb003"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "Illustration" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb004"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "UI & UX Design" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb005"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "Flyer & Brochure Design" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb006"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "Social Media Design" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb007"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "T-Shirt & Merchandise" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb008"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "Packaging Design" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb009"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "Book & Album Cover" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb010"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1"), Name = "3D Design" },
+
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb011"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"), Name = "SEO" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb012"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"), Name = "Social Media Marketing" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb013"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"), Name = "Content Marketing" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb014"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"), Name = "Email Marketing" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb015"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"), Name = "Paid Advertising (PPC)" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb016"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"), Name = "Influencer Marketing" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb017"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"), Name = "Video Marketing" },
+
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb021"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"), Name = "Article & Blog Writing" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb022"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"), Name = "Copywriting" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb023"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"), Name = "Translation" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb024"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"), Name = "Proofreading & Editing" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb025"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"), Name = "CV & Resume Writing" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb026"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"), Name = "Creative Writing" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb027"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"), Name = "Technical Writing" },
+
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb031"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Web Development" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb032"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Mobile Apps" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb033"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Game Development" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb034"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Cybersecurity & Data Protection" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb035"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "DevOps & Cloud" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb036"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Databases" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb037"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "QA & Testing" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb038"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Desktop Applications" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb039"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4"), Name = "Chatbots & Automation" },
+
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb041"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), Name = "Video Editing" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb042"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), Name = "Explainer Videos" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb043"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), Name = "Animation" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb044"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), Name = "Intro & Outro Videos" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb045"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), Name = "Subtitles & Captions" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb046"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), Name = "Visual Effects (VFX)" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb047"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), Name = "Slideshow & Promo Videos" },
+
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb051"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6"), Name = "Voice Over" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb052"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6"), Name = "Music Production" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb053"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6"), Name = "Mixing & Mastering" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb054"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6"), Name = "Songwriting & Lyrics" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb055"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6"), Name = "Jingles & Intros" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb056"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6"), Name = "Sound Design" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb057"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6"), Name = "Podcast Editing" },
+
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb061"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7"), Name = "Virtual Assistant" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb062"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7"), Name = "Business Plans" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb063"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7"), Name = "Market Research" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb064"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7"), Name = "Project Management" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb065"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7"), Name = "Presentation Design" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb066"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7"), Name = "HR & Recruiting" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb067"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7"), Name = "Legal Consulting" },
+
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb071"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8"), Name = "Accounting & Bookkeeping" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb072"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8"), Name = "Financial Planning" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb073"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8"), Name = "Tax Advice" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb074"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8"), Name = "Investment Research" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb075"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8"), Name = "Crypto & Blockchain" },
+
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb081"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa9"), Name = "AI Chatbots" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb082"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa9"), Name = "AI Art & Image Generation" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb083"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa9"), Name = "AI Content Writing" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb084"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa9"), Name = "Machine Learning Models" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb085"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa9"), Name = "Prompt Engineering" },
+
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb091"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa10"), Name = "Photo Editing & Retouching" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb092"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa10"), Name = "Product Photography" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb093"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa10"), Name = "Portrait Photography" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb094"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa10"), Name = "Real Estate Photography" },
+
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb101"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa11"), Name = "Data Entry" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb102"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa11"), Name = "Data Analysis" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb103"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa11"), Name = "Data Visualization" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb104"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa11"), Name = "Web Scraping" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb105"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa11"), Name = "Data Science & ML" },
+
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb111"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa12"), Name = "Online Tutoring" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb112"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa12"), Name = "Fitness & Nutrition" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb113"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa12"), Name = "Life Coaching" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb114"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa12"), Name = "Astrology & Readings" },
+                new GigSubcategory { Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbb115"), CategoryId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa12"), Name = "Gaming & Coaching" }
             );
         });
 

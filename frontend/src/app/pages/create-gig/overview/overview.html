@@ -59,14 +59,19 @@
               <select
                 id="gig-category"
                 class="min-h-14 w-full rounded-2xl border border-divider bg-surface-alt px-4 text-base text-heading outline-none transition focus:border-primary/50 focus:bg-surface focus:ring-4 focus:ring-primary/15"
-                formControlName="category"
+                formControlName="categoryId"
                 (change)="onCategoryChange()"
               >
-                <option value="">Select a category</option>
-                @for (category of CATEGORY_OPTIONS; track category.value) {
-                  <option [value]="category.value">{{ category.value }}</option>
+                <option value="">
+                  @if (isLoadingCategories()) { Loading… } @else { Select a category }
+                </option>
+                @for (cat of categories(); track cat.id) {
+                  <option [value]="cat.id">{{ cat.name }}</option>
                 }
               </select>
+              @if (form.controls.categoryId.invalid && form.controls.categoryId.touched) {
+                <p class="mt-2 text-sm font-medium text-warning">Please select a category.</p>
+              }
             </div>
 
             <div>
@@ -76,13 +81,21 @@
               <select
                 id="gig-subcategory"
                 class="min-h-14 w-full rounded-2xl border border-divider bg-surface-alt px-4 text-base text-heading outline-none transition focus:border-primary/50 focus:bg-surface focus:ring-4 focus:ring-primary/15"
-                formControlName="subcategory"
+                formControlName="subcategoryId"
+                [attr.disabled]="subcategories().length === 0 ? true : null"
               >
-                <option value="">Select a subcategory</option>
-                @for (subcategory of availableSubcategories(); track subcategory.value) {
-                  <option [value]="subcategory.value">{{ subcategory.value }}</option>
+                <option value="">
+                  @if (isLoadingSubcategories()) { Loading… }
+                  @else if (subcategories().length === 0) { Select a category first }
+                  @else { Select a subcategory }
+                </option>
+                @for (sub of subcategories(); track sub.id) {
+                  <option [value]="sub.id">{{ sub.name }}</option>
                 }
               </select>
+              @if (form.controls.subcategoryId.invalid && form.controls.subcategoryId.touched) {
+                <p class="mt-2 text-sm font-medium text-warning">Please select a subcategory.</p>
+              }
             </div>
           </div>
         </section>

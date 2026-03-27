@@ -73,42 +73,21 @@
       <form (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
 
         @if (activeTab() === 'join') {
-          <div class="flex flex-col gap-3">
-
-            <!--First name-->
-            <div class="flex flex-col flex-1 gap-1">
-              <label class="text-sm font-medium text-heading" for="firstName">First name</label>
-              <div
-                class="flex items-center border border-divider rounded-lg overflow-hidden focus-within:border-primary transition-colors">
-                <input id="firstName" type="text" name="firstName"
-                       class="flex-1 px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent outline-none"
-                       placeholder="First name" [ngModel]="firstName()" (ngModelChange)="firstName.set($event)"/>
-                <span class="px-3 text-muted">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                          <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                </span>
-              </div>
-            </div>
-
-            <!--Last name-->
-            <div class="flex flex-col flex-1 gap-1">
-              <label class="text-sm font-medium text-heading" for="lastName">Last name</label>
-              <div
-                class="flex items-center border border-divider rounded-lg overflow-hidden focus-within:border-primary transition-colors">
-                <input id="lastName" type="text" name="lastName"
-                       class="flex-1 px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent outline-none"
-                       placeholder="Last name" [ngModel]="lastName()" (ngModelChange)="lastName.set($event)"/>
-                <span class="px-3 text-muted">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                          <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                      </span>
-              </div>
+          <!--Username-->
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-heading" for="customUsername">Username</label>
+            <div
+              class="flex items-center border border-divider rounded-lg overflow-hidden focus-within:border-primary transition-colors">
+              <input id="customUsername" type="text" name="customUsername"
+                     class="flex-1 px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                     placeholder="Choose a username" [ngModel]="customUsername()" (ngModelChange)="customUsername.set($event)"/>
+              <span class="px-3 text-muted">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </span>
             </div>
 
           </div>

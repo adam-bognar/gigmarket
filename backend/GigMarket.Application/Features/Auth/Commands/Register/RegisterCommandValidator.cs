@@ -9,12 +9,11 @@ namespace GigMarket.Application.Features.Auth.Commands.Register
     {
         public RegisterCommandValidator()
         {
-            RuleFor(x => x.Firstname)
-                .NotEmpty().WithMessage("First name is required.")
-                .MaximumLength(50).WithMessage("First name must not exceed 50 characters.");
-            RuleFor(x => x.Lastname)
-                .NotEmpty().WithMessage("Last name is required.")
-                .MaximumLength(50).WithMessage("Last name must not exceed 50 characters.");
+            RuleFor(x => x.CustomUsername)
+                .NotEmpty().WithMessage("Username is required.")
+                .MinimumLength(3).WithMessage("Username must be at least 3 characters.")
+                .MaximumLength(30).WithMessage("Username must not exceed 30 characters.")
+                .Matches("^[a-zA-Z0-9_]+$").WithMessage("Username may only contain letters, digits, and underscores.");
             
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is required.")
