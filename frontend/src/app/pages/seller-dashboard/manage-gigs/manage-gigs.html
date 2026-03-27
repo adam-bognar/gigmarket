@@ -1,0 +1,168 @@
+<section class="mx-auto grid max-w-7xl gap-10 px-5 py-12 md:px-8 md:py-16">
+  <!-- Header -->
+  <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col gap-2">
+      <h1 class="m-0 text-4xl font-bold tracking-tight text-heading">Manage Gigs</h1>
+      <p class="m-0 text-base text-muted">Overview and management of your service listings</p>
+    </div>
+
+    <button
+      type="button"
+      class="shrink-0 rounded-2xl cursor-pointer bg-primary px-6 py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+    >
+      Create New Gig
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <!-- Active Gigs Card -->
+    <div class="relative flex flex-col gap-4 rounded-xl border border-divider bg-surface p-6 shadow-sm">
+      <div class="flex items-start justify-between">
+        <div class="flex flex-col gap-1">
+          <p class="m-0 text-sm font-medium uppercase tracking-wide text-muted">Active Gigs</p>
+          <p class="m-0 text-3xl font-bold text-heading">{{ activeGigCount() | number: '1.0-0' }}</p>
+        </div>
+        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-alt">
+          <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+      <p class="m-0 text-xs text-muted">Your current active service listings</p>
+    </div>
+
+    <!-- Total Impressions Card -->
+    <div class="relative flex flex-col gap-4 rounded-xl border border-divider bg-surface p-6 shadow-sm">
+      <div class="flex items-start justify-between">
+        <div class="flex flex-col gap-1">
+          <p class="m-0 text-sm font-medium uppercase tracking-wide text-muted">Total Impressions</p>
+          <p class="m-0 text-3xl font-bold text-heading">{{ totalImpressions() | number: '1.0-0' }}</p>
+        </div>
+        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-alt">
+          <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        </div>
+      </div>
+      <p class="m-0 text-xs text-muted">Total review impressions across your gigs</p>
+    </div>
+  </div>
+
+  <!-- Gigs Table -->
+  <div class="grid gap-5 rounded-xl border border-divider bg-surface p-5 shadow-sm md:p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <h2 class="m-0 text-xl font-semibold text-heading">Your Gigs</h2>
+
+      <div class="inline-flex overflow-hidden rounded-lg border border-divider bg-surface-alt p-1">
+        <button
+          type="button"
+          (click)="setFilter('all')"
+          class="rounded-md px-4 py-2 text-sm font-medium transition-colors"
+          [class.bg-primary]="selectedFilter() === 'all'"
+          [class.text-on-primary]="selectedFilter() === 'all'"
+          [class.text-heading]="selectedFilter() !== 'all'"
+        >
+          All Gigs
+        </button>
+        <button
+          type="button"
+          (click)="setFilter('active')"
+          class="rounded-md px-4 py-2 text-sm font-medium transition-colors"
+          [class.bg-primary]="selectedFilter() === 'active'"
+          [class.text-on-primary]="selectedFilter() === 'active'"
+          [class.text-heading]="selectedFilter() !== 'active'"
+        >
+          Active Gigs
+        </button>
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <div class="rounded-lg border border-divider bg-surface-alt p-5 text-sm text-muted">Loading gigs...</div>
+    } @else if (error()) {
+      <div class="rounded-lg border border-error/30 bg-red-50 p-5 text-sm text-error">{{ error() }}</div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="min-w-full border-collapse">
+          <thead>
+            <tr class="border-b border-divider text-left text-xs uppercase tracking-wide text-muted">
+              <th class="px-3 py-3 font-semibold">Gig</th>
+              <th class="px-3 py-3 font-semibold">Ratings</th>
+              <th class="px-3 py-3 font-semibold">Total Orders</th>
+              <th class="px-3 py-3 font-semibold">Min Price</th>
+              <th class="px-3 py-3 font-semibold">Status</th>
+              <th class="px-3 py-3 font-semibold">Min Delivery</th>
+              <th class="px-3 py-3 font-semibold">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (filteredGigs().length) {
+              @for (gig of filteredGigs(); track gig.id) {
+                <tr class="border-b border-divider text-sm text-heading">
+                  <td class="px-3 py-4">
+                    <div class="flex min-w-[18rem] items-center gap-3">
+                      <img
+                        [src]="gig.primaryPhotoUrl"
+                        [alt]="gig.title + ' preview'"
+                        class="h-12 w-16 rounded-md object-cover"
+                      >
+                      <span class="line-clamp-2 font-medium">{{ gig.title }}</span>
+                    </div>
+                  </td>
+                  <td class="px-3 py-4">
+                    <div class="flex items-center gap-1.5">
+                      <svg class="h-4 w-4 text-warning" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09L5.64 12.545 1.28 7.91l6.09-.885L10 1l2.63 6.025 6.09.885-4.36 4.635 1.41 5.545z"/>
+                      </svg>
+                      <span>{{ gig.averageRating | number: '1.1-1' }}</span>
+                    </div>
+                  </td>
+                  <td class="px-3 py-4 text-muted">{{ gig.totalReviews | number: '1.0-0' }}</td>
+                  <td class="px-3 py-4 font-semibold">${{ gig.startingPrice | number: '1.0-0' }}</td>
+                  <td class="px-3 py-4">
+                    <span
+                      class="inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold"
+                      [class.border-primary]="isActiveStatus(gig.status)"
+                      [class.bg-primary]="isActiveStatus(gig.status)"
+                      [class.text-primary]="isActiveStatus(gig.status)"
+                      [class.border-divider]="!isActiveStatus(gig.status)"
+                      [class.bg-surface-alt]="!isActiveStatus(gig.status)"
+                      [class.text-muted]="!isActiveStatus(gig.status)"
+                    >
+                      {{ gig.status }}
+                    </span>
+                  </td>
+                  <td class="px-3 py-4 text-muted">{{ gig.minDeliveryDays }} days</td>
+                  <td class="px-3 py-4">
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        (click)="onEditGig(gig.id)"
+                        class="rounded-md border border-divider px-3 py-1.5 text-xs font-medium text-heading transition-colors hover:bg-surface-alt"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        (click)="onDeleteGig(gig.id)"
+                        class="rounded-md border border-error/40 px-3 py-1.5 text-xs font-medium text-error transition-colors hover:bg-red-50"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @else {
+              <tr>
+                <td colspan="7" class="px-3 py-8 text-center text-sm text-muted">No gigs found for the selected filter.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</section>

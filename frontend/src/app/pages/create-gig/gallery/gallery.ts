@@ -1,21 +1,17 @@
-import {Component, computed, output, signal} from '@angular/core';
+import {Component, computed, input, OnInit, output, signal} from '@angular/core';
 import {NgOptimizedImage} from '@angular/common';
+import {GalleryDraft, PhotoSlot, VideoSlot} from '../../../shared/services/gig-draft.service';
 
-
-interface GigPhoto {
-  file: File | null;
-  previewUrl: string | null;
-}
-
-export interface GalleryFormValue {
-  photos: File[];
-  video: File | null;
-}
+export type GalleryFormValue = GalleryDraft;
 
 const MAX_PHOTOS = 3;
 const MAX_VIDEO_SIZE_MB = 75;
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png'];
 const ACCEPTED_VIDEO_TYPES = ['video/mp4'];
+
+function emptySlots(): PhotoSlot[] {
+  return Array.from({ length: MAX_PHOTOS }, (): PhotoSlot => ({ kind: 'empty' }));
+}
 
 @Component({
   selector: 'app-gallery',
@@ -25,20 +21,14 @@ const ACCEPTED_VIDEO_TYPES = ['video/mp4'];
   templateUrl: './gallery.html',
   styleUrl: './gallery.css',
 })
-export class Gallery {
+export class Gallery implements OnInit {
   readonly back = output<void>();
   readonly continue = output<GalleryFormValue>();
 
-  readonly photos = signal<GigPhoto[]>([
-    {file: null, previewUrl: null},
-    {file: null, previewUrl: null},
-    {file: null, previewUrl: null},
-  ]);
+  readonly initialValue = input<GalleryDraft | null>(null);
 
-  readonly video = signal<GigPhoto>({
-    file: null,
-    previewUrl: null,
-  });
+  readonly photos = signal<PhotoSlot[]>(emptySlots());
+  readonly video = signal<VideoSlot>({ kind: 'empty' });
 
   readonly showErrors = signal(false);
   readonly photoError = signal<string | null>(null);
@@ -47,11 +37,23 @@ export class Gallery {
   readonly acceptedImageTypes = ACCEPTED_IMAGE_TYPES.join(',');
   readonly acceptedVideoTypes = ACCEPTED_VIDEO_TYPES.join(',');
 
-  readonly primaryPhoto = computed(() => this.photos()[0]);
-  readonly hasVideo = computed(() => !!this.video().file);
-  readonly hasPrimaryPhoto = computed(() => !!this.photos()[0].file);
+  readonly hasPrimaryPhoto = computed(() => this.photos()[0].kind !== 'empty');
+  readonly hasVideo = computed(() => this.video().kind !== 'empty');
 
   readonly maxPhotos = MAX_PHOTOS;
+
+  ngOnInit(): void {
+    const draft = this.initialValue();
+    if (draft) {
+      this.photos.set(draft.photos);
+      this.video.set(draft.video);
+    }
+  }
+
+  readonly videoPreviewUrl = computed(() => {
+    const v = this.video();
+    return v.kind !== 'empty' ? v.previewUrl : null;
+  });
 
   onPhotoSelected(event: Event, index: number): void {
     const input = event.target as HTMLInputElement;
@@ -68,9 +70,10 @@ export class Gallery {
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      this.photos.update((current) =>
-        current.map((photo, i) =>
-          i === index ? { file, previewUrl: e.target?.result as string } : photo,
+      const previewUrl = e.target?.result as string;
+      this.photos.update(slots =>
+        slots.map((slot, i): PhotoSlot =>
+          i === index ? { kind: 'new', file, previewUrl } : slot,
         ),
       );
     };
@@ -80,8 +83,8 @@ export class Gallery {
   }
 
   removePhoto(index: number): void {
-    this.photos.update((current) =>
-      current.map((photo, i) => (i === index ? { file: null, previewUrl: null } : photo)),
+    this.photos.update(slots =>
+      slots.map((slot, i): PhotoSlot => i === index ? { kind: 'empty' } : slot),
     );
   }
 
@@ -105,17 +108,17 @@ export class Gallery {
       return;
     }
 
-    const url = URL.createObjectURL(file);
-    this.video.set({ file, previewUrl: url });
+    const previewUrl = URL.createObjectURL(file);
+    this.video.set({ kind: 'new', file, previewUrl });
     input.value = '';
   }
 
   removeVideo(): void {
     const current = this.video();
-    if (current.previewUrl) {
+    if (current.kind === 'new') {
       URL.revokeObjectURL(current.previewUrl);
     }
-    this.video.set({ file: null, previewUrl: null });
+    this.video.set({ kind: 'empty' });
     this.videoError.set(null);
   }
 
@@ -123,13 +126,9 @@ export class Gallery {
     this.showErrors.set(true);
     if (!this.hasPrimaryPhoto()) return;
 
-    const photoFiles = this.photos()
-      .filter(p => p.file !== null)
-      .map(p => p.file!);
-
     this.continue.emit({
-      photos: photoFiles,
-      video: this.video().file,
+      photos: this.photos(),
+      video: this.video(),
     });
   }
 }

@@ -15,32 +15,32 @@
 	  <button
 		type="button"
 		class="flex items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition"
-		[class.bg-slate-100]="state().category === allCategories"
-		[class.font-semibold]="state().category === allCategories"
-		[class.text-heading]="state().category === allCategories"
-		[class.text-muted]="state().category !== allCategories"
-		(click)="selectCategory(allCategories)"
+    [class.bg-slate-100]="state().categoryId === null"
+    [class.font-semibold]="state().categoryId === null"
+    [class.text-heading]="state().categoryId === null"
+    [class.text-muted]="state().categoryId !== null"
+    (click)="selectCategory(null)"
 	  >
-		<span>{{ allCategories }}</span>
-		@if (state().category === allCategories) {
-		  <span class="text-primary">›</span>
-		}
-	  </button>
+      <span>All categories</span>
+      @if (state().categoryId === null) {
+        <span class="text-primary">›</span>
+      }
+    </button>
 
-	  @for (category of categoryOptions(); track category) {
+    @for (cat of categories(); track cat.id) {
 		<button
 		  type="button"
 		  class="flex items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition"
-		  [class.bg-slate-100]="state().category === category"
-		  [class.font-semibold]="state().category === category"
-		  [class.text-heading]="state().category === category"
-		  [class.text-muted]="state().category !== category"
-		  (click)="selectCategory(category)"
+      [class.bg-slate-100]="state().categoryId === cat.id"
+      [class.font-semibold]="state().categoryId === cat.id"
+      [class.text-heading]="state().categoryId === cat.id"
+      [class.text-muted]="state().categoryId !== cat.id"
+      (click)="selectCategory(cat.id)"
 		>
-		  <span>{{ category }}</span>
-		  @if (state().category === category) {
-			<span class="text-primary">›</span>
-		  }
+      <span>{{ cat.name }}</span>
+      @if (state().categoryId === cat.id) {
+        <span class="text-primary">›</span>
+      }
 		</button>
 	  }
 	</div>

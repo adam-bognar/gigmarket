@@ -22,9 +22,17 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/create-gig/create-gig').then((m) => m.CreateGig),
   },
   {
+    path: 'create-gig/:id',
+    loadComponent: () => import('./pages/create-gig/create-gig').then((m) => m.CreateGig),
+  },
+  {
     path: 'gigs/:id',
     loadComponent: () => import('./pages/gig-details/gig-details').then((m) => m.GigDetails),
   },
+  {
+    path: 'dashboard/seller/manage-gigs',
+    loadComponent: () => import('./pages/seller-dashboard/manage-gigs/manage-gigs').then((m) => m.ManageGigs),
+  }
   // {
   //   path: 'gigs/c2c84ec0-cd3c-4227-b627-29debdeeff45',
   //   loadComponent: () => import('./pages/gig-details/gig-details').then((m) => m.GigDetails),

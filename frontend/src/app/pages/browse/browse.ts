@@ -7,24 +7,17 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Card, type BrowseCardItem } from './card/card';
-import {
-  ALL_CATEGORIES,
-  BROWSE_CATEGORY_OPTIONS,
-  DEFAULT_BROWSE_FILTERS,
-  Filter,
-  type BrowseFilterState,
-} from './filter/filter';
-import {GigService} from '../../shared/services/gig.service';
-import {GigSummaryDto} from '../../shared/models/gig.model';
-import {RouterLink} from '@angular/router';
+import { DEFAULT_BROWSE_FILTERS, Filter, type BrowseFilterState } from './filter/filter';
+import { GigService } from '../../shared/services/gig.service';
+import { GigSummaryDto } from '../../shared/models/gig.model';
 
 const PRICE_MIN = 0;
 const PRICE_MAX = 300;
 
-
 function mapToCardItem(dto: GigSummaryDto): BrowseCardItem {
-  const mapped = {
+  return {
     id: dto.id,
     coverImageSrc: dto.primaryPhotoUrl,
     coverImageAlt: dto.title,
@@ -32,14 +25,12 @@ function mapToCardItem(dto: GigSummaryDto): BrowseCardItem {
     sellerAvatarUrl: dto.sellerAvatarUrl,
     title: dto.title,
     category: dto.categoryName,
+    categoryId: dto.categoryId,
     basePrice: dto.startingPrice,
     deliveryDays: dto.minDeliveryDays,
     rating: dto.averageRating,
     reviewCount: dto.totalReviews,
   };
-
-  console.log('[mapToCardItem] input:', dto, '→ output:', mapped);
-  return mapped;
 }
 
 @Component({
@@ -54,31 +45,21 @@ export class Browse implements OnInit {
   readonly cards = signal<BrowseCardItem[]>([]);
   readonly isLoading = signal(true);
   readonly error = signal<string | null>(null);
-
   readonly filters = signal<BrowseFilterState>(DEFAULT_BROWSE_FILTERS);
-  readonly categoryOptions = BROWSE_CATEGORY_OPTIONS;
   readonly minPrice = PRICE_MIN;
   readonly maxPrice = PRICE_MAX;
 
   readonly filteredCards = computed(() => {
-    const activeFilters = this.filters();
-
-    return this.cards().filter((card) => {
-      const matchesCategory =
-        activeFilters.category === ALL_CATEGORIES ||
-        card.category === activeFilters.category;
-      const matchesPrice =
-        card.basePrice >= activeFilters.minPrice &&
-        card.basePrice <= activeFilters.maxPrice;
+    const f = this.filters();
+    return this.cards().filter(card => {
+      const matchesCategory = f.categoryId === null || card.categoryId === f.categoryId;
+      const matchesPrice = card.basePrice >= f.minPrice && card.basePrice <= f.maxPrice;
       const matchesDelivery =
-        activeFilters.deliveryTime === 'any'
-          ? true
-          : activeFilters.deliveryTime === '24h'
-            ? card.deliveryDays <= 1
-            : activeFilters.deliveryTime === '3days'
-              ? card.deliveryDays <= 3
-              : card.deliveryDays <= 7;
-      const matchesRating = card.rating >= activeFilters.minRating;
+        f.deliveryTime === 'any'   ? true :
+          f.deliveryTime === '24h'   ? card.deliveryDays <= 1 :
+            f.deliveryTime === '3days' ? card.deliveryDays <= 3 :
+              card.deliveryDays <= 7;
+      const matchesRating = card.rating >= f.minRating;
 
       return matchesCategory && matchesPrice && matchesDelivery && matchesRating;
     });
@@ -87,24 +68,12 @@ export class Browse implements OnInit {
   readonly availableServicesCount = computed(() => this.filteredCards().length);
 
   ngOnInit(): void {
-    console.log('[Browse] ngOnInit — fetching gigs');
-
     this.gigService.getGigs().subscribe({
       next: (dtos) => {
-        console.log('[Browse] raw DTOs from API:', dtos);
-
-        const mapped = dtos.map(mapToCardItem);
-        console.log('[Browse] mapped BrowseCardItems:', mapped);
-
-        this.cards.set(mapped);
+        this.cards.set(dtos.map(mapToCardItem));
         this.isLoading.set(false);
-
-        console.log('[Browse] isLoading:', this.isLoading());
-        console.log('[Browse] cards count:', this.cards().length);
-        console.log('[Browse] filteredCards count:', this.filteredCards().length);
       },
-      error: (err) => {
-        console.error('[Browse] API error:', err);
+      error: () => {
         this.error.set('Failed to load gigs. Please try again later.');
         this.isLoading.set(false);
       },

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, output, signal } from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, input, OnInit, output, signal} from '@angular/core';
 import {GigPackagePayload, PackageTier} from '../../../shared/models/gig.model';
 
 export interface PricingFormValue {
@@ -29,7 +29,8 @@ interface PricingPackage {
   templateUrl: './pricing.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Pricing {
+export class Pricing implements OnInit {
+  readonly initialValue = input<PricingFormValue | null>(null);
   readonly back = output<void>();
   readonly continue = output<PricingFormValue>();
 
@@ -123,6 +124,28 @@ export class Pricing {
     ];
 
   });
+
+  ngOnInit(): void {
+    const v = this.initialValue();
+    if (!v) return;
+
+    this.packages.update(current =>
+      current.map(pkg => {
+        const saved = v.packages.find(p => p.tier === pkg.label);
+        if (!saved) return pkg;
+        return {
+          ...pkg,
+          name: saved.name,
+          description: saved.description,
+          deliveryTime: `${saved.deliveryDays} Day${saved.deliveryDays === 1 ? '' : 's'} Delivery`,
+          revisions: saved.revisions === 999 ? 'Unlimited' : String(saved.revisions),
+          price: saved.price,
+        };
+      }),
+    );
+
+    this.packagesEnabled.set(v.packages.length > 1);
+  }
 
   toggleTips(): void {
     this.showTips.update((value) => !value);

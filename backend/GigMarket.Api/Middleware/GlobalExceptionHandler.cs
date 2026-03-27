@@ -43,6 +43,12 @@ public class GlobalExceptionHandler : IExceptionHandler
                 problemDetails.Title = "Bad Request";
                 problemDetails.Detail = badRequest.Message;
                 break;
+
+            case NotFoundException notFound:
+                problemDetails.Status = StatusCodes.Status404NotFound;
+                problemDetails.Title = "Not Found";
+                problemDetails.Detail = notFound.Message;
+                break;
             
             case UnauthorizedException unauthorized:
                 problemDetails.Status = StatusCodes.Status401Unauthorized;

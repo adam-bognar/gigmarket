@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 
@@ -12,6 +14,15 @@ import { AuthService } from '../../services/auth.service';
 })
 export class Navbar {
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map((e) => e.urlAfterRedirects),
+    ),
+    { initialValue: this.router.url },
+  );
 
   protected readonly searchQuery = signal('');
   protected readonly mobileMenuOpen = signal(false);
@@ -20,12 +31,11 @@ export class Navbar {
   protected readonly user = this.authService.user;
   protected readonly isAuthenticated = this.authService.isAuthenticated;
   protected readonly isSeller = computed(() => this.user()?.isSeller ?? false);
+  protected readonly isDashboard = computed(() => this.currentUrl().includes('/dashboard'));
   protected readonly userInitials = computed(() => {
     const u = this.user();
     if (!u) return '';
-    const first = u.firstName?.charAt(0) ?? '';
-    const last = u.lastName?.charAt(0) ?? '';
-    return `${first}${last}`.toUpperCase();
+    return u.customUsername?.charAt(0).toUpperCase() ?? '';
   });
 
   toggleMobileMenu(): void {

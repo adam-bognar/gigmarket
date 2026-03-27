@@ -4,17 +4,15 @@
 }
 
 export interface RegisterRequest {
-  firstName: string;
-  lastName: string;
+  customUsername: string;
   email: string;
   password: string;
 }
 
 export interface AuthUser {
   id: string;
+  customUsername: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  profilePicUrl?: string;
   isSeller?: boolean;
+  profileUrl?: string;
 }
