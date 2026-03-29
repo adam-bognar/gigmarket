@@ -33,6 +33,7 @@ public sealed class GetMyGigsQueryHandler(
                 SellerFirstName = g.SellerProfile.FirstName,
                 SellerLastName = g.SellerProfile.LastName,
                 SellerAvatarBlobPath = g.SellerProfile.ProfileImageUrl,
+                g.CategoryId,
                 CategoryName = g.Category.Name,
                 SubcategoryName = g.Subcategory.Name,
                 AverageRating = g.Reviews.Any() ? Math.Round(g.Reviews.Average(r => r.Rating), 1) : 0.0,
@@ -52,6 +53,7 @@ public sealed class GetMyGigsQueryHandler(
             g.SellerFirstName,
             g.SellerLastName,
             await ResolveUrlAsync(g.SellerAvatarBlobPath, cancellationToken),
+            g.CategoryId,
             g.CategoryName,
             g.SubcategoryName,
             g.AverageRating,
@@ -73,4 +75,3 @@ public sealed class GetMyGigsQueryHandler(
         return await blobStorageService.GetDownloadUrlAsync(blobPath, ct);
     }
 }
-

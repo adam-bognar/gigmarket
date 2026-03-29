@@ -53,6 +53,10 @@ export class ManageGigs implements OnInit {
     this.selectedFilter.set(filter);
   }
 
+  onCreateGig() {
+    this.router.navigate(['/create-gig']);
+  }
+
   onEditGig(gigId: string) {
     this.router.navigate(['/create-gig', gigId]);
   }

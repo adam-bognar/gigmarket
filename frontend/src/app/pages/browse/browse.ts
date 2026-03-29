@@ -2,19 +2,27 @@ import { DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
+  computed, DestroyRef,
   inject,
   OnInit,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import {ActivatedRoute, Params, Router, RouterLink} from '@angular/router';
 import { Card, type BrowseCardItem } from './card/card';
-import { DEFAULT_BROWSE_FILTERS, Filter, type BrowseFilterState } from './filter/filter';
-import { GigService } from '../../shared/services/gig.service';
+import {
+  DEFAULT_BROWSE_FILTERS,
+  Filter,
+  type BrowseFilterState,
+  DeliveryTimeFilter,
+  RatingFilter
+} from './filter/filter';
+import {GigFilterParams, GigService} from '../../shared/services/gig.service';
 import { GigSummaryDto } from '../../shared/models/gig.model';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {switchMap, tap} from 'rxjs';
 
 const PRICE_MIN = 0;
-const PRICE_MAX = 300;
+const PRICE_MAX = 1000;
 
 function mapToCardItem(dto: GigSummaryDto): BrowseCardItem {
   return {
@@ -41,6 +49,9 @@ function mapToCardItem(dto: GigSummaryDto): BrowseCardItem {
 })
 export class Browse implements OnInit {
   private readonly gigService = inject(GigService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly cards = signal<BrowseCardItem[]>([]);
   readonly isLoading = signal(true);
@@ -49,27 +60,21 @@ export class Browse implements OnInit {
   readonly minPrice = PRICE_MIN;
   readonly maxPrice = PRICE_MAX;
 
-  readonly filteredCards = computed(() => {
-    const f = this.filters();
-    return this.cards().filter(card => {
-      const matchesCategory = f.categoryId === null || card.categoryId === f.categoryId;
-      const matchesPrice = card.basePrice >= f.minPrice && card.basePrice <= f.maxPrice;
-      const matchesDelivery =
-        f.deliveryTime === 'any'   ? true :
-          f.deliveryTime === '24h'   ? card.deliveryDays <= 1 :
-            f.deliveryTime === '3days' ? card.deliveryDays <= 3 :
-              card.deliveryDays <= 7;
-      const matchesRating = card.rating >= f.minRating;
-
-      return matchesCategory && matchesPrice && matchesDelivery && matchesRating;
-    });
-  });
-
-  readonly availableServicesCount = computed(() => this.filteredCards().length);
+  readonly availableServicesCount = computed(() => this.cards().length);
 
   ngOnInit(): void {
-    this.gigService.getGigs().subscribe({
-      next: (dtos) => {
+    this.route.queryParams.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      tap(() => {
+        this.isLoading.set(true);
+        this.error.set(null);
+      }),
+      switchMap(params => {
+        this.filters.set(this.paramsToFilters(params));
+        return this.gigService.getGigs(this.paramsToApiFilters(params));
+      }),
+    ).subscribe({
+      next: dtos => {
         this.cards.set(dtos.map(mapToCardItem));
         this.isLoading.set(false);
       },
@@ -81,6 +86,38 @@ export class Browse implements OnInit {
   }
 
   updateFilters(nextFilters: BrowseFilterState): void {
-    this.filters.set(nextFilters);
+    const currentQ = this.route.snapshot.queryParams['q'];
+    this.router.navigate([], {
+      queryParams: {
+        ...(currentQ ? { q: currentQ } : {}),
+        categoryId: nextFilters.categoryId ?? null,
+        minPrice: nextFilters.minPrice > PRICE_MIN ? nextFilters.minPrice : null,
+        maxPrice: nextFilters.maxPrice < PRICE_MAX ? nextFilters.maxPrice : null,
+        deliveryTime: nextFilters.deliveryTime !== 'any' ? nextFilters.deliveryTime : null,
+        minRating: nextFilters.minRating > 0 ? nextFilters.minRating : null,
+      },
+      replaceUrl: true,
+    });
+  }
+
+  private paramsToFilters(params: Params): BrowseFilterState {
+    return {
+      categoryId: params['categoryId'] ?? null,
+      minPrice: params['minPrice'] != null ? Number(params['minPrice']) : PRICE_MIN,
+      maxPrice: params['maxPrice'] != null ? Number(params['maxPrice']) : PRICE_MAX,
+      deliveryTime: (params['deliveryTime'] as DeliveryTimeFilter) ?? 'any',
+      minRating: params['minRating'] != null ? Number(params['minRating']) as RatingFilter : 0,
+    };
+  }
+
+  private paramsToApiFilters(params: Params): GigFilterParams {
+    return {
+      search: params['q'] || undefined,
+      categoryId: params['categoryId'] || undefined,
+      minPrice: params['minPrice'] != null ? Number(params['minPrice']) : undefined,
+      maxPrice: params['maxPrice'] != null ? Number(params['maxPrice']) : undefined,
+      deliveryTime: params['deliveryTime'] || undefined,
+      minRating: params['minRating'] != null ? Number(params['minRating']) : undefined,
+    };
   }
 }

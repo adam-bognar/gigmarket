@@ -36,9 +36,9 @@
       }
 
       @if (!isLoading() && !error()) {
-        @if (filteredCards().length > 0) {
+        @if (cards().length > 0) {
           <div class="grid grid-cols-1 gap-7 md:grid-cols-2 xl:grid-cols-3">
-            @for (card of filteredCards(); track card.id) {
+            @for (card of cards(); track card.id) {
               <a [routerLink]="['/gigs', card.id]">
                 <app-card [item]="card" />
               </a>

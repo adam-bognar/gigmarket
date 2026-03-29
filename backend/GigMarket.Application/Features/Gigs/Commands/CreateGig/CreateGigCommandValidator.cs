@@ -15,7 +15,7 @@ public sealed class CreateGigRequestValidator : AbstractValidator<CreateGigReque
 {
     public CreateGigRequestValidator()
     {
-        RuleFor(x => x.Title).NotEmpty().MinimumLength(15).MaximumLength(80);
+        RuleFor(x => x.Title).NotEmpty().MinimumLength(1).MaximumLength(80);
         RuleFor(x => x.CategoryId).NotEmpty();
         RuleFor(x => x.SubcategoryId).NotEmpty();
         RuleFor(x => x.Description).NotEmpty().MinimumLength(120).MaximumLength(1200);

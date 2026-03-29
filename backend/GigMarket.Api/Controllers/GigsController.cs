@@ -20,9 +20,16 @@ namespace GigMarket.Api.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ProducesResponseType(typeof(List<GigSummaryDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<GigSummaryDto>>> GetAll(CancellationToken ct)
+        public async Task<ActionResult<List<GigSummaryDto>>> GetAll(
+            [FromQuery] string? search,
+            [FromQuery] Guid? categoryId,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice,
+            [FromQuery] string? deliveryTime,
+            [FromQuery] double? minRating,
+            CancellationToken ct)
         {
-            var result = await mediator.Send(new GetGigsQuery(), ct);
+            var result = await mediator.Send(new GetGigsQuery(search, categoryId, minPrice, maxPrice, deliveryTime, minRating), ct);
             return Ok(result);
         }
 
