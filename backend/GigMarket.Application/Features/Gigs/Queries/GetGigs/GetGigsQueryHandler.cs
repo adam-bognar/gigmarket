@@ -10,8 +10,22 @@ public sealed class GetGigsQueryHandler(IApplicationDbContext db, IBlobStorageSe
 {
     public async Task<List<GigSummaryDto>> Handle(GetGigsQuery request, CancellationToken cancellationToken)
     {
+        int? maxDeliveryDays = request.DeliveryTime switch
+        {
+            "24h"   => 1,
+            "3days" => 3,
+            "7days" => 7,
+            _       => null,
+        };
+
         var rawGigs = await db.Gigs
             .AsNoTracking()
+            .Where(g => string.IsNullOrEmpty(request.Search) || g.Title.Contains(request.Search))
+            .Where(g => request.CategoryId == null || g.CategoryId == request.CategoryId)
+            .Where(g => request.MinPrice == null || (g.Packages.Any() && g.Packages.Min(p => p.Price) >= request.MinPrice))
+            .Where(g => request.MaxPrice == null || (g.Packages.Any() && g.Packages.Min(p => p.Price) <= request.MaxPrice))
+            .Where(g => maxDeliveryDays == null || (g.Packages.Any() && g.Packages.Min(p => p.DeliveryDays) <= maxDeliveryDays))
+            .Where(g => request.MinRating == null || request.MinRating == 0 || (g.Reviews.Any() && g.Reviews.Average(r => r.Rating) >= request.MinRating))
             .Select(g => new
             {
                 g.Id,
@@ -23,6 +37,7 @@ public sealed class GetGigsQueryHandler(IApplicationDbContext db, IBlobStorageSe
                 SellerFirstName = g.SellerProfile.FirstName,
                 SellerLastName = g.SellerProfile.LastName,
                 SellerAvatarBlobPath = g.SellerProfile.ProfileImageUrl,
+                g.CategoryId,
                 CategoryName = g.Category.Name,
                 SubcategoryName = g.Subcategory.Name,
                 AverageRating = g.Reviews.Any() ? Math.Round(g.Reviews.Average(r => r.Rating), 1) : 0.0,
@@ -42,6 +57,7 @@ public sealed class GetGigsQueryHandler(IApplicationDbContext db, IBlobStorageSe
             g.SellerFirstName,
             g.SellerLastName,
             await ResolveUrlAsync(g.SellerAvatarBlobPath, cancellationToken),
+            g.CategoryId,
             g.CategoryName,
             g.SubcategoryName,
             g.AverageRating,

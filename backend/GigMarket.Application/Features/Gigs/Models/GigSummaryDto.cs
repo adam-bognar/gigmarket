@@ -9,6 +9,7 @@ public sealed record GigSummaryDto(
     string SellerFirstName,
     string SellerLastName,
     string SellerAvatarUrl,
+    Guid CategoryId,
     string CategoryName,
     string SubcategoryName,
     double AverageRating,
@@ -16,4 +17,3 @@ public sealed record GigSummaryDto(
     List<string> Tags,
     string Status
 );
-
