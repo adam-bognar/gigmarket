@@ -53,7 +53,7 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
                 Revisions = p.Revisions,
                 Price = p.Price,
             }).ToList(),
-            
+
             Requirements = request.Requirements?.Select(r => new GigRequirement
             {
                 Id = Guid.NewGuid(),
@@ -67,14 +67,14 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
                     Value = c
                 }).ToList() ?? new List<GigRequirementChoice>()
             }).ToList() ?? new List<GigRequirement>(),
-            
+
             Photos = BuildPhotos(request.PrimaryPhotoUrl, request.AdditionalPhotoUrls),
-            
+
             Video = request.VideoUrl is not null
                 ? new GigVideo { Id = Guid.NewGuid(), Url = request.VideoUrl }
                 : null
         };
-        
+
         db.Gigs.Add(gig);
         await db.SaveChangesAsync(ct);
 
@@ -106,9 +106,9 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
         var userId = currentUser.UserId!.Value;
 
         var gig = await db.Gigs
-            .Include(g => g.SellerProfile)
-            .FirstOrDefaultAsync(g => g.Id == gigId, ct)
-            ?? throw new NotFoundException($"Gig with id '{gigId}' was not found.");
+                      .Include(g => g.SellerProfile)
+                      .FirstOrDefaultAsync(g => g.Id == gigId, ct)
+                  ?? throw new NotFoundException($"Gig with id '{gigId}' was not found.");
 
         if (gig.SellerProfile.UserId != userId)
             throw new UnauthorizedException("You can only delete your own gigs.");
@@ -125,28 +125,22 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
         var userId = currentUser.UserId!.Value;
 
         var gig = await db.Gigs
-            .Include(g => g.SellerProfile)
-            .Include(g => g.Tags)
-            .Include(g => g.Packages)
-            .Include(g => g.Requirements)
-                .ThenInclude(r => r.Choices)
-            .Include(g => g.Photos)
-            .Include(g => g.Video)
-            .FirstOrDefaultAsync(g => g.Id == gigId, ct)
-            ?? throw new NotFoundException($"Gig with id '{gigId}' was not found.");
+                      .Include(g => g.SellerProfile)
+                      .FirstOrDefaultAsync(g => g.Id == gigId, ct)
+                  ?? throw new NotFoundException($"Gig with id '{gigId}' was not found.");
 
         if (gig.SellerProfile.UserId != userId)
             throw new UnauthorizedException("You can only edit your own gigs.");
 
         var category = await db.GigCategories
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == request.CategoryId, ct)
-            ?? throw new BadRequestException("Invalid category.");
+                           .AsNoTracking()
+                           .FirstOrDefaultAsync(x => x.Id == request.CategoryId, ct)
+                       ?? throw new BadRequestException("Invalid category.");
 
         var subcategory = await db.GigSubcategories
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == request.SubcategoryId, ct)
-            ?? throw new BadRequestException("Invalid subcategory.");
+                              .AsNoTracking()
+                              .FirstOrDefaultAsync(x => x.Id == request.SubcategoryId, ct)
+                          ?? throw new BadRequestException("Invalid subcategory.");
 
         if (subcategory.CategoryId != category.Id)
             throw new BadRequestException("Subcategory does not belong to the selected category.");
@@ -159,19 +153,47 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
         if (request.Status.HasValue)
             gig.Status = request.Status.Value;
 
-        db.GigTags.RemoveRange(gig.Tags);
-        db.GigPackages.RemoveRange(gig.Packages);
-        db.GigRequirements.RemoveRange(gig.Requirements);
-        db.GigPhotos.RemoveRange(gig.Photos);
+        var requirementIdsQuery = db.GigRequirements
+            .Where(r => r.GigId == gigId)
+            .Select(r => r.Id);
 
-        if (gig.Video is not null)
-            db.GigVideos.Remove(gig.Video);
+        await db.GigRequirementChoices
+            .Where(c => requirementIdsQuery.Contains(c.GigRequirementId))
+            .ExecuteDeleteAsync(ct);
 
-        gig.Tags = request.Tags.Select(t => new GigTag { Id = Guid.NewGuid(), Name = t }).ToList();
+        await db.GigRequirements
+            .Where(r => r.GigId == gigId)
+            .ExecuteDeleteAsync(ct);
 
-        gig.Packages = request.Packages.Select(p => new GigPackage
+        await db.GigTags
+            .Where(t => t.GigId == gigId)
+            .ExecuteDeleteAsync(ct);
+
+        await db.GigPackages
+            .Where(p => p.GigId == gigId)
+            .ExecuteDeleteAsync(ct);
+
+        await db.GigPhotos
+            .Where(p => p.GigId == gigId)
+            .ExecuteDeleteAsync(ct);
+
+        await db.GigVideos
+            .Where(v => v.GigId == gigId)
+            .ExecuteDeleteAsync(ct);
+
+        var tags = request.Tags.Select(t => new GigTag
         {
             Id = Guid.NewGuid(),
+            GigId = gigId,
+            Name = t
+        }).ToList();
+
+        db.GigTags.AddRange(tags);
+
+        var packages = request.Packages.Select(p => new GigPackage
+        {
+            Id = Guid.NewGuid(),
+            GigId = gigId,
             Tier = p.Tier,
             Name = p.Name,
             Description = p.Description,
@@ -180,25 +202,48 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
             Price = p.Price,
         }).ToList();
 
-        gig.Requirements = request.Requirements?.Select(r => new GigRequirement
+        db.GigPackages.AddRange(packages);
+
+        var requirements = request.Requirements?.Select(r =>
         {
-            Id = Guid.NewGuid(),
-            Type = r.Type,
-            Question = r.Question,
-            IsRequired = r.IsRequired,
-            SortOrder = r.SortOrder,
-            Choices = r.Choices?.Select(c => new GigRequirementChoice
+            var requirementId = Guid.NewGuid();
+
+            return new GigRequirement
             {
-                Id = Guid.NewGuid(),
-                Value = c
-            }).ToList() ?? new List<GigRequirementChoice>()
+                Id = requirementId,
+                GigId = gigId,
+                Type = r.Type,
+                Question = r.Question,
+                IsRequired = r.IsRequired,
+                SortOrder = r.SortOrder,
+                Choices = r.Choices?.Select(c => new GigRequirementChoice
+                {
+                    Id = Guid.NewGuid(),
+                    GigRequirementId = requirementId,
+                    Value = c
+                }).ToList() ?? new List<GigRequirementChoice>()
+            };
         }).ToList() ?? new List<GigRequirement>();
 
-        gig.Photos = BuildPhotos(request.PrimaryPhotoUrl, request.AdditionalPhotoUrls);
+        db.GigRequirements.AddRange(requirements);
 
-        gig.Video = request.VideoUrl is not null
-            ? new GigVideo { Id = Guid.NewGuid(), Url = request.VideoUrl }
-            : null;
+        var photos = BuildPhotos(request.PrimaryPhotoUrl, request.AdditionalPhotoUrls);
+        foreach (var photo in photos)
+        {
+            photo.GigId = gigId;
+        }
+
+        db.GigPhotos.AddRange(photos);
+
+        if (request.VideoUrl is not null)
+        {
+            db.GigVideos.Add(new GigVideo
+            {
+                Id = Guid.NewGuid(),
+                GigId = gigId,
+                Url = request.VideoUrl
+            });
+        }
 
         await db.SaveChangesAsync(ct);
 
@@ -210,18 +255,18 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
             Subcategory: subcategory.Name,
             Status: gig.Status.ToString(),
             CreatedAtUtc: gig.CreatedAtUtc,
-            Tags: gig.Tags.Select(t => t.Name).ToList(),
-            Packages: gig.Packages.Select(p => new GigPackageDto(
+            Tags: tags.Select(t => t.Name).ToList(),
+            Packages: packages.Select(p => new GigPackageDto(
                 p.Id, p.Tier.ToString(), p.Name, p.Description,
                 p.DeliveryDays, p.Revisions, p.Price)).ToList(),
             Photos: new GigPhotosDto(
-                PrimaryPhotoUrl: gig.Photos.First(p => p.IsPrimary).Url,
-                AdditionalPhotoUrls: gig.Photos.Where(p => !p.IsPrimary)
+                PrimaryPhotoUrl: photos.First(p => p.IsPrimary).Url,
+                AdditionalPhotoUrls: photos.Where(p => !p.IsPrimary)
                     .OrderBy(p => p.SortOrder)
                     .Select(p => p.Url).ToList())
         );
     }
-    
+
 
     private static List<GigPhoto> BuildPhotos(string primaryPhotoUrl, List<string>? additionalPhotoUrls)
     {

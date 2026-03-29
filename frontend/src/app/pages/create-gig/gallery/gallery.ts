@@ -15,9 +15,7 @@ function emptySlots(): PhotoSlot[] {
 
 @Component({
   selector: 'app-gallery',
-  imports: [
-    NgOptimizedImage
-  ],
+  imports: [],
   templateUrl: './gallery.html',
   styleUrl: './gallery.css',
 })

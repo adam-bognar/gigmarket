@@ -2,6 +2,7 @@
 using GigMarket.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GigMarket.Api.Middleware;
 
@@ -54,6 +55,13 @@ public class GlobalExceptionHandler : IExceptionHandler
                 problemDetails.Status = StatusCodes.Status401Unauthorized;
                 problemDetails.Title = "Unauthorized";
                 problemDetails.Detail = unauthorized.Message;
+                break;
+            
+            case DbUpdateConcurrencyException:
+                problemDetails.Status = StatusCodes.Status409Conflict;
+                problemDetails.Title = "Concurrency Conflict";
+                problemDetails.Detail =
+                    "The resource was changed or removed before this update could be completed. Please reload the data and try again.";
                 break;
             
             default:

@@ -31,7 +31,10 @@
     }
 
     @if (error()) {
-      <p class="text-sm text-red-500 text-center">{{ error() }}</p>
+      <div class="rounded-2xl border border-red-200 bg-red-50 px-5 py-4">
+        <p class="m-0 text-sm font-semibold text-red-700">Something went wrong</p>
+        <p class="m-0 mt-1 text-sm text-red-600">{{ error() }}</p>
+      </div>
     }
     @if (isSubmitting()) {
       <p class="text-sm text-muted text-center">
