@@ -18,7 +18,23 @@ public sealed record UpdateGigRequest(
     List<string>? AdditionalPhotoUrls,
     string? VideoUrl,
     GigStatus? Status
-);
+)
+{
+    public UpdateGigRequest() : this(
+        string.Empty,
+        Guid.Empty,
+        Guid.Empty,
+        new List<string>(),
+        string.Empty,
+        new List<UpdateGigPackageRequest>(),
+        new List<UpdateGigRequirementRequest>(),
+        string.Empty,
+        new List<string>(),
+        null,
+        null)
+    {
+    }
+}
 
 public sealed record UpdateGigPackageRequest(
     PackageTier Tier,
@@ -26,12 +42,22 @@ public sealed record UpdateGigPackageRequest(
     string Description,
     int DeliveryDays,
     int Revisions,
-    decimal Price);
+    decimal Price)
+{
+    public UpdateGigPackageRequest() : this(default, string.Empty, string.Empty, 0, 0, 0m)
+    {
+    }
+}
 
 public sealed record UpdateGigRequirementRequest(
     RequirementType Type,
     string Question,
     bool IsRequired,
     int SortOrder,
-    List<string>? Choices);
+    List<string>? Choices)
+{
+    public UpdateGigRequirementRequest() : this(default, string.Empty, false, 0, new List<string>())
+    {
+    }
+}
 

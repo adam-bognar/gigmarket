@@ -3,6 +3,7 @@ using GigMarket.Application.Common.Exceptions;
 using GigMarket.Application.Common.Interfaces;
 using GigMarket.Application.Features.Gigs.Models;
 using GigMarket.Application.Features.Reviews.Models;
+using GigMarket.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +29,9 @@ public sealed class GetGigByIdQueryHandler(IApplicationDbContext db, IMapper map
                 .ThenInclude(r => r.Reviewer)
             .FirstOrDefaultAsync(g => g.Id == request.GigId, cancellationToken)
             ?? throw new NotFoundException($"Gig with id '{request.GigId}' was not found.");
+        
+        if (gig.Status == GigStatus.Draft)
+            throw new NotFoundException($"Gig with id '{request.GigId}' was not found.");
 
         var primaryPhotoBlobPath = gig.Photos.FirstOrDefault(p => p.IsPrimary)?.Url ?? string.Empty;
         var additionalPhotoBlobPaths = gig.Photos

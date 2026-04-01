@@ -30,6 +30,7 @@ export interface GigRequirementPayload {
 }
 
 export interface CreateGigPayload {
+  gigId: string;
   title: string;
   categoryId: string;
   subcategoryId: string;
@@ -42,7 +43,18 @@ export interface CreateGigPayload {
   videoUrl: string | null;
 }
 
-export type UpdateGigPayload = CreateGigPayload;
+export interface UpdateGigPayload {
+  title: string;
+  categoryId: string;
+  subcategoryId: string;
+  tags: string[];
+  description: string;
+  packages: GigPackagePayload[];
+  requirements: GigRequirementPayload[] | null;
+  primaryPhotoUrl: string;
+  additionalPhotoUrls: string[] | null;
+  videoUrl: string | null;
+}
 
 export interface GigSummaryDto {
   id: string;
