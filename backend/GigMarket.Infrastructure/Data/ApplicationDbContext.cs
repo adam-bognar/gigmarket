@@ -33,6 +33,8 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     public DbSet<GigPhoto> GigPhotos => Set<GigPhoto>();
     public DbSet<GigVideo> GigVideos => Set<GigVideo>();
     public DbSet<GigReview> GigReviews => Set<GigReview>();
+    
+    public DbSet<Order> Orders => Set<Order>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -314,6 +316,35 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(r => new { r.GigId, r.ReviewerUserId }).IsUnique();
+        });
+        
+        builder.Entity<Order>(entity =>
+        {
+            entity.HasKey(o => o.Id);
+ 
+            entity.Property(o => o.Status)
+                .HasConversion<string>();
+ 
+            entity.Property(o => o.TotalPrice)
+                .HasColumnType("decimal(18,2)");
+ 
+            entity.HasIndex(o => o.StripeSessionId)
+                .IsUnique();
+ 
+            entity.HasOne(o => o.Gig)
+                .WithMany()
+                .HasForeignKey(o => o.GigId)
+                .OnDelete(DeleteBehavior.Restrict);
+ 
+            entity.HasOne(o => o.Package)
+                .WithMany()
+                .HasForeignKey(o => o.PackageId)
+                .OnDelete(DeleteBehavior.Restrict);
+ 
+            entity.HasOne(o => o.Buyer)
+                .WithMany()
+                .HasForeignKey(o => o.BuyerUserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
         
         builder.Entity<Language>().HasData(

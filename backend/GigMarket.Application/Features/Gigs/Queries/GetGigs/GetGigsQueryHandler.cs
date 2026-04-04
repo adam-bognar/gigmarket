@@ -1,5 +1,6 @@
 ﻿using GigMarket.Application.Common.Interfaces;
 using GigMarket.Application.Features.Gigs.Models;
+using GigMarket.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,7 @@ public sealed class GetGigsQueryHandler(IApplicationDbContext db, IBlobStorageSe
             .Where(g => request.MaxPrice == null || (g.Packages.Any() && g.Packages.Min(p => p.Price) <= request.MaxPrice))
             .Where(g => maxDeliveryDays == null || (g.Packages.Any() && g.Packages.Min(p => p.DeliveryDays) <= maxDeliveryDays))
             .Where(g => request.MinRating == null || request.MinRating == 0 || (g.Reviews.Any() && g.Reviews.Average(r => r.Rating) >= request.MinRating))
+            .Where(g => g.Status == GigStatus.Active)
             .Select(g => new
             {
                 g.Id,

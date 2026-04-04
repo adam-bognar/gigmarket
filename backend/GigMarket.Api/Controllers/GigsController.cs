@@ -1,4 +1,5 @@
 using GigMarket.Application.Features.Gigs.Commands.CreateGig;
+using GigMarket.Application.Features.Gigs.Commands.CreateGigDraft;
 using GigMarket.Application.Features.Gigs.Commands.DeleteGig;
 using GigMarket.Application.Features.Gigs.Commands.UpdateGig;
 using GigMarket.Application.Features.Gigs.Models;
@@ -58,6 +59,13 @@ namespace GigMarket.Api.Controllers
         public async Task<IActionResult> Create([FromBody] CreateGigRequest request, CancellationToken ct)
         {
             var result = await mediator.Send(new CreateGigCommand(request), ct);
+            return Ok(result);
+        }
+        
+        [HttpPost("draft")]
+        public async Task<ActionResult<GigDto>> CreateDraft(CancellationToken ct)
+        {
+            var result = await mediator.Send(new CreateGigDraftCommand(), ct);
             return Ok(result);
         }
 

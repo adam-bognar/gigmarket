@@ -112,6 +112,7 @@ export class CreateGig implements OnInit {
         return forkJoin([additionalUploads$, videoUpload$]).pipe(
           switchMap(([additionalResults, videoResult]) => {
             const payload: CreateGigPayload = {
+              gigId: tempGigId,
               title: overview.title,
               categoryId: overview.categoryId,
               subcategoryId: overview.subcategoryId,

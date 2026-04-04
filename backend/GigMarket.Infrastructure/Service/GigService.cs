@@ -16,6 +16,11 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
             throw new UnauthorizedException("Not authenticated.");
 
         var userId = currentUser.UserId!.Value;
+        
+        var gigIdExists = await db.Gigs.AnyAsync(g => g.Id == request.GigId, ct);
+        
+        if (gigIdExists)
+            throw new BadRequestException("Gig already exists.");
 
         var sellerProfile = await db.SellerProfiles
                                 .FirstOrDefaultAsync(x => x.UserId == userId, ct)
@@ -36,7 +41,7 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
 
         var gig = new Gig
         {
-            Id = Guid.NewGuid(),
+            Id = request.GigId,
             SellerProfileId = sellerProfile.Id,
             CategoryId = category.Id,
             SubcategoryId = subcategory.Id,
@@ -53,6 +58,7 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
                 Revisions = p.Revisions,
                 Price = p.Price,
             }).ToList(),
+            Status = GigStatus.Active,
 
             Requirements = request.Requirements?.Select(r => new GigRequirement
             {
@@ -96,6 +102,57 @@ public class GigService(ICurrentUserService currentUser, IApplicationDbContext d
                     .OrderBy(p => p.SortOrder)
                     .Select(p => p.Url).ToList())
         );
+    }
+    
+    public async Task<GigDto> CreateGigDraftAsync(CancellationToken ct)
+    {
+        if (!currentUser.IsAuthenticated)
+            throw new UnauthorizedException("Not authenticated.");
+
+        var userId = currentUser.UserId!.Value;
+
+        var sellerProfile = await db.SellerProfiles
+                                .FirstOrDefaultAsync(x => x.UserId == userId, ct)
+                            ?? throw new BadRequestException("You must complete your seller profile first.");
+
+        var firstCategory = await db.GigCategories
+                                .AsNoTracking()
+                                .OrderBy(x => x.Name)
+                                .FirstOrDefaultAsync(ct)
+                            ?? throw new BadRequestException("No gig categories found.");
+
+        var firstSubcategory = await db.GigSubcategories
+                                   .AsNoTracking()
+                                   .Where(x => x.CategoryId == firstCategory.Id)
+                                   .OrderBy(x => x.Name)
+                                   .FirstOrDefaultAsync(ct)
+                               ?? throw new BadRequestException("No gig subcategories found.");
+
+        var gig = new Gig
+        {
+            Id = Guid.NewGuid(),
+            SellerProfileId = sellerProfile.Id,
+            CategoryId = firstCategory.Id,
+            SubcategoryId = firstSubcategory.Id,
+            Title = string.Empty,
+            Description = string.Empty,
+            Status = GigStatus.Draft
+        };
+
+        db.Gigs.Add(gig);
+        await db.SaveChangesAsync(ct);
+
+        return new GigDto
+        {
+            Id = gig.Id,
+            SellerProfileId = gig.SellerProfileId,
+            Title = gig.Title,
+            Category = firstCategory.Name,
+            Subcategory = firstSubcategory.Name,
+            Status = gig.Status.ToString(),
+            CreatedAtUtc = gig.CreatedAtUtc,
+            Photos = new GigPhotosDto()
+        };
     }
 
     public async Task DeleteGigAsync(Guid gigId, CancellationToken ct)

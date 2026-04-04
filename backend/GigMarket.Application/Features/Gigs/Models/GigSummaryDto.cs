@@ -16,4 +16,25 @@ public sealed record GigSummaryDto(
     int TotalReviews,
     List<string> Tags,
     string Status
-);
+)
+{
+    public GigSummaryDto() : this(
+        Guid.Empty,
+        string.Empty,
+        string.Empty,
+        0m,
+        0,
+        Guid.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        Guid.Empty,
+        string.Empty,
+        string.Empty,
+        0d,
+        0,
+        new List<string>(),
+        string.Empty)
+    {
+    }
+}

@@ -1,0 +1,67 @@
+<div class="mx-auto max-w-3xl px-4 py-12">
+  <h1 class="mb-8 text-2xl font-bold text-heading">My Orders</h1>
+
+  @if (isLoading()) {
+    <div class="flex flex-col gap-4">
+      @for (_ of [1, 2, 3]; track $index) {
+        <div class="h-28 animate-pulse rounded-xl bg-surface-alt"></div>
+      }
+    </div>
+  } @else if (error()) {
+    <p class="text-danger">{{ error() }}</p>
+  } @else if (!orders().length) {
+    <div class="flex flex-col items-center gap-4 py-20 text-center">
+      <lucide-icon [img]="packageIcon" class="h-12 w-12 text-muted" />
+      <p class="text-lg font-semibold text-heading">No orders yet</p>
+      <p class="text-muted">When you purchase a gig, it will show up here.</p>
+      <a
+        routerLink="/browse"
+        class="mt-2 rounded-full bg-primary px-6 py-3 font-bold text-on-primary transition hover:bg-primary-dark"
+      >
+        Browse gigs
+      </a>
+    </div>
+  } @else {
+    <div class="flex flex-col gap-4">
+      @for (order of orders(); track order.id) {
+        <div class="flex flex-col gap-4 rounded-xl border border-divider bg-surface p-5 sm:flex-row sm:items-center sm:gap-5">
+
+          <img
+            [src]="order.gigPrimaryPhotoUrl"
+            [alt]="order.gigTitle"
+            class="h-20 w-20 shrink-0 rounded-lg object-cover"
+          >
+
+          <div class="flex min-w-0 flex-1 flex-col gap-1">
+            <a
+              [routerLink]="['/gigs', order.gigId]"
+              class="truncate font-semibold text-heading hover:underline"
+            >
+              {{ order.gigTitle }}
+            </a>
+            <p class="text-sm text-muted">{{ order.packageName }} · {{ order.packageTier }}</p>
+            <div class="mt-1 flex items-center gap-3 text-xs text-muted">
+              <span class="flex items-center gap-1">
+                <lucide-icon [img]="clockIcon" class="h-3.5 w-3.5" />
+                {{ order.deliveryDays }} day{{ order.deliveryDays === 1 ? '' : 's' }} delivery
+              </span>
+              <span>·</span>
+              <span>{{ order.paidAtUtc ?? order.createdAtUtc | date: 'MMM d, y' }}</span>
+            </div>
+          </div>
+
+          <div class="flex shrink-0 flex-row items-center gap-4 sm:flex-col sm:items-end">
+            <span class="text-lg font-bold text-heading">${{ order.totalPrice | number: '1.2-2' }}</span>
+            <span
+              class="rounded-full px-3 py-1 text-xs font-semibold"
+              [class]="statusClass(order.status)"
+            >
+              {{ order.status }}
+            </span>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+</div>

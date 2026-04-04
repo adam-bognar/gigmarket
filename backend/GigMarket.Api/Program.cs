@@ -5,6 +5,7 @@ using GigMarket.Api.Services;
 using GigMarket.Application;
 using GigMarket.Application.Common.Interfaces;
 using GigMarket.Infrastructure;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,9 @@ builder.Services.AddProblemDetails();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+builder.Services.Configure<RouteOptions>(options => { });
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
@@ -51,6 +55,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.Use(async (context, next) =>
+{
+    context.Request.EnableBuffering();
+    await next();
+});
 
 app.UseHttpsRedirection();
 

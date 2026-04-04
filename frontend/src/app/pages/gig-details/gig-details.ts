@@ -3,6 +3,7 @@ import {ActivatedRoute} from '@angular/router';
 import {DatePipe, DecimalPipe} from '@angular/common';
 import {GigService} from '../../shared/services/gig.service';
 import {GigDetailDto, GigDetailPackageDto} from '../../shared/models/gig.model';
+import {OrderService} from '../../shared/services/order.service';
 
 type PackageTier = 'basic' | 'standard' | 'premium';
 
@@ -16,10 +17,13 @@ type PackageTier = 'basic' | 'standard' | 'premium';
 export class GigDetails implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly gigService = inject(GigService);
+  private readonly orderService = inject(OrderService);
 
   gig = signal<GigDetailDto | null>(null);
   isLoading = signal(true);
   error = signal<string | null>(null);
+  isCheckingOut = signal(false);
+
   selectedImageIndex = signal(0);
   selectedPackageTier = signal<PackageTier>('basic');
 
@@ -105,6 +109,24 @@ export class GigDetails implements OnInit {
       error: () => {
         this.error.set('Failed to load gig. Please try again.');
         this.isLoading.set(false);
+      },
+    });
+  }
+
+  checkout() {
+    const g = this.gig();
+    const pkg = this.selectedPackage();
+    if (!g || !pkg || this.isCheckingOut()) return;
+
+    this.isCheckingOut.set(true);
+
+    this.orderService.createCheckoutSession({ gigId: g.id, packageId: pkg.id }).subscribe({
+      next: ({ sessionUrl }) => {
+        window.location.href = sessionUrl;
+      },
+      error: () => {
+        this.isCheckingOut.set(false);
+        this.error.set('Failed to start checkout. Please try again.');
       },
     });
   }
