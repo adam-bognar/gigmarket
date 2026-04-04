@@ -68,6 +68,7 @@ public sealed class GetGigByIdQueryHandler(IApplicationDbContext db, IMapper map
             SellerFirstName:  gig.SellerProfile.FirstName,
             SellerLastName:   gig.SellerProfile.LastName,
             SellerAvatarUrl:  sellerAvatarUrl,
+            SellerMemberSince: gig.SellerProfile.CreatedAtUtc.ToLongDateString(),
 
             PrimaryPhotoUrl:      primaryPhotoUrl,
             AdditionalPhotoUrls:  additionalPhotoUrls.ToList(),

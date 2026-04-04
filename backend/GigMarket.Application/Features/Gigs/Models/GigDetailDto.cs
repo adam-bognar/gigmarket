@@ -18,6 +18,7 @@ public sealed record GigDetailDto(
     string SellerFirstName,
     string SellerLastName,
     string SellerAvatarUrl,
+    string SellerMemberSince,
 
     string PrimaryPhotoUrl,
     List<string> AdditionalPhotoUrls,
@@ -45,6 +46,7 @@ public sealed record GigDetailDto(
         Guid.Empty,
         string.Empty,
         Guid.Empty,
+        string.Empty,
         string.Empty,
         string.Empty,
         string.Empty,

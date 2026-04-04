@@ -29,6 +29,8 @@ namespace GigMarket.Application.Common.Interfaces
         DbSet<GigVideo> GigVideos { get; }
         DbSet<GigReview> GigReviews { get; }
         
+        DbSet<Order> Orders { get; }
+        
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
