@@ -84,6 +84,7 @@ export class GigDetails implements OnInit {
     return images[idx] ?? images[0] ?? '';
   });
 
+  //TODO show this data
   ratingBreakdown = computed(() => {
     const g = this.gig();
     if (!g || !g.reviews.length) return [];

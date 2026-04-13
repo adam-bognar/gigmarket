@@ -7,6 +7,7 @@ import {Component, computed, input} from '@angular/core';
   styleUrl: './step-indicator.css',
 })
 export class StepIndicator {
+  //TODO use proper icons
   step = input.required<number>()
   label = input.required<string>()
 

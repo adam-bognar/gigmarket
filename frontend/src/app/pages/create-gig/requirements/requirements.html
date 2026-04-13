@@ -165,8 +165,8 @@
                     class="min-h-12 flex-1 rounded-2xl border border-divider bg-surface-alt px-4 text-sm text-heading outline-none transition placeholder:text-muted/70 focus:border-primary/50 focus:bg-surface focus:ring-4 focus:ring-primary/15"
                     type="text"
                     placeholder="Add an option..."
-                    [value]="getNewChoiceInput()"
-                    (input)="updateNewChoiceInput($any($event.target).value)"
+                    [value]="newChoiceInput()"
+                    (input)="newChoiceInput.set($any($event.target).value)"
                     (keydown.enter)="addChoice(); $event.preventDefault()"
                   />
                   <button

@@ -13,6 +13,7 @@ import { AuthService } from '../../services/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Navbar {
+  //TODO implement search
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 

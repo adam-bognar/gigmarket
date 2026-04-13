@@ -23,6 +23,7 @@ export class OrderSuccess implements OnInit {
   isLoading = signal(true);
   error = signal<string | null>(null);
 
+  //TODO handle correct order
   ngOnInit() {
     this.orderService.getMyOrders().subscribe({
       next: (orders) => {

@@ -13,6 +13,7 @@ import {Features} from './components/features/features';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Landing {
+  //TODO use proper categories
   readonly footerLinks = [
     {
       title: 'Categories',

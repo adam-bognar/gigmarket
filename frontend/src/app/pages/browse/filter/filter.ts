@@ -44,6 +44,7 @@ const RATING_OPTIONS: ReadonlyArray<{ value: RatingFilter; label: string }> = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Filter implements OnInit {
+  //TODO adjust max price
   private readonly categoriesService = inject(CategoriesService);
 
   readonly state = input<BrowseFilterState>(DEFAULT_BROWSE_FILTERS);

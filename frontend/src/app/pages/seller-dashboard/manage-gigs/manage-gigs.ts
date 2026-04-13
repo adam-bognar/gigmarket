@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, inject, OnInit, signal} from '@angular/core';
 import {DecimalPipe} from '@angular/common';
 import {Router} from '@angular/router';
+import {LucideAngularModule} from 'lucide-angular';
 import {GigService} from '../../../shared/services/gig.service';
 import {GigSummaryDto} from '../../../shared/models/gig.model';
 
@@ -8,7 +9,7 @@ type GigFilter = 'all' | 'active';
 
 @Component({
   selector: 'app-manage-gigs',
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, LucideAngularModule],
   templateUrl: './manage-gigs.html',
   styleUrl: './manage-gigs.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,7 +31,7 @@ export class ManageGigs implements OnInit {
     return list;
   });
 
-  activeGigCount = computed(() => this.gigs().filter((gig) => gig.status.toLowerCase() === 'active').length);
+  activeGigCount = computed(() => this.filteredGigs().length);
 
   totalImpressions = computed(() => {
     return this.gigs().reduce((sum, gig) => sum + gig.totalReviews, 0);

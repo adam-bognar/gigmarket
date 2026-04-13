@@ -20,7 +20,7 @@
             routerLink="/become-a-seller"
             class="inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-8 py-4 text-base font-bold text-on-primary transition hover:bg-primary-dark hover:scale-105 active:scale-95"
           >
-            <lucide-icon [img]="icons.ArrowRight" [size]="18" aria-hidden="true"/>
+            <lucide-icon [img]="icons.ArrowRight" [size]="18"/>
             Become a Seller
           </a>
           <a
@@ -36,14 +36,14 @@
       <div class="relative hidden h-72 lg:block">
         @for (card of floatingCards; track card.label; let i = $index) {
           <div
-            class="absolute flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-4 backdrop-blur-md animate-bounce"
+            class="absolute flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-md animate-bounce"
             [style.top]="card.top"
             [style.left]="card.left"
             [style.animation-delay]="card.delay"
             [style.animation-duration]="card.duration"
           >
             <div class="flex size-10 items-center justify-center rounded-xl" [class]="card.bgClass">
-              <lucide-icon [img]="card.icon" [size]="20" [class]="card.iconClass" aria-hidden="true"/>
+              <lucide-icon [img]="card.icon" [size]="20" [class]="card.iconClass"/>
             </div>
             <div>
               <p class="m-0 text-sm font-bold text-white">{{ card.label }}</p>
