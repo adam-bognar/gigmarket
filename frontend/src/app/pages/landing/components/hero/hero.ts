@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Search } from 'lucide-angular';
+import {GigService} from '../../../../shared/services/gig.service';
 
 @Component({
   selector: 'app-hero',
@@ -10,6 +11,8 @@ import { LucideAngularModule, Search } from 'lucide-angular';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Hero {
+  private readonly router = inject(Router);
+
   readonly icons = { Search };
   searchQuery = '';
 
@@ -20,8 +23,6 @@ export class Hero {
     { value: '50M+', label: 'Jobs completed' },
     { value: '4.9★', label: 'Avg. rating' },
   ];
-
-  constructor(private router: Router) {}
 
   onSearch(): void {
     const q = this.searchQuery.trim();

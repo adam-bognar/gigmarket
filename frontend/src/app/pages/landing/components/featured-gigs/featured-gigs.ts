@@ -14,6 +14,7 @@ const FEATURED_COUNT = 4;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeaturedGigs implements OnInit {
+  //TODO implement featured gigs logic
   private readonly gigService = inject(GigService);
 
   readonly icons = { Star, Clock };

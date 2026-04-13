@@ -25,9 +25,7 @@
           <p class="m-0 text-3xl font-bold text-heading">{{ activeGigCount() | number: '1.0-0' }}</p>
         </div>
         <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-alt">
-          <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <lucide-angular name="check-circle" class="h-6 w-6 text-primary" />
         </div>
       </div>
       <p class="m-0 text-xs text-muted">Your current active service listings</p>
@@ -41,10 +39,7 @@
           <p class="m-0 text-3xl font-bold text-heading">{{ totalImpressions() | number: '1.0-0' }}</p>
         </div>
         <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-alt">
-          <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
+          <lucide-angular name="eye" class="h-6 w-6 text-primary" />
         </div>
       </div>
       <p class="m-0 text-xs text-muted">Total review impressions across your gigs</p>
@@ -114,9 +109,7 @@
                   </td>
                   <td class="px-3 py-4">
                     <div class="flex items-center gap-1.5">
-                      <svg class="h-4 w-4 text-warning" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 15l-5.878 3.09L5.64 12.545 1.28 7.91l6.09-.885L10 1l2.63 6.025 6.09.885-4.36 4.635 1.41 5.545z"/>
-                      </svg>
+                      <lucide-angular name="star" class="h-4 w-4 text-warning"/>
                       <span>{{ gig.averageRating | number: '1.1-1' }}</span>
                     </div>
                   </td>

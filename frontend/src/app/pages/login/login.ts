@@ -12,6 +12,7 @@ import {AuthService} from '../../shared/services/auth.service';
   styleUrl: './login.css',
 })
 export class Login {
+  //TODO change svg to lucide angular
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 

@@ -44,7 +44,7 @@ export class Requirements implements OnInit {
   readonly requirements = signal<RequirementField[]>([]);
   readonly showErrors = signal(false);
 
-  readonly newChoiceInputs = signal<Record<string, string>>({});
+  readonly newChoiceInput = signal('');
 
   readonly addForm = this.fb.nonNullable.group({
     question: ['', [Validators.required, Validators.minLength(5)]],
@@ -105,27 +105,20 @@ export class Requirements implements OnInit {
   cancelAdd(): void {
     this.isFormVisible.set(false);
     this.editingId.set(null);
+    this.choiceBuffer.set([]);
+    this.newChoiceInput.set('');
     this.showErrors.set(false);
   }
 
   addChoice(): void {
-    const inputs = this.newChoiceInputs();
-    const value = (inputs['new'] ?? '').trim();
+    const value = this.newChoiceInput().trim();
     if (!value) return;
-    this.choiceBuffer.update((c) => [...c, value]);
-    this.newChoiceInputs.update((m) => ({ ...m, new: '' }));
+    this.choiceBuffer.update(c => [...c, value]);
+    this.newChoiceInput.set('');
   }
 
   removeChoice(index: number): void {
     this.choiceBuffer.update((c) => c.filter((_, i) => i !== index));
-  }
-
-  updateNewChoiceInput(value: string): void {
-    this.newChoiceInputs.update((m) => ({ ...m, new: value }));
-  }
-
-  getNewChoiceInput(): string {
-    return this.newChoiceInputs()['new'] ?? '';
   }
 
   saveRequirement(): void {

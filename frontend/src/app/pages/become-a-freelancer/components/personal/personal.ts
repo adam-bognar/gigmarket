@@ -41,7 +41,7 @@ export class Personal implements OnInit {
   form = this.fb.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
-    description: ['', [Validators.required, Validators.minLength(150), Validators.maxLength(1000)]],
+    description: ['', [Validators.required, Validators.minLength(this.minDescriptionLength), Validators.maxLength(this.maxDescriptionLength)]],
     profilePic: [null as File | null, Validators.required],
     languages: this.fb.array([
       this.fb.control('', Validators.required),

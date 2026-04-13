@@ -95,10 +95,7 @@
                 <div class="relative">
                     <button type="button"
                             class="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border-2 border-primary cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                            (click)="toggleProfileMenu()"
-                            [attr.aria-expanded]="profileMenuOpen()"
-                            aria-haspopup="true"
-                            aria-label="User menu">
+                            (click)="toggleProfileMenu()">
                         @if (user()?.profileUrl) {
                             <img [src]="user()?.profileUrl" [alt]="user()?.customUsername ?? ''"
                                  class="w-full h-full object-cover" />
@@ -117,7 +114,7 @@
                                 Profile
                             </a>
                             <a routerLink="/dashboard/seller/manage-gigs" (click)="closeProfileMenu()" role="menuitem"
-                               class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
+                               class="blockerLi px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
                                 Dashboard
                             </a>
                             <hr class="my-1 border-divider" />
@@ -142,9 +139,7 @@
 
         <!-- Hamburger button: visible only on mobile -->
         <button type="button" class="md:hidden ml-auto p-2 rounded-md text-heading hover:text-primary transition-colors cursor-pointer"
-            (click)="toggleMobileMenu()"
-            [attr.aria-expanded]="mobileMenuOpen()"
-            aria-label="Toggle navigation menu">
+            (click)="toggleMobileMenu()">
             @if (mobileMenuOpen()) {
                 <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

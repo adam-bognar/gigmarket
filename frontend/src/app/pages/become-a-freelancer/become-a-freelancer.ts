@@ -41,12 +41,7 @@ export class BecomeAFreelancer {
     const personal = this.draft.personal();
     const professional = this.draft.professional();
 
-    console.log('onFinish called');
-    console.log('Personal data:', personal);
-    console.log('Professional data:', professional);
-
     if (!personal || !professional) {
-      console.error('Missing personal or professional data');
       return;
     }
 
@@ -55,7 +50,6 @@ export class BecomeAFreelancer {
 
     this.sellerProfileService.uploadProfilePic(personal.profilePic).pipe(
       switchMap(({ blobPath }) => {
-        console.log('Profile pic uploaded successfully. Blob path:', blobPath);
 
         const payload = {
           firstName: personal.firstName,
@@ -74,21 +68,15 @@ export class BecomeAFreelancer {
           personalWebsite: professional.personalWebsite,
         };
 
-        console.log('Payload being sent to createProfile:', payload);
         return this.sellerProfileService.createProfile(payload);
       }),
     ).subscribe({
       next: () => {
-        console.log('Profile created successfully');
         this.isSubmitting.set(false);
         this.draft.clearDraft();
         this.router.navigate(['/browse']);
       },
       error: (err) => {
-        console.error('Error occurred:', err);
-        console.error('Error message:', err?.error?.message);
-        console.error('Full error object:', JSON.stringify(err, null, 2));
-
         this.isSubmitting.set(false);
         this.error.set(err?.error?.message ?? 'Something went wrong. Please try again.');
       },

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { Navbar } from './shared/components/navbar/navbar';
 import {AuthService} from './shared/services/auth.service';
@@ -10,7 +10,7 @@ import {AuthService} from './shared/services/auth.service';
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App {
+export class App implements OnInit {
   private readonly router = inject(Router);
   private authService = inject(AuthService);
 

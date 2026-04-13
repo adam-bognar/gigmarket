@@ -32,6 +32,7 @@ export class Gallery implements OnInit {
   readonly photoError = signal<string | null>(null);
   readonly videoError = signal<string | null>(null);
 
+  // For file input accept attributes
   readonly acceptedImageTypes = ACCEPTED_IMAGE_TYPES.join(',');
   readonly acceptedVideoTypes = ACCEPTED_VIDEO_TYPES.join(',');
 
@@ -101,7 +102,7 @@ export class Gallery implements OnInit {
 
     const sizeMb = file.size / (1024 * 1024);
     if (sizeMb > MAX_VIDEO_SIZE_MB) {
-      this.videoError.set(`Video must be under ${MAX_VIDEO_SIZE_MB} seconds / 50 MB.`);
+      this.videoError.set(`Video must be under ${MAX_VIDEO_SIZE_MB} seconds / 75 MB.`);
       input.value = '';
       return;
     }

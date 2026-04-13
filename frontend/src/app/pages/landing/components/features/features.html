@@ -11,7 +11,7 @@
       @for (feature of features; track feature.title) {
         <div class="group flex flex-col gap-5 rounded-3xl border border-divider bg-surface p-8 transition hover:border-primary/30 hover:shadow-xl">
           <div class="flex size-14 items-center justify-center rounded-2xl transition group-hover:scale-110" [class]="feature.bgClass">
-            <lucide-icon [img]="feature.icon" [size]="26" [class]="feature.iconClass" aria-hidden="true"/>
+            <lucide-icon [img]="feature.icon" [size]="26" [class]="feature.iconClass"/>
           </div>
           <div class="flex flex-col gap-2">
             <h3 class="m-0 text-xl font-bold text-heading">{{ feature.title }}</h3>
