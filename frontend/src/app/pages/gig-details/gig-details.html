@@ -77,9 +77,15 @@
 
                 <button
                   type="button"
-                  class="shrink-0 rounded-md border border-divider px-4 py-2 text-sm font-medium text-heading transition-colors hover:bg-surface-alt"
+                  class="shrink-0 rounded-md border border-divider px-4 py-2 text-sm font-medium text-heading transition-colors hover:bg-surface-alt disabled:cursor-not-allowed disabled:opacity-60"
+                  [disabled]="isStartingConversation()"
+                  (click)="contactSeller()"
                 >
-                  Contact me
+                  @if (isStartingConversation()) {
+                    Opening...
+                  } @else {
+                    Contact me
+                  }
                 </button>
               </div>
 

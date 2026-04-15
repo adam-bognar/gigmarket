@@ -4,10 +4,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import {ChatService} from '../../services/chat.service';
+import {MessageSquare, LucideAngularModule} from 'lucide-angular';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, LucideAngularModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,6 +18,9 @@ export class Navbar {
   //TODO implement search
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly chatService = inject(ChatService);
+  protected readonly MessageSquareIcon = MessageSquare;
+  protected readonly unreadCount = this.chatService.unreadCount;
 
   private readonly currentUrl = toSignal(
     this.router.events.pipe(

@@ -4,6 +4,7 @@ using GigMarket.Infrastructure.Data;
 using GigMarket.Infrastructure.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<ISellerService, SellerService>();
         services.AddScoped<IGigService, GigService>();
         services.AddScoped<IBlobStorageService, BlobStorageService>();
+        services.AddSignalR();
 
         services.AddIdentity<User, IdentityRole<Guid>>(options =>
             {

@@ -41,6 +41,14 @@ export const routes: Routes = [
     path: 'orders/success',
     loadComponent: () => import('./pages/order-success/order-success').then((m) => m.OrderSuccess),
   },
+  {
+    path: 'inbox',
+    loadComponent: () => import('./pages/inbox/inbox').then((m) => m.InboxPage),
+  },
+  {
+    path: 'inbox/:conversationId',
+    loadComponent: () => import('./pages/inbox/conversation/conversation').then((m) => m.ConversationPage),
+  },
   // {
   //   path: 'gigs/c2c84ec0-cd3c-4227-b627-29debdeeff45',
   //   loadComponent: () => import('./pages/gig-details/gig-details').then((m) => m.GigDetails),

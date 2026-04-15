@@ -1,0 +1,59 @@
+<section class="mx-auto max-w-3xl px-4 py-10">
+  <h1 class="mb-6 text-2xl font-bold text-heading">Inbox</h1>
+
+  @if (conversations().length === 0) {
+    <div class="flex flex-col items-center gap-3 rounded-2xl border border-divider bg-surface p-12 text-center">
+      <lucide-icon [img]="InboxIcon" class="h-10 w-10 text-muted" />
+      <p class="text-base font-medium text-heading">No conversations yet</p>
+      <p class="text-sm text-muted">When you contact a seller or receive a message, it will appear here.</p>
+    </div>
+  } @else {
+    <ul class="flex flex-col divide-y divide-divider rounded-2xl border border-divider bg-surface overflow-hidden">
+      @for (conv of conversations(); track conv.id) {
+        <li>
+          <a
+            [routerLink]="['/inbox', conv.id]"
+            class="flex items-start gap-4 px-5 py-4 transition-colors hover:bg-surface-alt"
+          >
+            <!-- Avatar -->
+            <div class="relative shrink-0">
+              @if (conv.otherAvatarUrl) {
+                <img [src]="conv.otherAvatarUrl" [alt]="conv.otherUsername" class="h-11 w-11 rounded-full object-cover ring-1 ring-divider" />
+              } @else {
+                <div class="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-base font-bold text-primary">
+                  {{ conv.otherUsername.charAt(0).toUpperCase() }}
+                </div>
+              }
+              @if (conv.unreadCount > 0) {
+                <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-on-primary">
+                  {{ conv.unreadCount > 9 ? '9+' : conv.unreadCount }}
+                </span>
+              }
+            </div>
+
+            <!-- Content -->
+            <div class="min-w-0 flex-1">
+              <div class="flex items-baseline justify-between gap-2">
+                <span class="truncate text-sm font-semibold text-heading">{{ conv.otherUsername }}</span>
+                @if (conv.lastMessageSentAt) {
+                  <span class="shrink-0 text-xs text-muted">{{ conv.lastMessageSentAt | date: 'MMM d' }}</span>
+                }
+              </div>
+              <p class="truncate text-xs text-muted mt-0.5">{{ conv.gigTitle }}</p>
+              @if (conv.lastMessageContent) {
+                <p
+                  class="mt-1 truncate text-sm"
+                  [class.font-semibold]="conv.unreadCount > 0"
+                  [class.text-heading]="conv.unreadCount > 0"
+                  [class.text-muted]="conv.unreadCount === 0"
+                >
+                  {{ conv.lastMessageContent }}
+                </p>
+              }
+            </div>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</section>
