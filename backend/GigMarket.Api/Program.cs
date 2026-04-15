@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Azure.Storage.Blobs;
+using GigMarket.API.Hubs;
 using GigMarket.Api.Middleware;
 using GigMarket.Api.Services;
 using GigMarket.Application;
@@ -67,6 +68,8 @@ app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.MapControllers();
 

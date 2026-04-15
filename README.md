@@ -41,29 +41,29 @@
 
 **Week 6 (03.26):**
 - [x] Frontend: Gig Detail Page.
-- [ ] UI: "My Gigs" dashboard card (Edit/Delete buttons).
+- [x] UI: "My Gigs" dashboard card (Edit/Delete buttons).
 
 #### Sprint 4: The Order System (Complex)
 **Goal:** A Buyer can "purchase" a gig, creating an Order.
 
 **Week 7:**
-- [ ] Database: Order entity (Status: Pending, InProgress, Completed).
-- [ ] API: OrdersController (Create Order, Mark as Delivered).
-- [ ] Feature: Stripe payment integration (Checkout flow + webhook handling).
+- [x] Database: Order entity (Status: Pending, InProgress, Completed).
+- [x] API: OrdersController (Create Order, Mark as Delivered).
+- [x] Feature: Stripe payment integration (Checkout flow + webhook handling).
 
 **Week 8 (04.16):**
-- [ ] Feature: "Contact Seller" button (Drafts a message).
-- [ ] Real-time: Setup SignalR for Notifications.
-- [ ] Frontend: Order Page (Timeline view: "Order Started" -> "Delivery Submitted").
+- [x] Feature: "Contact Seller" button (Drafts a message).
+- [x] Real-time: Setup SignalR for Notifications.
+- [x] Real-time: SignalR Chat Hub (1-on-1 messaging).
+- [x] Database: Messages table.
+- [x] Frontend: Inbox UI.
 
 ### Phase 3: Ecosystem & Polish (Weeks 9-12)
 #### Sprint 5: Chat & Reviews
 **Goal:** Users can talk in real-time and leave reviews.
 
 **Week 9:**
-- [ ] Real-time: SignalR Chat Hub (1-on-1 messaging).
-- [ ] Database: Messages table.
-- [ ] Frontend: Inbox UI (Left list, Right chat window).
+- [ ] Frontend: Order Page (Timeline view: "Order Started" -> "Delivery Submitted").
 
 **Week 10 (04.30):**
 - [ ] Feature: Review System (Stars + Comment).
@@ -74,10 +74,7 @@
 **Goal:** Implement one standout feature and finalize production hardening.
 
 **Week 11 (Optional Features):**
-- Option A (AI): Add an "AI Brief Generator" button on the search bar (Connects to OpenAI API).
-- Option B (Video): Add "Video Call" button to Chat (using WebRTC/PeerJS).
+- [ ] Bug Fixes
 
 **Week 12 (05.14):**
-- [ ] Bug Fixes: Handle edge cases (404 errors, Empty states).
-- [ ] Docs: Generate Architecture Diagrams, ER Diagrams, and Screenshots.
-- [ ] Deploy: Publish to chosen cloud (AWS or Azure — TBD).
+- [ ] Bug Fixes

@@ -35,6 +35,9 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     public DbSet<GigReview> GigReviews => Set<GigReview>();
     
     public DbSet<Order> Orders => Set<Order>();
+    
+    public DbSet<Conversation> Conversations => Set<Conversation>();
+    public DbSet<Message> Messages => Set<Message>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -344,6 +347,52 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
             entity.HasOne(o => o.Buyer)
                 .WithMany()
                 .HasForeignKey(o => o.BuyerUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+        
+        builder.Entity<Conversation>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+ 
+            entity.HasIndex(c => new { c.BuyerUserId, c.SellerUserId, c.GigId }).IsUnique();
+ 
+            entity.HasIndex(c => new { c.BuyerUserId,  c.LastMessageAtUtc });
+            entity.HasIndex(c => new { c.SellerUserId, c.LastMessageAtUtc });
+ 
+            entity.HasOne(c => c.Buyer)
+                .WithMany()
+                .HasForeignKey(c => c.BuyerUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+ 
+            entity.HasOne(c => c.Seller)
+                .WithMany()
+                .HasForeignKey(c => c.SellerUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+ 
+            entity.HasOne(c => c.Gig)
+                .WithMany()
+                .HasForeignKey(c => c.GigId)
+                .OnDelete(DeleteBehavior.Cascade);
+ 
+            entity.HasMany(c => c.Messages)
+                .WithOne(m => m.Conversation)
+                .HasForeignKey(m => m.ConversationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+ 
+        builder.Entity<Message>(entity =>
+        {
+            entity.HasKey(m => m.Id);
+ 
+            entity.HasIndex(m => new { m.ConversationId, m.SentAtUtc });
+ 
+            entity.Property(m => m.Content)
+                .HasMaxLength(4000)
+                .IsRequired();
+ 
+            entity.HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderUserId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
         

@@ -1,9 +1,10 @@
 import {ChangeDetectionStrategy, Component, computed, inject, OnInit, signal} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {DatePipe, DecimalPipe} from '@angular/common';
 import {GigService} from '../../shared/services/gig.service';
 import {GigDetailDto, GigDetailPackageDto} from '../../shared/models/gig.model';
 import {OrderService} from '../../shared/services/order.service';
+import {ChatService} from '../../shared/services/chat.service';
 
 type PackageTier = 'basic' | 'standard' | 'premium';
 
@@ -18,11 +19,14 @@ export class GigDetails implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly gigService = inject(GigService);
   private readonly orderService = inject(OrderService);
+  private readonly router = inject(Router);
+  private readonly chatService = inject(ChatService);
 
   gig = signal<GigDetailDto | null>(null);
   isLoading = signal(true);
   error = signal<string | null>(null);
   isCheckingOut = signal(false);
+  isStartingConversation = signal(false);
 
   selectedImageIndex = signal(0);
   selectedPackageTier = signal<PackageTier>('basic');
@@ -129,6 +133,28 @@ export class GigDetails implements OnInit {
         this.isCheckingOut.set(false);
         this.error.set('Failed to start checkout. Please try again.');
       },
+    });
+  }
+
+  contactSeller() {
+    const g = this.gig();
+    if (!g || this.isStartingConversation()) return;
+
+    this.isStartingConversation.set(true);
+    this.error.set(null);
+
+    this.chatService.startConversation({
+      gigId: g.id,
+      initialMessage: `Hi! I'm interested in your gig: ${g.title}`
+    }).subscribe({
+      next: (conversation) => {
+        this.isStartingConversation.set(false);
+        this.router.navigate(['/inbox', conversation.id]);
+      },
+      error: () => {
+        this.isStartingConversation.set(false);
+        this.error.set('Failed to start conversation. Please try again.');
+      }
     });
   }
 
