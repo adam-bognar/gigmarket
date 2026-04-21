@@ -34,7 +34,10 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     public DbSet<GigVideo> GigVideos => Set<GigVideo>();
     public DbSet<GigReview> GigReviews => Set<GigReview>();
     
-    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<Order> Orders => Set<Order>(); 
+    public DbSet<OrderDelivery> OrderDeliveries => Set<OrderDelivery>();
+    public DbSet<OrderRevisionRequest> OrderRevisionRequests => Set<OrderRevisionRequest>();
+    public DbSet<OrderDeliveryAttachment> OrderDeliveryAttachments => Set<OrderDeliveryAttachment>();
     
     public DbSet<Conversation> Conversations => Set<Conversation>();
     public DbSet<Message> Messages => Set<Message>();
@@ -348,6 +351,57 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
                 .WithMany()
                 .HasForeignKey(o => o.BuyerUserId)
                 .OnDelete(DeleteBehavior.Restrict);
+ 
+            entity.HasMany(o => o.Deliveries)
+                .WithOne(d => d.Order)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+ 
+            entity.HasMany(o => o.RevisionRequests)
+                .WithOne(r => r.Order)
+                .HasForeignKey(r => r.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        
+        builder.Entity<OrderDelivery>(entity =>
+        {
+            entity.HasKey(d => d.Id);
+
+            entity.Property(d => d.Message)
+                .HasMaxLength(4000)
+                .IsRequired();
+
+            entity.HasMany(d => d.Attachments)
+                .WithOne(a => a.OrderDelivery)
+                .HasForeignKey(a => a.OrderDeliveryId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<OrderDeliveryAttachment>(entity =>
+        {
+            entity.HasKey(a => a.Id);
+
+            entity.Property(a => a.FileUrl)
+                .HasMaxLength(2000)
+                .IsRequired();
+
+            entity.Property(a => a.FileName)
+                .HasMaxLength(255);
+
+            entity.Property(a => a.ContentType)
+                .HasMaxLength(255);
+
+            entity.HasIndex(a => a.OrderDeliveryId);
+        });
+ 
+        builder.Entity<OrderRevisionRequest>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+ 
+            entity.Property(r => r.Message)
+                .HasMaxLength(4000)
+                .IsRequired();
         });
         
         builder.Entity<Conversation>(entity =>

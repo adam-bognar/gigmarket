@@ -22,15 +22,17 @@ public sealed class FulfillOrderCommandHandler(IApplicationDbContext db)
  
         var order = new Order
         {
-            Id            = Guid.NewGuid(),
-            GigId         = request.GigId,
-            PackageId     = request.PackageId,
-            BuyerUserId   = request.BuyerUserId,
+            Id              = Guid.NewGuid(),
+            GigId           = request.GigId,
+            PackageId       = request.PackageId,
+            BuyerUserId     = request.BuyerUserId,
             StripeSessionId = request.StripeSessionId,
-            Status        = OrderStatus.Paid,
-            TotalPrice    = request.TotalPrice,
-            CreatedAtUtc  = DateTime.UtcNow,
-            PaidAtUtc     = request.PaidAtUtc
+            Status          = OrderStatus.InProgress,
+            TotalPrice      = request.TotalPrice,
+            RevisionsUsed   = 0,
+            CreatedAtUtc    = DateTime.UtcNow,
+            PaidAtUtc       = request.PaidAtUtc,
+            DeadlineUtc     = request.PaidAtUtc.AddDays(package?.DeliveryDays ?? 3)
         };
  
         db.Orders.Add(order);

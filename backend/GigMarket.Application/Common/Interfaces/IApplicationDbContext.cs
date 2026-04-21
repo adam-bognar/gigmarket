@@ -30,6 +30,9 @@ namespace GigMarket.Application.Common.Interfaces
         DbSet<GigReview> GigReviews { get; }
         
         DbSet<Order> Orders { get; }
+        DbSet<OrderDelivery> OrderDeliveries { get; }
+        DbSet<OrderRevisionRequest> OrderRevisionRequests { get; }
+        DbSet<OrderDeliveryAttachment> OrderDeliveryAttachments { get; }
         
         DbSet<Conversation> Conversations { get; }
         DbSet<Message> Messages { get; }

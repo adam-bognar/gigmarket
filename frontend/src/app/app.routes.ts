@@ -42,6 +42,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/order-success/order-success').then((m) => m.OrderSuccess),
   },
   {
+    path: 'orders/:id',
+    loadComponent: () => import('./pages/order-detail/order-detail').then((m) => m.OrderDetail),
+  },
+  {
     path: 'inbox',
     loadComponent: () => import('./pages/inbox/inbox').then((m) => m.InboxPage),
   },
