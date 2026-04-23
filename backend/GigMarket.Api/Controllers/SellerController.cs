@@ -1,4 +1,6 @@
 ﻿using GigMarket.Application.Features.SellerProfiles.Commands.CreateSellerProfile;
+using GigMarket.Application.Features.SellerProfiles.Commands.UpdateSellerProfile;
+using GigMarket.Application.Features.SellerProfiles.Queries.GetMySellerProfile;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +17,20 @@ public class SellerController(IMediator mediator) : ControllerBase
     {
         var result = await mediator.Send(new CreateSellerProfileCommand(request), ct);
         return Ok(result);
+    }
+    
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMe(CancellationToken ct)
+    {
+        var result = await mediator.Send(new GetMySellerProfileQuery(), ct);
+        return Ok(result);
+    }
+ 
+    [HttpPut("update")]
+    public async Task<IActionResult> Update([FromBody] UpdateSellerProfileRequest request, CancellationToken ct)
+    {
+        await mediator.Send(new UpdateSellerProfileCommand(request), ct);
+        return NoContent();
     }
     
 }

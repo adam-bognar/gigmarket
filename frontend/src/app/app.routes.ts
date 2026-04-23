@@ -34,6 +34,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/seller-dashboard/manage-gigs/manage-gigs').then((m) => m.ManageGigs),
   },
   {
+    path: 'dashboard/seller/profile',
+    loadComponent: () => import('./pages/seller-profile-edit/seller-profile-edit').then((m) => m.SellerProfileEdit),
+  },
+  {
     path: 'orders',
     loadComponent: () => import('./pages/my-orders/my-orders').then((m) => m.MyOrders),
   },

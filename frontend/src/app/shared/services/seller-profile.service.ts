@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {Observable} from 'rxjs';
-import {CreateSellerProfilePayload, LanguageOption} from '../models/seller.model';
+import {CreateSellerProfilePayload, LanguageOption, SellerProfileFullDto, UpdateSellerProfilePayload} from '../models/seller.model';
 
 @Injectable({
   providedIn: 'root',
@@ -29,5 +29,13 @@ export class SellerProfileService {
 
   createProfile(payload: CreateSellerProfilePayload): Observable<{ id: string }> {
     return this.http.post<{ id: string }>(`${this.baseUrl}/seller/create`, payload);
+  }
+
+  getMyProfile(): Observable<SellerProfileFullDto> {
+    return this.http.get<SellerProfileFullDto>(`${this.baseUrl}/seller/me`);
+  }
+
+  updateProfile(payload: UpdateSellerProfilePayload): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/seller/update`, payload);
   }
 }

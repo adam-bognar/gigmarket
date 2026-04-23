@@ -1,0 +1,500 @@
+<div class="min-h-screen bg-gray-50">
+
+  <!-- Page header -->
+  <div class="bg-white border-b border-divider">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+      <div class="flex items-center gap-3">
+        <a routerLink="/dashboard/seller/manage-gigs"
+           class="p-2 rounded-lg text-muted hover:bg-muted/10 hover:text-heading transition-colors">
+          <lucide-icon [img]="icons.X" [size]="20"></lucide-icon>
+        </a>
+        <div>
+          <h1 class="text-xl font-bold text-heading">Edit Profile</h1>
+          <p class="text-sm text-muted mt-0.5">Update your public seller profile</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+
+    <!-- Loading skeleton -->
+    @if (isLoading()) {
+      <div class="flex flex-col gap-6">
+        @for (_ of [1,2,3]; track $index) {
+          <div class="bg-white rounded-2xl border border-muted/20 p-6 animate-pulse">
+            <div class="h-5 bg-muted/20 rounded w-1/4 mb-4"></div>
+            <div class="h-4 bg-muted/10 rounded w-full mb-2"></div>
+            <div class="h-4 bg-muted/10 rounded w-3/4"></div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Error banner (load failure) -->
+    @if (!isLoading() && error() && !isSaving()) {
+      <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600">
+        {{ error() }}
+      </div>
+    }
+
+    @if (!isLoading()) {
+      <form [formGroup]="form" class="flex flex-col gap-6" (ngSubmit)="onSave()">
+
+        <!-- PERSONAL INFORMATION -->
+        <div class="bg-white rounded-2xl border border-muted/20 p-6 flex flex-col gap-6">
+
+          <div class="flex flex-col gap-1">
+            <h2 class="text-lg font-bold text-heading">Personal Information</h2>
+            <p class="text-sm text-muted">This information appears on your public profile.</p>
+          </div>
+
+          <hr class="border-divider">
+
+          <!-- First / Last name -->
+          <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex flex-col flex-1 gap-1">
+              <label for="firstName" class="text-sm font-medium">
+                First Name <span class="text-red-500 ml-0.5">*</span>
+              </label>
+              <div class="flex items-center border rounded-lg overflow-hidden transition-colors"
+                   [class.border-red-400]="form.controls.firstName.invalid && form.controls.firstName.touched"
+                   [class.border-divider]="!(form.controls.firstName.invalid && form.controls.firstName.touched)">
+                <input id="firstName" type="text" formControlName="firstName"
+                       class="flex-1 px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                       placeholder="Enter your first name"/>
+              </div>
+              @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
+                <p class="text-xs text-red-500 mt-0.5">First name is required.</p>
+              }
+            </div>
+
+            <div class="flex flex-col flex-1 gap-1">
+              <label for="lastName" class="text-sm font-medium">
+                Last Name <span class="text-red-500 ml-0.5">*</span>
+              </label>
+              <div class="flex items-center border rounded-lg overflow-hidden transition-colors"
+                   [class.border-red-400]="form.controls.lastName.invalid && form.controls.lastName.touched"
+                   [class.border-divider]="!(form.controls.lastName.invalid && form.controls.lastName.touched)">
+                <input id="lastName" type="text" formControlName="lastName"
+                       class="flex-1 px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                       placeholder="Enter your last name"/>
+              </div>
+              @if (form.controls.lastName.invalid && form.controls.lastName.touched) {
+                <p class="text-xs text-red-500 mt-0.5">Last name is required.</p>
+              }
+            </div>
+          </div>
+
+          <!-- Profile picture -->
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-medium">Profile Picture</label>
+            <div class="flex flex-row gap-4 items-center">
+              <button type="button" (click)="fileInput.click()"
+                      class="size-20 rounded-full bg-muted/10 border border-muted/50 border-dashed flex items-center justify-center overflow-hidden shrink-0">
+                @if (profilePicPreview()) {
+                  <img [src]="profilePicPreview()!" alt="Profile preview" class="size-full object-cover"/>
+                } @else {
+                  <lucide-icon [img]="icons.Camera" class="text-muted" [size]="28"></lucide-icon>
+                }
+              </button>
+              <input #fileInput type="file" accept="image/jpeg,image/png" class="hidden"
+                     (change)="onFileSelected($event)"/>
+              <div class="flex flex-col gap-1.5">
+                <button type="button" (click)="fileInput.click()"
+                        class="border border-muted/50 rounded-lg px-3 py-1.5 text-xs font-medium hover:bg-muted/10 transition-colors cursor-pointer self-start">
+                  Change Photo
+                </button>
+                <p class="text-xs text-muted">JPG or PNG. Max 5 MB.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="flex flex-col gap-1">
+            <label for="description" class="text-sm font-medium">
+              Description <span class="text-red-500 ml-0.5">*</span>
+            </label>
+            <textarea id="description" formControlName="description" rows="5"
+                      maxlength="1000"
+                      placeholder="Tell clients about yourself, your experience, and what makes you unique..."
+                      class="w-full px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent border rounded-lg outline-none resize-none transition-colors"
+                      [class.border-red-400]="form.controls.description.invalid && form.controls.description.touched"
+                      [class.border-divider]="!(form.controls.description.invalid && form.controls.description.touched)">
+            </textarea>
+            <div class="flex justify-between items-center mt-0.5">
+              @if (form.controls.description.invalid && form.controls.description.touched) {
+                @if (form.controls.description.hasError('required')) {
+                  <p class="text-xs text-red-500">Description is required.</p>
+                } @else if (form.controls.description.hasError('minlength')) {
+                  <p class="text-xs text-red-500">Description must be at least 150 characters.</p>
+                }
+              }
+              <p class="text-xs text-muted ml-auto">{{ descriptionLength }} / 1000</p>
+            </div>
+          </div>
+
+          <!-- Languages -->
+          <div class="flex flex-col gap-3">
+            <h3 class="text-sm font-bold text-heading">Languages <span class="text-red-500">*</span></h3>
+
+            <div formArrayName="languages" class="flex flex-col gap-3">
+              @for (lang of languages.controls; track $index) {
+                <div class="flex flex-row gap-3 items-center">
+                  <div class="relative flex items-center flex-1 border rounded-lg overflow-hidden transition-colors"
+                       [class.border-red-400]="lang.invalid && lang.touched"
+                       [class.border-divider]="!(lang.invalid && lang.touched)">
+                    <select [formControlName]="$index"
+                            class="flex-1 px-4 py-2.5 text-sm text-heading bg-transparent outline-none appearance-none cursor-pointer">
+                      <option value="" disabled>Select a language</option>
+                      @for (language of availableLanguages(); track language.id) {
+                        <option [value]="language.id">{{ language.name }}</option>
+                      }
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                      <lucide-icon [img]="icons.ChevronDown" [size]="16"></lucide-icon>
+                    </div>
+                  </div>
+                  <button type="button" (click)="removeLanguage($index)"
+                          [disabled]="languages.length === 1"
+                          class="p-2.5 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+                    <lucide-icon [img]="icons.Trash2" [size]="18"></lucide-icon>
+                  </button>
+                </div>
+              }
+            </div>
+
+            <button type="button" (click)="addLanguage()"
+                    class="text-sm text-primary font-medium flex items-center self-start hover:underline cursor-pointer">
+              + Add Language
+            </button>
+          </div>
+        </div>
+
+        <!-- PROFESSIONAL INFORMATION -->
+        <div class="bg-white rounded-2xl border border-muted/20 p-6 flex flex-col gap-8">
+
+          <div class="flex flex-col gap-1">
+            <h2 class="text-lg font-bold text-heading">Professional Information</h2>
+            <p class="text-sm text-muted">Tell clients about your expertise and experience.</p>
+          </div>
+
+          <hr class="border-divider">
+
+          <!-- Occupation -->
+          <div class="flex flex-col md:flex-row w-full gap-4">
+            <div class="flex flex-col gap-1 md:w-2/5">
+              <h3 class="font-bold text-sm text-heading">
+                Occupation <span class="text-red-500">*</span>
+              </h3>
+              <p class="text-xs text-muted">Your primary field of expertise</p>
+            </div>
+
+            <div class="flex flex-col gap-2 md:w-3/5">
+              <div class="relative flex items-center flex-1 border rounded-lg overflow-hidden transition-colors"
+                   [class.border-red-400]="form.controls.occupation.invalid && form.controls.occupation.touched"
+                   [class.border-divider]="!(form.controls.occupation.invalid && form.controls.occupation.touched)">
+                <input type="text" formControlName="occupation"
+                       class="flex-1 px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                       placeholder="e.g. Graphic Designer"/>
+              </div>
+              @if (form.controls.occupation.invalid && form.controls.occupation.touched) {
+                <p class="text-xs text-red-500">Occupation is required.</p>
+              }
+
+              <div class="flex flex-row gap-4">
+                <!-- From -->
+                <div class="flex flex-col gap-1 flex-1">
+                  <label class="text-xs font-medium text-muted">From</label>
+                  <div class="relative flex items-center border rounded-lg transition-colors"
+                       [class.border-red-400]="form.controls.ofrom.invalid && form.controls.ofrom.touched"
+                       [class.border-divider]="!(form.controls.ofrom.invalid && form.controls.ofrom.touched)">
+                    <select formControlName="ofrom"
+                            class="w-full px-4 py-2.5 text-sm text-heading bg-transparent outline-none appearance-none cursor-pointer pr-10">
+                      <option value="" disabled>Year</option>
+                      @for (year of years(); track year) {
+                        <option [value]="year">{{ year }}</option>
+                      }
+                    </select>
+                    <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                      <lucide-icon [img]="icons.ChevronDown" [size]="16"></lucide-icon>
+                    </span>
+                  </div>
+                  @if (form.controls.ofrom.invalid && form.controls.ofrom.touched) {
+                    <p class="text-xs text-red-500">Required.</p>
+                  }
+                </div>
+
+                <!-- To -->
+                <div class="flex flex-col gap-1 flex-1">
+                  <label class="text-xs font-medium text-muted">To</label>
+                  <div class="relative flex items-center border rounded-lg transition-colors"
+                       [class.border-red-400]="(form.controls.oto.invalid && form.controls.oto.touched) || yearRangeError"
+                       [class.border-divider]="!((form.controls.oto.invalid && form.controls.oto.touched) || yearRangeError)">
+                    <select formControlName="oto"
+                            class="w-full px-4 py-2.5 text-sm text-heading bg-transparent outline-none appearance-none cursor-pointer pr-10">
+                      <option value="" disabled>Year</option>
+                      @for (year of years(); track year) {
+                        <option [value]="year">{{ year }}</option>
+                      }
+                    </select>
+                    <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                      <lucide-icon [img]="icons.ChevronDown" [size]="16"></lucide-icon>
+                    </span>
+                  </div>
+                  @if (yearRangeError) {
+                    <p class="text-xs text-red-500">"To" cannot be before "From".</p>
+                  } @else if (form.controls.oto.invalid && form.controls.oto.touched) {
+                    <p class="text-xs text-red-500">Required.</p>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="border-divider">
+
+          <!-- Skills -->
+          <div class="flex flex-col md:flex-row w-full gap-4">
+            <div class="flex flex-col gap-1 md:w-2/5">
+              <h3 class="font-bold text-sm text-heading">
+                Skills <span class="text-red-500">*</span>
+              </h3>
+              <p class="text-xs text-muted">List skills relevant to the services you offer</p>
+            </div>
+
+            <div class="flex flex-col gap-3 md:w-3/5">
+              <div class="flex gap-2">
+                <div class="relative flex items-center flex-1 border rounded-lg overflow-hidden transition-colors"
+                     [class.border-red-400]="skillsArray.length === 0 && form.controls.skills.touched"
+                     [class.border-divider]="!(skillsArray.length === 0 && form.controls.skills.touched)">
+                  <input type="text" [value]="skillInput()"
+                         (input)="onSkillInputChange($event)"
+                         (keydown)="onSkillKeydown($event)"
+                         class="flex-1 px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                         placeholder="e.g. Photoshop"/>
+                </div>
+                <button type="button" (click)="addSkill()"
+                        class="flex items-center gap-1.5 px-4 py-2.5 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors cursor-pointer">
+                  <lucide-icon [img]="icons.Plus" [size]="16"></lucide-icon>
+                  Add
+                </button>
+              </div>
+
+              @if (skillsArray.length === 0 && form.controls.skills.touched) {
+                <p class="text-xs text-red-500">At least one skill is required.</p>
+              }
+
+              @if (skillsArray.length > 0) {
+                <div class="flex flex-wrap gap-2">
+                  @for (skill of skillsArray.controls; track $index) {
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary text-sm font-medium rounded-full">
+                      {{ skill.value }}
+                      <button type="button" (click)="removeSkill($index)"
+                              class="flex items-center justify-center text-primary hover:text-red-500 transition-colors rounded-full">
+                        <lucide-icon [img]="icons.X" [size]="12"></lucide-icon>
+                      </button>
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <hr class="border-divider">
+
+          <!-- Education -->
+          <div class="flex flex-col md:flex-row w-full gap-4">
+            <div class="flex flex-col gap-1 md:w-2/5">
+              <h3 class="font-bold text-sm text-heading">Education</h3>
+              <p class="text-xs text-muted">Share your educational background</p>
+            </div>
+
+            <div class="flex flex-col gap-4 md:w-3/5" formArrayName="education">
+              @for (edu of educationArray.controls; track $index) {
+                <div [formGroupName]="$index"
+                     class="flex flex-col gap-3 border border-divider rounded-xl p-4 relative">
+                  <button type="button" (click)="removeEducation($index)"
+                          class="absolute top-3 right-3 text-muted hover:text-red-500 transition-colors cursor-pointer">
+                    <lucide-icon [img]="icons.Trash2" [size]="16"></lucide-icon>
+                  </button>
+                  <p class="text-sm font-semibold text-heading">Education #{{ $index + 1 }}</p>
+
+                  <div class="flex flex-col gap-1">
+                    <label class="text-xs font-medium text-muted uppercase tracking-wide">Country</label>
+                    <div class="relative flex items-center border border-divider rounded-lg focus-within:border-primary transition-colors">
+                      <select formControlName="country"
+                              class="w-full px-4 py-2.5 text-sm text-heading bg-transparent outline-none appearance-none cursor-pointer pr-10">
+                        <option value="">Select country</option>
+                        @for (country of countryOptions; track country) {
+                          <option [value]="country">{{ country }}</option>
+                        }
+                      </select>
+                      <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                        <lucide-icon [img]="icons.ChevronDown" [size]="16"></lucide-icon>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col gap-1">
+                    <label class="text-xs font-medium text-muted uppercase tracking-wide">Institution</label>
+                    <input type="text" formControlName="institution"
+                           class="px-4 py-2.5 text-sm text-heading border border-divider rounded-lg bg-transparent outline-none focus:border-primary transition-colors"
+                           placeholder="e.g. MIT"/>
+                  </div>
+
+                  <div class="flex flex-col gap-1">
+                    <label class="text-xs font-medium text-muted uppercase tracking-wide">Degree</label>
+                    <div class="relative flex items-center border border-divider rounded-lg focus-within:border-primary transition-colors">
+                      <select formControlName="title"
+                              class="w-full px-4 py-2.5 text-sm text-heading bg-transparent outline-none appearance-none cursor-pointer pr-10">
+                        <option value="">Select degree</option>
+                        @for (degree of degreeOptions; track degree) {
+                          <option [value]="degree">{{ degree }}</option>
+                        }
+                      </select>
+                      <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                        <lucide-icon [img]="icons.ChevronDown" [size]="16"></lucide-icon>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col gap-1">
+                    <label class="text-xs font-medium text-muted uppercase tracking-wide">Major / Field of Study</label>
+                    <input type="text" formControlName="major"
+                           class="px-4 py-2.5 text-sm text-heading border border-divider rounded-lg bg-transparent outline-none focus:border-primary transition-colors"
+                           placeholder="e.g. Computer Science"/>
+                  </div>
+
+                  <div class="flex flex-col gap-1">
+                    <label class="text-xs font-medium text-muted uppercase tracking-wide">Year of Graduation</label>
+                    <div class="relative flex items-center border border-divider rounded-lg focus-within:border-primary transition-colors">
+                      <select formControlName="graduationYear"
+                              class="w-full px-4 py-2.5 text-sm text-heading bg-transparent outline-none appearance-none cursor-pointer pr-10">
+                        <option value="">Select year</option>
+                        @for (year of years(); track year) {
+                          <option [value]="year">{{ year }}</option>
+                        }
+                      </select>
+                      <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                        <lucide-icon [img]="icons.ChevronDown" [size]="16"></lucide-icon>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <button type="button" (click)="addEducation()"
+                      class="flex items-center justify-center gap-2 w-full px-4 py-2.5 border border-dashed border-primary text-primary text-sm font-medium rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
+                <lucide-icon [img]="icons.Plus" [size]="16"></lucide-icon>
+                Add Education
+              </button>
+            </div>
+          </div>
+
+          <hr class="border-divider">
+
+          <!-- Certifications -->
+          <div class="flex flex-col md:flex-row w-full gap-4">
+            <div class="flex flex-col gap-1 md:w-2/5">
+              <h3 class="font-bold text-sm text-heading">Certifications</h3>
+              <p class="text-xs text-muted">Include relevant certifications or awards</p>
+            </div>
+
+            <div class="flex flex-col gap-4 md:w-3/5" formArrayName="certifications">
+              @for (cert of certificationsArray.controls; track $index) {
+                <div [formGroupName]="$index"
+                     class="flex flex-col gap-3 border border-divider rounded-xl p-4 relative">
+                  <button type="button" (click)="removeCertification($index)"
+                          class="absolute top-3 right-3 text-muted hover:text-red-500 transition-colors cursor-pointer">
+                    <lucide-icon [img]="icons.Trash2" [size]="16"></lucide-icon>
+                  </button>
+                  <p class="text-sm font-semibold text-heading">Certification #{{ $index + 1 }}</p>
+
+                  <div class="flex flex-col gap-1">
+                    <label class="text-xs font-medium text-muted uppercase tracking-wide">Certificate / Award</label>
+                    <input type="text" formControlName="name"
+                           class="px-4 py-2.5 text-sm text-heading border border-divider rounded-lg bg-transparent outline-none focus:border-primary transition-colors"
+                           placeholder="e.g. AWS Certified Solutions Architect"/>
+                  </div>
+
+                  <div class="flex flex-col gap-1">
+                    <label class="text-xs font-medium text-muted uppercase tracking-wide">Certified From</label>
+                    <input type="text" formControlName="certifiedFrom"
+                           class="px-4 py-2.5 text-sm text-heading border border-divider rounded-lg bg-transparent outline-none focus:border-primary transition-colors"
+                           placeholder="e.g. Amazon Web Services"/>
+                  </div>
+
+                  <div class="flex flex-col gap-1">
+                    <label class="text-xs font-medium text-muted uppercase tracking-wide">Year</label>
+                    <div class="relative flex items-center border border-divider rounded-lg focus-within:border-primary transition-colors">
+                      <select formControlName="year"
+                              class="w-full px-4 py-2.5 text-sm text-heading bg-transparent outline-none appearance-none cursor-pointer pr-10">
+                        <option value="">Select year</option>
+                        @for (year of years(); track year) {
+                          <option [value]="year">{{ year }}</option>
+                        }
+                      </select>
+                      <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-muted">
+                        <lucide-icon [img]="icons.ChevronDown" [size]="16"></lucide-icon>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              }
+
+              <button type="button" (click)="addCertification()"
+                      class="flex items-center justify-center gap-2 w-full px-4 py-2.5 border border-dashed border-primary text-primary text-sm font-medium rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
+                <lucide-icon [img]="icons.Plus" [size]="16"></lucide-icon>
+                Add Certification
+              </button>
+            </div>
+          </div>
+
+          <hr class="border-divider">
+
+          <!-- Personal website -->
+          <div class="flex flex-col md:flex-row w-full gap-4">
+            <div class="flex flex-col gap-1 md:w-2/5">
+              <h3 class="font-bold text-sm text-heading">Personal Website</h3>
+              <p class="text-xs text-muted">Link to your portfolio or website</p>
+            </div>
+
+            <div class="flex flex-col gap-2 md:w-3/5">
+              <div class="relative flex items-center flex-1 border border-divider rounded-lg overflow-hidden transition-colors focus-within:border-primary">
+                <span class="px-3 py-2.5 text-sm text-muted border-r border-divider bg-muted/5 select-none shrink-0">https://</span>
+                <input type="url" formControlName="personalWebsite"
+                       class="flex-1 px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                       placeholder="www.yourwebsite.com"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SAVE BAR -->
+        <div class="bg-white rounded-2xl border border-muted/20 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+
+          <div class="text-sm">
+            @if (successMessage()) {
+              <p class="text-green-600 font-medium">{{ successMessage() }}</p>
+            }
+            @if (error() && isSaving()) {
+              <p class="text-red-500">{{ error() }}</p>
+            }
+          </div>
+
+          <button type="submit" (click)="onSave()"
+                  [disabled]="isSaving()"
+                  class="px-8 py-2.5 bg-primary hover:bg-primary-dark text-on-primary text-sm font-semibold rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer">
+            @if (isSaving()) {
+              Saving...
+            } @else {
+              Save Changes
+            }
+          </button>
+        </div>
+
+      </form>
+    }
+  </div>
+</div>
