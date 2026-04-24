@@ -1,5 +1,7 @@
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import {LucideAngularModule, StarIcon} from 'lucide-angular';
 
 export interface BrowseCardItem {
   id: string;
@@ -7,6 +9,7 @@ export interface BrowseCardItem {
   coverImageAlt: string;
   sellerName: string;
   sellerAvatarUrl: string;
+  sellerProfileId: string;
   title: string;
   category: string;
   categoryId: string;
@@ -18,11 +21,12 @@ export interface BrowseCardItem {
 
 @Component({
   selector: 'app-card',
-  imports: [NgOptimizedImage, DecimalPipe],
+  imports: [NgOptimizedImage, DecimalPipe, RouterLink, LucideAngularModule],
   templateUrl: './card.html',
   styleUrl: './card.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Card {
   readonly item = input.required<BrowseCardItem>();
+  protected readonly StarIcon = StarIcon;
 }

@@ -353,7 +353,10 @@
           <section class="rounded-3xl border border-divider bg-surface p-5">
             @if (viewerRole() === 'buyer') {
               <h2 class="mb-3 text-base font-bold text-heading">Seller</h2>
-              <div class="flex items-center gap-3">
+              <a
+                [routerLink]="['/sellers', o.sellerProfileId]"
+                class="flex items-center gap-3 hover:opacity-80 transition-opacity"
+              >
                 @if (o.sellerAvatarUrl) {
                   <img
                     [src]="o.sellerAvatarUrl"
@@ -368,7 +371,7 @@
                 <div>
                   <p class="text-sm font-semibold text-heading">{{ o.sellerFirstName }} {{ o.sellerLastName }}</p>
                 </div>
-              </div>
+              </a>
             }
 
             @if (viewerRole() === 'seller') {

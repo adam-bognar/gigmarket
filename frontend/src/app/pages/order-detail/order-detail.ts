@@ -6,9 +6,9 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-import { switchMap } from 'rxjs';
-import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
+import {ActivatedRoute, RouterLink} from '@angular/router';
+import {switchMap} from 'rxjs';
+import {DatePipe, DecimalPipe, NgClass} from '@angular/common';
 import {
   LucideAngularModule,
   ArrowLeft,
@@ -37,37 +37,37 @@ import {ActivityItem, OrderDeliveryDto, OrderDetailDto, OrderRevisionRequestDto}
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderDetail implements OnInit {
-  private readonly route   = inject(ActivatedRoute);
+  private readonly route = inject(ActivatedRoute);
   private readonly orderSvc = inject(OrderService);
-  private readonly authSvc  = inject(AuthService);
+  private readonly authSvc = inject(AuthService);
 
-  readonly ArrowLeft    = ArrowLeft;
-  readonly Clock        = Clock;
-  readonly RefreshCw    = RefreshCw;
-  readonly DollarSign   = DollarSign;
-  readonly Calendar     = Calendar;
-  readonly User         = User;
-  readonly UploadCloud  = UploadCloud;
-  readonly CheckCircle  = CheckCircle;
-  readonly RotateCcw    = RotateCcw;
-  readonly Paperclip    = Paperclip;
-  readonly X            = X;
-  readonly FileText     = FileText;
-  readonly Package      = Package;
+  readonly ArrowLeft = ArrowLeft;
+  readonly Clock = Clock;
+  readonly RefreshCw = RefreshCw;
+  readonly DollarSign = DollarSign;
+  readonly Calendar = Calendar;
+  readonly User = User;
+  readonly UploadCloud = UploadCloud;
+  readonly CheckCircle = CheckCircle;
+  readonly RotateCcw = RotateCcw;
+  readonly Paperclip = Paperclip;
+  readonly X = X;
+  readonly FileText = FileText;
+  readonly Package = Package;
 
-  readonly order   = signal<OrderDetailDto | null>(null);
+  readonly order = signal<OrderDetailDto | null>(null);
   readonly loading = signal(true);
-  readonly error   = signal<string | null>(null);
+  readonly error = signal<string | null>(null);
 
-  readonly deliverMessage   = signal('');
-  readonly deliverFiles     = signal<{ name: string; url: string }[]>([]);
-  readonly uploadingFile    = signal(false);
+  readonly deliverMessage = signal('');
+  readonly deliverFiles = signal<{ name: string; url: string }[]>([]);
+  readonly uploadingFile = signal(false);
   readonly submittingDeliver = signal(false);
-  readonly deliverError     = signal<string | null>(null);
+  readonly deliverError = signal<string | null>(null);
 
-  readonly revisionMessage    = signal('');
+  readonly revisionMessage = signal('');
   readonly submittingRevision = signal(false);
-  readonly revisionError      = signal<string | null>(null);
+  readonly revisionError = signal<string | null>(null);
 
   readonly submittingAccept = signal(false);
 
@@ -77,7 +77,7 @@ export class OrderDetail implements OnInit {
     const o = this.order();
     const u = this.currentUser();
     if (!o || !u) return 'unknown';
-    if (u.id === o.buyerUserId)  return 'buyer';
+    if (u.id === o.buyerUserId) return 'buyer';
     if (u.id === o.sellerUserId) return 'seller';
     return 'unknown';
   });
@@ -85,8 +85,8 @@ export class OrderDetail implements OnInit {
   readonly activityFeed = computed<ActivityItem[]>(() => {
     const o = this.order();
     if (!o) return [];
-    const deliveries: ActivityItem[] = o.deliveries.map(d => ({ type: 'delivery', data: d }));
-    const revisions: ActivityItem[]  = o.revisionRequests.map(r => ({ type: 'revision', data: r }));
+    const deliveries: ActivityItem[] = o.deliveries.map(d => ({type: 'delivery', data: d}));
+    const revisions: ActivityItem[] = o.revisionRequests.map(r => ({type: 'revision', data: r}));
     return [...deliveries, ...revisions].sort(
       (a, b) => new Date(b.data.createdAtUtc).getTime() - new Date(a.data.createdAtUtc).getTime()
     );
@@ -146,7 +146,7 @@ export class OrderDetail implements OnInit {
 
     this.orderSvc.uploadDeliveryFile(orderId, file).subscribe({
       next: (res) => {
-        this.deliverFiles.update(files => [...files, { name: file.name, url: res.url }]);
+        this.deliverFiles.update(files => [...files, {name: file.name, url: res.url}]);
         this.uploadingFile.set(false);
       },
       error: () => {
@@ -202,7 +202,7 @@ export class OrderDetail implements OnInit {
     this.revisionError.set(null);
 
     this.orderSvc
-      .requestRevision(orderId, { message: this.revisionMessage() })
+      .requestRevision(orderId, {message: this.revisionMessage()})
       .subscribe({
         next: () => {
           this.revisionMessage.set('');
@@ -236,22 +236,22 @@ export class OrderDetail implements OnInit {
 
   statusLabel(status: string): string {
     const map: Record<string, string> = {
-      InProgress:   'In Progress',
-      Delivered:    'Delivered',
-      UnderRevision:'Under Revision',
-      Completed:    'Completed',
-      Cancelled:    'Cancelled',
+      InProgress: 'In Progress',
+      Delivered: 'Delivered',
+      UnderRevision: 'Under Revision',
+      Completed: 'Completed',
+      Cancelled: 'Cancelled',
     };
     return map[status] ?? status;
   }
 
   statusClasses(status: string): string {
     const map: Record<string, string> = {
-      InProgress:    'bg-blue-100 text-blue-700',
-      Delivered:     'bg-amber-100 text-amber-700',
+      InProgress: 'bg-blue-100 text-blue-700',
+      Delivered: 'bg-amber-100 text-amber-700',
       UnderRevision: 'bg-orange-100 text-orange-700',
-      Completed:     'bg-green-100 text-green-700',
-      Cancelled:     'bg-red-100 text-red-700',
+      Completed: 'bg-green-100 text-green-700',
+      Cancelled: 'bg-red-100 text-red-700',
     };
     return map[status] ?? 'bg-surface-alt text-muted';
   }

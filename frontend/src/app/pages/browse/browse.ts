@@ -31,6 +31,7 @@ function mapToCardItem(dto: GigSummaryDto): BrowseCardItem {
     coverImageAlt: dto.title,
     sellerName: `${dto.sellerFirstName} ${dto.sellerLastName}`.trim(),
     sellerAvatarUrl: dto.sellerAvatarUrl,
+    sellerProfileId: dto.sellerProfileId,
     title: dto.title,
     category: dto.categoryName,
     categoryId: dto.categoryId,

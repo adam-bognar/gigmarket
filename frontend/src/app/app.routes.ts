@@ -30,6 +30,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/gig-details/gig-details').then((m) => m.GigDetails),
   },
   {
+    path: 'sellers/:id',
+    loadComponent: () => import('./pages/seller-profile/seller-profile').then((m) => m.SellerProfile),
+  },
+  {
     path: 'dashboard/seller/manage-gigs',
     loadComponent: () => import('./pages/seller-dashboard/manage-gigs/manage-gigs').then((m) => m.ManageGigs),
   },

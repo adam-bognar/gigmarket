@@ -3,7 +3,13 @@ import {HttpClient} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {Observable} from 'rxjs';
-import {CreateSellerProfilePayload, LanguageOption, SellerProfileFullDto, UpdateSellerProfilePayload} from '../models/seller.model';
+import {
+  CreateSellerProfilePayload,
+  LanguageOption,
+  SellerProfileFullDto,
+  SellerPublicProfileDto,
+  UpdateSellerProfilePayload,
+} from '../models/seller.model';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +29,7 @@ export class SellerProfileService {
     return this.http.post<{ blobPath: string }>(
       `${this.baseUrl}/files/upload/profile/me`,
       formData,
-      { withCredentials: true }
+      {withCredentials: true}
     );
   }
 
@@ -37,5 +43,11 @@ export class SellerProfileService {
 
   updateProfile(payload: UpdateSellerProfilePayload): Observable<void> {
     return this.http.put<void>(`${this.baseUrl}/seller/update`, payload);
+  }
+
+  getPublicProfile(sellerProfileId: string): Observable<SellerPublicProfileDto> {
+    return this.http.get<SellerPublicProfileDto>(
+      `${this.baseUrl}/seller/${sellerProfileId}/public`
+    );
   }
 }

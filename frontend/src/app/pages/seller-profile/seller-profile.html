@@ -1,0 +1,264 @@
+@if (isLoading()) {
+  <div class="p-12 text-muted">Loading seller profile...</div>
+} @else if (error()) {
+  <div class="p-12 text-danger">{{ error() }}</div>
+} @else {
+  @let p = profile();
+  @if (p) {
+    <div class="min-h-screen bg-surface-alt">
+
+      <!-- Header banner -->
+      <div class="h-36 w-full bg-linear-to-r from-primary/20 via-primary/10 to-transparent"></div>
+
+      <!-- Profile header card -->
+      <div class="mx-auto max-w-6xl px-6">
+        <div class="relative -mt-16 flex flex-col gap-5 rounded-2xl border border-divider bg-surface p-6 shadow-sm sm:flex-row sm:items-end sm:justify-between">
+
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
+            <!-- Avatar -->
+            <img
+              [src]="p.profileImageUrl "
+              [alt]="fullName() + ' profile picture'"
+              class="h-24 w-24 shrink-0 rounded-full object-cover ring-4 ring-surface"
+            >
+
+            <div class="flex flex-col gap-1.5">
+              <h1 class="text-2xl font-bold text-heading">{{ fullName() }}</h1>
+              <p class="text-base font-medium text-muted">{{ p.occupation.name }}</p>
+
+              <!-- Rating -->
+              @if (p.totalReviews > 0) {
+                <div class="flex flex-row items-center gap-1.5">
+                  <div class="flex flex-row items-center gap-0.5">
+                    @for (star of stars; track star) {
+                      <lucide-icon
+                        [img]="StarIcon"
+                        [size]="14"
+                        [class]="starFill(star, p.averageRating) === 'full' ? 'transition-colors fill-warning text-warning'
+                                : starFill(star, p.averageRating) === 'half'
+                                ? 'transition-colors fill-warning/50 text-warning/50'
+                                : 'transition-colors text-divider'"/>
+                    }
+                  </div>
+                  <span class="text-sm font-semibold text-heading">{{ p.averageRating | number: '1.1-1' }}</span>
+                  <span class="text-sm text-muted">({{ p.totalReviews | number: '1.0-0' }} reviews)</span>
+                </div>
+              }
+
+              <!-- Meta row -->
+              <div class="flex flex-row flex-wrap items-center gap-3 text-sm text-muted">
+                <span class="flex items-center gap-1">
+                  <lucide-icon [img]="CalendarIcon" [size]="13" />
+                  Member since {{ formatMemberSince(p.memberSinceUtc) }}
+                </span>
+                @if (p.personalWebsite) {
+                  <a
+                    [href]="p.personalWebsite"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center gap-1 text-primary hover:text-primary-dark hover:underline"
+                  >
+                    <lucide-icon [img]="GlobeIcon" [size]="13" />
+                    Website
+                    <lucide-icon [img]="ExternalLinkIcon" [size]="11" />
+                  </a>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA button -->
+          <div class="shrink-0">
+            @if (isOwnProfile()) {
+              <a
+                routerLink="/dashboard/seller/profile"
+                class="flex items-center gap-2 rounded-lg border border-divider px-5 py-2.5 text-sm font-semibold text-heading transition-colors hover:bg-surface-alt"
+              >
+                <lucide-icon [img]="PencilIcon" [size]="14" />
+                Edit Profile
+              </a>
+            } @else {
+              <button
+                type="button"
+                class="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50"
+                [disabled]="!hasActiveGigs() || isStartingConversation()"
+                (click)="contactSeller()"
+              >
+                <lucide-icon [img]="MessageCircleIcon" [size]="14" />
+                @if (isStartingConversation()) {
+                  Opening...
+                } @else if (!hasActiveGigs()) {
+                  No active gigs
+                } @else {
+                  Contact Me
+                }
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Body: sidebar + main -->
+      <div class="mx-auto max-w-6xl px-6 py-8">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
+
+          <!-- LEFT SIDEBAR -->
+          <aside class="flex flex-col gap-5 lg:sticky lg:top-20 lg:w-72 lg:shrink-0">
+
+            <!-- About -->
+            <div class="flex flex-col gap-3 rounded-xl border border-divider bg-surface p-5">
+              <h2 class="text-sm font-semibold uppercase tracking-wide text-muted">About</h2>
+              <p class="wrap-break-word whitespace-pre-line text-sm leading-relaxed text-heading">{{ p.description }}</p>
+            </div>
+
+            <!-- Languages -->
+            @if (p.languages.length) {
+              <div class="flex flex-col gap-3 rounded-xl border border-divider bg-surface p-5">
+                <h2 class="text-sm font-semibold uppercase tracking-wide text-muted">Languages</h2>
+                <ul class="flex flex-col gap-1.5">
+                  @for (lang of p.languages; track lang.id) {
+                    <li class="text-sm text-heading">{{ lang.name }}</li>
+                  }
+                </ul>
+              </div>
+            }
+
+            <!-- Skills -->
+            @if (p.skills.length) {
+              <div class="flex flex-col gap-3 rounded-xl border border-divider bg-surface p-5">
+                <h2 class="text-sm font-semibold uppercase tracking-wide text-muted">Skills</h2>
+                <div class="flex flex-wrap gap-2">
+                  @for (skill of p.skills; track skill) {
+                    <span class="rounded-full border border-divider px-3 py-1 text-xs font-medium text-heading">
+                      {{ skill }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Occupation / Experience -->
+            <div class="flex flex-col gap-3 rounded-xl border border-divider bg-surface p-5">
+              <h2 class="text-sm font-semibold uppercase tracking-wide text-muted">Experience</h2>
+              <div class="flex items-start gap-3">
+                <lucide-icon [img]="BriefcaseIcon" [size]="16" class="mt-0.5 shrink-0 text-muted" />
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-sm font-medium text-heading">{{ p.occupation.name }}</span>
+                  <span class="text-xs text-muted">{{ p.occupation.fromYear }} – {{ p.occupation.toYear }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Education -->
+            @if (p.educations.length) {
+              <div class="flex flex-col gap-4 rounded-xl border border-divider bg-surface p-5">
+                <h2 class="text-sm font-semibold uppercase tracking-wide text-muted">Education</h2>
+                @for (edu of p.educations; track edu.institutionName) {
+                  <div class="flex items-start gap-3">
+                    <lucide-icon [img]="GraduationCapIcon" [size]="16" class="mt-0.5 shrink-0 text-muted" />
+                    <div class="flex flex-col gap-0.5">
+                      <span class="text-sm font-medium text-heading">{{ edu.institutionName }}</span>
+                      <span class="text-xs text-muted">{{ edu.degree }} in {{ edu.major }}, {{ edu.graduationYear }}</span>
+                      <span class="text-xs text-muted">{{ edu.country }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- Certifications -->
+            @if (p.certifications.length) {
+              <div class="flex flex-col gap-4 rounded-xl border border-divider bg-surface p-5">
+                <h2 class="text-sm font-semibold uppercase tracking-wide text-muted">Certifications</h2>
+                @for (cert of p.certifications; track cert.name) {
+                  <div class="flex items-start gap-3">
+                    <lucide-icon [img]="AwardIcon" [size]="16" class="mt-0.5 shrink-0 text-muted" />
+                    <div class="flex flex-col gap-0.5">
+                      <span class="text-sm font-medium text-heading">{{ cert.name }}</span>
+                      <span class="text-xs text-muted">{{ cert.issuingOrganization }}, {{ cert.year }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </aside>
+
+          <!-- MAIN COLUMN -->
+          <div class="flex min-w-0 flex-1 flex-col gap-8">
+
+            <!-- Active Gigs -->
+            <section class="flex flex-col gap-4">
+              <h2 class="text-lg font-bold text-heading">
+                Active Gigs
+                @if (p.gigs.length) {
+                  <span class="ml-2 text-sm font-normal text-muted">({{ p.gigs.length }})</span>
+                }
+              </h2>
+
+              @if (gigCards().length) {
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                  @for (card of gigCards(); track card.id) {
+                    <a [routerLink]="['/gigs', card.id]" class="block focus:outline-none">
+                      <app-card [item]="card" />
+                    </a>
+                  }
+                </div>
+              } @else {
+                <div class="rounded-xl border border-divider bg-surface px-6 py-10 text-center">
+                  <p class="text-muted">This seller has no active gigs at the moment.</p>
+                </div>
+              }
+            </section>
+
+            <!-- Reviews -->
+            <section class="flex flex-col gap-4">
+              <h2 class="text-lg font-bold text-heading">
+                Reviews
+                @if (p.totalReviews > 0) {
+                  <span class="ml-2 text-sm font-normal text-muted">({{ p.totalReviews | number: '1.0-0' }})</span>
+                }
+              </h2>
+
+              @if (p.reviews.length) {
+                <div class="flex flex-col divide-y divide-divider rounded-xl border border-divider bg-surface">
+                  @for (review of p.reviews; track review.id) {
+                    <div class="flex flex-col gap-2 p-5">
+                      <div class="flex flex-row items-start justify-between gap-3">
+                        <div class="flex flex-col gap-0.5">
+                          <span class="text-sm font-semibold text-heading">{{ review.reviewerUsername }}</span>
+                          <a
+                            [routerLink]="['/gigs', review.gigId]"
+                            class="text-xs text-primary hover:text-primary-dark hover:underline"
+                          >
+                            {{ review.gigTitle }}
+                          </a>
+                        </div>
+                        <div class="flex shrink-0 flex-row items-center gap-1">
+                          <lucide-icon [img]="StarIcon" [size]="13" class="fill-warning text-warning" />
+                          <span class="text-sm font-semibold text-heading">{{ review.rating | number: '1.1-1' }}</span>
+                        </div>
+                      </div>
+                      <p class="text-sm leading-relaxed text-muted">{{ review.description }}</p>
+                      <p class="text-xs text-muted">{{ review.createdAtUtc | date: 'MMM d, y' }}</p>
+                    </div>
+                  }
+                </div>
+
+                @if (p.totalReviews > 10) {
+                  <p class="text-center text-sm text-muted">
+                    Showing 10 most recent of {{ p.totalReviews | number: '1.0-0' }} reviews.
+                  </p>
+                }
+              } @else {
+                <div class="rounded-xl border border-divider bg-surface px-6 py-10 text-center">
+                  <p class="text-muted">No reviews yet.</p>
+                </div>
+              }
+            </section>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+}

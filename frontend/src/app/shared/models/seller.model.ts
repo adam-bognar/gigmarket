@@ -1,3 +1,5 @@
+import {GigSummaryDto} from './gig.model';
+
 export interface LanguageOption {
   id: string;
   name: string;
@@ -85,4 +87,49 @@ export interface SellerProfileFullDto {
     year: number;
   }[];
   createdAtUtc: string;
+}
+
+export interface SellerReviewDto {
+  id: string;
+  gigId: string;
+  gigTitle: string;
+  reviewerUserId: string;
+  reviewerUsername: string;
+  rating: number;
+  description: string;
+  createdAtUtc: string;
+}
+
+export interface SellerPublicProfileDto {
+  id: string;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  description: string;
+  profileImageUrl: string;
+  personalWebsite: string | null;
+  occupation: {
+    name: string;
+    fromYear: number;
+    toYear: number;
+  };
+  languages: { id: string; name: string }[];
+  skills: string[];
+  educations: {
+    country: string;
+    institutionName: string;
+    degree: string;
+    major: string;
+    graduationYear: number;
+  }[];
+  certifications: {
+    name: string;
+    issuingOrganization: string;
+    year: number;
+  }[];
+  memberSinceUtc: string;
+  averageRating: number;
+  totalReviews: number;
+  gigs: GigSummaryDto[];
+  reviews: SellerReviewDto[];
 }

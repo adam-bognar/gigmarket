@@ -11,14 +11,17 @@
           <h1 class="text-3xl font-bold text-heading">{{ gigData.title }}</h1>
 
           <div class="flex flex-row flex-wrap items-center gap-4 text-sm">
-            <div class="flex flex-row items-center gap-2">
+            <a
+              [routerLink]="['/sellers', gigData.sellerProfileId]"
+              class="flex flex-row items-center gap-2 hover:opacity-80 transition-opacity"
+            >
               <img
                 [src]="gigData.sellerAvatarUrl"
                 [alt]="sellerName() + ' avatar'"
                 class="h-9 w-9 rounded-full object-cover ring-2 ring-divider"
               >
               <span class="font-semibold text-heading">{{ sellerName() }}</span>
-            </div>
+            </a>
 
             <span class="select-none text-divider">|</span>
 
@@ -61,7 +64,10 @@
 
             <div class="flex flex-col gap-4 rounded-xl border border-divider p-5">
               <div class="flex flex-row items-center justify-between gap-4">
-                <div class="flex min-w-0 flex-row items-center gap-3">
+                <a
+                  [routerLink]="['/sellers', gigData.sellerProfileId]"
+                  class="flex min-w-0 flex-row items-center gap-3 hover:opacity-80 transition-opacity"
+                >
                   <img
                     [src]="gigData.sellerAvatarUrl"
                     [alt]="sellerName() + ' profile picture'"
@@ -71,7 +77,7 @@
                     <span class="truncate text-base font-semibold text-heading">{{ sellerName() }}</span>
                     <span class="truncate text-sm text-muted">{{ sellerOccupation() }}</span>
                   </div>
-                </div>
+                </a>
 
                 <button
                   type="button"
