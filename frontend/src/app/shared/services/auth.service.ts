@@ -40,6 +40,29 @@ export class AuthService {
       );
   }
 
+  refreshUser(): Observable<AuthUser | null> {
+    return this.getMe();
+  }
+
+  updateAccount(customUsername: string, email: string): Observable<AuthUser> {
+    return this.http
+      .put<AuthUser>(`${this.baseUrl}/account`, {customUsername, email})
+      .pipe(tap({next: (user) => this.currentUser.set(user)}));
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/account/password`, {currentPassword, newPassword});
+  }
+
+  uploadProfilePicture(file: File): Observable<{blobPath: string}> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{blobPath: string}>(
+      `${environment.apiUrl}/files/upload/profile/me`,
+      formData
+    );
+  }
+
   logout(): Observable<void> {
     return this.http
       .post<void>(`${this.baseUrl}/logout`, {})

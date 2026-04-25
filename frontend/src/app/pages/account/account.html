@@ -1,0 +1,213 @@
+<div class="min-h-screen bg-surface-alt">
+  <div class="max-w-2xl mx-auto px-4 py-10">
+
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-heading">Account Settings</h1>
+      <p class="text-sm text-muted mt-1">Manage your profile picture, display name, email and password.</p>
+    </div>
+
+    <!-- Avatar card -->
+    <div class="bg-white rounded-xl border border-divider p-6 mb-5">
+      <h2 class="text-base font-semibold text-heading mb-5">Profile Picture</h2>
+
+      <div class="flex items-center gap-6">
+        <!-- Avatar preview -->
+        <div class="relative shrink-0">
+          <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-primary bg-primary flex items-center justify-center">
+            @if (avatarPreview()) {
+              <img [src]="avatarPreview()!" alt="Avatar" class="w-full h-full object-cover" />
+            } @else {
+              <span class="text-2xl font-bold text-on-primary">{{ userInitials() }}</span>
+            }
+          </div>
+          @if (avatarSaving()) {
+            <div class="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center">
+              <lucide-icon [img]="icons.LoaderCircle" class="w-5 h-5 text-white animate-spin" />
+            </div>
+          }
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-heading border border-divider rounded-lg hover:bg-surface-alt transition-colors cursor-pointer w-fit">
+            <lucide-icon [img]="icons.Camera" class="w-4 h-4" />
+            {{ avatarSaving() ? 'Uploading…' : 'Change picture' }}
+            <input type="file" accept="image/*" class="hidden" (change)="onAvatarSelected($event)" [disabled]="avatarSaving()" />
+          </label>
+          <p class="text-xs text-muted">JPG, PNG or WebP · Max 5 MB</p>
+
+          @if (avatarSuccess()) {
+            <p class="text-xs text-green-600 font-medium flex items-center gap-1">
+              <lucide-icon [img]="icons.Check" class="w-3.5 h-3.5" /> Picture updated!
+            </p>
+          }
+          @if (avatarError()) {
+            <p class="text-xs text-red-500">{{ avatarError() }}</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Account info card -->
+    <div class="bg-white rounded-xl border border-divider p-6 mb-5">
+      <h2 class="text-base font-semibold text-heading mb-5">Account Info</h2>
+
+      <form [formGroup]="infoForm" (ngSubmit)="onSaveInfo()" class="flex flex-col gap-4" novalidate>
+        <!-- Username -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-heading" for="username">Display name</label>
+          <input
+            id="username"
+            type="text"
+            formControlName="customUsername"
+            class="px-3 py-2 text-sm rounded-lg border transition-colors outline-none"
+            [class.border-red-400]="usernameCtrl.invalid && usernameCtrl.touched"
+            [class.border-divider]="!(usernameCtrl.invalid && usernameCtrl.touched)"
+            [class.focus:border-primary]="!(usernameCtrl.invalid && usernameCtrl.touched)"
+            placeholder="your_username"
+          />
+          @if (usernameCtrl.touched) {
+            @if (usernameCtrl.hasError('required')) {
+              <p class="text-xs text-red-500">Username is required.</p>
+            } @else if (usernameCtrl.hasError('minlength')) {
+              <p class="text-xs text-red-500">At least 3 characters required.</p>
+            } @else if (usernameCtrl.hasError('maxlength')) {
+              <p class="text-xs text-red-500">Maximum 30 characters.</p>
+            } @else if (usernameCtrl.hasError('pattern')) {
+              <p class="text-xs text-red-500">Only letters, numbers, underscores and hyphens.</p>
+            }
+          }
+        </div>
+
+        <!-- Email -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-heading" for="email">Email address</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="px-3 py-2 text-sm rounded-lg border transition-colors outline-none"
+            [class.border-red-400]="emailCtrl.invalid && emailCtrl.touched"
+            [class.border-divider]="!(emailCtrl.invalid && emailCtrl.touched)"
+            placeholder="you@example.com"
+          />
+          @if (emailCtrl.touched) {
+            @if (emailCtrl.hasError('required')) {
+              <p class="text-xs text-red-500">Email is required.</p>
+            } @else if (emailCtrl.hasError('email')) {
+              <p class="text-xs text-red-500">Enter a valid email address.</p>
+            }
+          }
+        </div>
+
+        @if (infoError()) {
+          <p class="text-sm text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{{ infoError() }}</p>
+        }
+
+        <div class="flex items-center gap-3 pt-1">
+          <button
+            type="submit"
+            class="px-5 py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-lg transition-colors cursor-pointer disabled:opacity-60"
+            [disabled]="infoSaving()"
+          >
+            {{ infoSaving() ? 'Saving…' : 'Save changes' }}
+          </button>
+          @if (infoSuccess()) {
+            <span class="text-sm text-green-600 font-medium flex items-center gap-1">
+              <lucide-icon [img]="icons.Check" class="w-4 h-4" /> Saved!
+            </span>
+          }
+        </div>
+      </form>
+    </div>
+
+    <!-- Password card -->
+    <div class="bg-white rounded-xl border border-divider p-6">
+      <h2 class="text-base font-semibold text-heading mb-5">Change Password</h2>
+
+      <form [formGroup]="pwForm" (ngSubmit)="onChangePassword()" class="flex flex-col gap-4" novalidate>
+        <!-- Current password -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-heading" for="currentPw">Current password</label>
+          <input
+            id="currentPw"
+            type="password"
+            formControlName="currentPassword"
+            autocomplete="current-password"
+            class="px-3 py-2 text-sm rounded-lg border transition-colors outline-none"
+            [class.border-red-400]="currentPwCtrl.invalid && currentPwCtrl.touched"
+            [class.border-divider]="!(currentPwCtrl.invalid && currentPwCtrl.touched)"
+            placeholder="••••••••"
+          />
+          @if (currentPwCtrl.invalid && currentPwCtrl.touched) {
+            <p class="text-xs text-red-500">Current password is required.</p>
+          }
+        </div>
+
+        <!-- New password -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-heading" for="newPw">New password</label>
+          <input
+            id="newPw"
+            type="password"
+            formControlName="newPassword"
+            autocomplete="new-password"
+            class="px-3 py-2 text-sm rounded-lg border transition-colors outline-none"
+            [class.border-red-400]="newPwCtrl.invalid && newPwCtrl.touched"
+            [class.border-divider]="!(newPwCtrl.invalid && newPwCtrl.touched)"
+            placeholder="••••••••"
+          />
+          @if (newPwCtrl.touched) {
+            @if (newPwCtrl.hasError('required')) {
+              <p class="text-xs text-red-500">New password is required.</p>
+            } @else if (newPwCtrl.hasError('minlength')) {
+              <p class="text-xs text-red-500">At least 8 characters required.</p>
+            } @else if (newPwCtrl.hasError('pattern')) {
+              <p class="text-xs text-red-500">Must contain at least one uppercase letter and one digit.</p>
+            }
+          }
+        </div>
+
+        <!-- Confirm password -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-heading" for="confirmPw">Confirm new password</label>
+          <input
+            id="confirmPw"
+            type="password"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+            class="px-3 py-2 text-sm rounded-lg border transition-colors outline-none"
+            [class.border-red-400]="(confirmPwCtrl.invalid && confirmPwCtrl.touched) || pwMismatch"
+            [class.border-divider]="!((confirmPwCtrl.invalid && confirmPwCtrl.touched) || pwMismatch)"
+            placeholder="••••••••"
+          />
+          @if (confirmPwCtrl.invalid && confirmPwCtrl.touched) {
+            <p class="text-xs text-red-500">Please confirm your new password.</p>
+          } @else if (pwMismatch) {
+            <p class="text-xs text-red-500">Passwords do not match.</p>
+          }
+        </div>
+
+        @if (pwError()) {
+          <p class="text-sm text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{{ pwError() }}</p>
+        }
+
+        <div class="flex items-center gap-3 pt-1">
+          <button
+            type="submit"
+            class="px-5 py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-lg transition-colors cursor-pointer disabled:opacity-60"
+            [disabled]="pwSaving()"
+          >
+            {{ pwSaving() ? 'Updating…' : 'Update password' }}
+          </button>
+          @if (pwSuccess()) {
+            <span class="text-sm text-green-600 font-medium flex items-center gap-1">
+              <lucide-icon [img]="icons.Check" class="w-4 h-4" /> Password updated!
+            </span>
+          }
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

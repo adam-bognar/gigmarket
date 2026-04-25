@@ -57,8 +57,7 @@
                    (blur)="onInputBlur()"
                    (keydown)="onKeydown($event)" />
             <button type="submit"
-                    class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer shrink-0"
-                    >
+                    class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer shrink-0">
               <lucide-icon [img]="SearchIcon" class="w-4 h-4" />
             </button>
           </div>
@@ -118,8 +117,8 @@
                    (mousedown)="selectSuggestion({ kind: 'action', label: actionQuery() })">
                 <lucide-icon [img]="SearchIcon" class="w-4 h-4 text-primary shrink-0" />
                 <span class="text-sm text-heading">
-                                    Search for <strong class="font-semibold">"{{ actionQuery() }}"</strong>
-                                </span>
+                  Search for <strong class="font-semibold">"{{ actionQuery() }}"</strong>
+                </span>
               </div>
             }
           </div>
@@ -151,8 +150,8 @@
             <lucide-icon [img]="MessageSquareIcon" class="h-5 w-5" />
             @if (unreadCount() > 0) {
               <span class="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-on-primary">
-                          {{ unreadCount() > 9 ? '9+' : unreadCount() }}
-                        </span>
+                {{ unreadCount() > 9 ? '9+' : unreadCount() }}
+              </span>
             }
           </a>
         }
@@ -167,22 +166,36 @@
                    class="w-full h-full object-cover" />
             } @else {
               <span class="text-xs font-bold text-on-primary bg-primary w-full h-full flex items-center justify-center">
-                                {{ userInitials() }}
-                            </span>
+                {{ userInitials() }}
+              </span>
             }
           </button>
 
           @if (profileMenuOpen()) {
-            <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-divider py-1 z-50"
+            <div class="absolute right-0 mt-2 w-52 bg-white rounded-md shadow-lg border border-divider py-1 z-50"
                  role="menu">
-              <a routerLink="/profile" (click)="closeProfileMenu()" role="menuitem"
+              <!-- User name hint -->
+              <div class="px-4 py-2 border-b border-divider">
+                <p class="text-xs text-muted truncate">Signed in as</p>
+                <p class="text-sm font-semibold text-heading truncate">{{ user()?.customUsername }}</p>
+              </div>
+
+              <a routerLink="/account" (click)="closeProfileMenu()" role="menuitem"
                  class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
-                Profile
+                Account Settings
               </a>
-              <a routerLink="/dashboard/seller/manage-gigs" (click)="closeProfileMenu()" role="menuitem"
-                 class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
-                Dashboard
-              </a>
+
+              @if (isSeller()) {
+                <a routerLink="/dashboard/seller/profile" (click)="closeProfileMenu()" role="menuitem"
+                   class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
+                  Seller Profile
+                </a>
+                <a routerLink="/dashboard/seller/manage-gigs" (click)="closeProfileMenu()" role="menuitem"
+                   class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
+                  Seller Dashboard
+                </a>
+              }
+
               <hr class="my-1 border-divider" />
               <button type="button" (click)="onLogout()" role="menuitem"
                       class="w-full text-left px-4 py-2 text-sm text-heading hover:bg-gray-100 cursor-pointer">
@@ -206,8 +219,7 @@
     <!-- Mobile hamburger -->
     <button type="button"
             class="md:hidden ml-auto p-2 rounded-md text-heading hover:text-primary hover:bg-surface-alt transition-colors cursor-pointer"
-            (click)="toggleMobileMenu()"
-            >
+            (click)="toggleMobileMenu()">
       @if (mobileMenuOpen()) {
         <lucide-icon [img]="XIcon" class="w-6 h-6" />
       } @else {
@@ -227,7 +239,7 @@
           <span class="text-xs font-semibold text-muted tracking-wide uppercase">Seller Dashboard</span>
         </div>
         <div class="flex flex-col gap-1">
-          <a routerLink="/dashboard/gigs" (click)="closeMobileMenu()"
+          <a routerLink="/dashboard/seller/manage-gigs" (click)="closeMobileMenu()"
              class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
             My Gigs
           </a>
@@ -262,8 +274,7 @@
                      (blur)="onInputBlur()"
                      (keydown)="onKeydown($event)" />
               <button type="submit"
-                      class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer shrink-0"
-                      >
+                      class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer shrink-0">
                 <lucide-icon [img]="SearchIcon" class="w-4 h-4" />
               </button>
             </div>
@@ -317,8 +328,8 @@
                      (mousedown)="selectSuggestion({ kind: 'action', label: actionQuery() })">
                   <lucide-icon [img]="SearchIcon" class="w-4 h-4 text-primary shrink-0" />
                   <span class="text-sm text-heading">
-                                        Search for <strong class="font-semibold">"{{ actionQuery() }}"</strong>
-                                    </span>
+                    Search for <strong class="font-semibold">"{{ actionQuery() }}"</strong>
+                  </span>
                 </div>
               }
             </div>
@@ -330,16 +341,16 @@
         @if (isAuthenticated()) {
           <!-- User info -->
           <div class="flex items-center gap-3 py-2">
-                        <span class="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border-2 border-primary shrink-0">
-                            @if (user()?.profileUrl) {
-                              <img [src]="user()?.profileUrl" [alt]="user()?.customUsername ?? ''"
-                                   class="w-full h-full object-cover" />
-                            } @else {
-                              <span class="text-xs font-bold text-on-primary bg-primary w-full h-full flex items-center justify-center">
-                                    {{ userInitials() }}
-                                </span>
-                            }
-                        </span>
+            <span class="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border-2 border-primary shrink-0">
+              @if (user()?.profileUrl) {
+                <img [src]="user()?.profileUrl" [alt]="user()?.customUsername ?? ''"
+                     class="w-full h-full object-cover" />
+              } @else {
+                <span class="text-xs font-bold text-on-primary bg-primary w-full h-full flex items-center justify-center">
+                  {{ userInitials() }}
+                </span>
+              }
+            </span>
             <span class="text-sm font-medium text-heading">{{ user()?.customUsername }}</span>
           </div>
 
@@ -351,7 +362,7 @@
           }
 
           @if (!isDashboard()) {
-            <a routerLink="/messages" (click)="closeMobileMenu()"
+            <a routerLink="/inbox" (click)="closeMobileMenu()"
                class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
               <lucide-icon [img]="MessageSquareIcon" class="w-5 h-5" />
               Messages
@@ -361,6 +372,11 @@
                class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
               <lucide-icon [img]="BellIcon" class="w-5 h-5" />
               Notifications
+            </a>
+
+            <a routerLink="/account" (click)="closeMobileMenu()"
+               class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
+              Account Settings
             </a>
           }
 

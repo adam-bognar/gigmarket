@@ -61,8 +61,8 @@ export const routes: Routes = [
     path: 'inbox/:conversationId',
     loadComponent: () => import('./pages/inbox/conversation/conversation').then((m) => m.ConversationPage),
   },
-  // {
-  //   path: 'gigs/c2c84ec0-cd3c-4227-b627-29debdeeff45',
-  //   loadComponent: () => import('./pages/gig-details/gig-details').then((m) => m.GigDetails),
-  // },
+  {
+    path: 'account',
+    loadComponent: () => import('./pages/account/account').then((m) => m.Account),
+  },
 ];
