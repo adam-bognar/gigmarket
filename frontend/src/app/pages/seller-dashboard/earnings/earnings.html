@@ -1,0 +1,221 @@
+<section class="mx-auto grid max-w-7xl gap-10 px-5 py-12 md:px-8 md:py-16">
+
+  <!-- Header -->
+  <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col gap-2">
+      <h1 class="m-0 text-4xl font-bold tracking-tight text-heading">Earnings & Payouts</h1>
+      <p class="m-0 text-base text-muted">Track your revenue and manage your Stripe payout account</p>
+    </div>
+
+    @if (isActive()) {
+      <button
+        type="button"
+        (click)="onOpenStripeDashboard()"
+        class="inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl border border-divider bg-surface px-5 py-3 text-sm font-semibold text-heading shadow-sm transition hover:bg-surface-alt"
+      >
+        <lucide-angular name="external-link" class="h-4 w-4" />
+        Open Stripe Dashboard
+      </button>
+    }
+  </div>
+
+  <!-- Stripe return banner -->
+  @if (stripeReturnBanner() === 'success') {
+    <div class="flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+      <lucide-angular name="circle-check" class="mt-0.5 h-5 w-5 shrink-0 text-green-600" />
+      <div class="flex flex-1 flex-col gap-0.5">
+        <p class="m-0 font-semibold">Stripe setup complete!</p>
+        <p class="m-0 text-green-700">Your account status has been refreshed. It may take a moment to go active.</p>
+      </div>
+      <button type="button" (click)="dismissBanner()" class="cursor-pointer text-green-600 hover:text-green-800">
+        <lucide-angular name="x" class="h-4 w-4" />
+      </button>
+    </div>
+  }
+
+  @if (stripeReturnBanner() === 'refresh') {
+    <div class="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+      <lucide-angular name="triangle-alert" class="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+      <div class="flex flex-1 flex-col gap-0.5">
+        <p class="m-0 font-semibold">Onboarding session expired</p>
+        <p class="m-0 text-amber-700">Click "Connect Stripe Account" below to restart the onboarding process.</p>
+      </div>
+      <button type="button" (click)="dismissBanner()" class="cursor-pointer text-amber-600 hover:text-amber-800">
+        <lucide-angular name="x" class="h-4 w-4" />
+      </button>
+    </div>
+  }
+
+  <!-- Stripe Connect banner -->
+  @if (!isLoading() && !isActive()) {
+    <div
+      class="flex flex-col gap-5 rounded-xl border p-6 sm:flex-row sm:items-center sm:justify-between"
+      [class.border-primary]="isNotConnected()"
+      [class.bg-blue-50]="isNotConnected()"
+      [class.border-amber-300]="isPending()"
+      [class.bg-amber-50]="isPending()"
+    >
+      <div class="flex items-start gap-4">
+        <div
+          class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+          [class.bg-primary]="isNotConnected()"
+          [class.bg-amber-100]="isPending()"
+        >
+          <lucide-angular
+            name="credit-card"
+            class="h-6 w-6"
+            [class.text-on-primary]="isNotConnected()"
+            [class.text-amber-700]="isPending()"
+          />
+        </div>
+        <div class="flex flex-col gap-1">
+          @if (isNotConnected()) {
+            <p class="m-0 font-semibold text-heading">Connect your Stripe account</p>
+            <p class="m-0 text-sm text-muted">
+              You need a Stripe account to receive payouts. Once connected, 80% of each completed order is automatically transferred to you.
+            </p>
+          } @else {
+            <p class="m-0 font-semibold text-heading">Stripe account pending</p>
+            <p class="m-0 text-sm text-muted">
+              Your account was created but onboarding isn't complete. Finish setting up to receive payouts.
+            </p>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2 sm:items-end">
+        <button
+          type="button"
+          (click)="onConnectStripe()"
+          [disabled]="isConnecting()"
+          class="shrink-0 cursor-pointer rounded-xl px-5 py-2.5 text-sm font-semibold transition disabled:opacity-60"
+          [class.bg-primary]="isNotConnected()"
+          [class.text-on-primary]="isNotConnected()"
+          [class.hover:bg-primary-dark]="isNotConnected()"
+          [class.bg-amber-500]="isPending()"
+          [class.text-white]="isPending()"
+          [class.hover:bg-amber-600]="isPending()"
+        >
+          {{ isConnecting() ? 'Redirecting...' : (isNotConnected() ? 'Connect Stripe Account' : 'Continue Onboarding') }}
+        </button>
+        @if (connectError()) {
+          <p class="m-0 text-xs text-error">{{ connectError() }}</p>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Stats Cards -->
+  @if (isLoading()) {
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+      @for (_ of [1,2,3]; track $index) {
+        <div class="h-28 animate-pulse rounded-xl bg-surface-alt"></div>
+      }
+    </div>
+  } @else if (earnings(); as e) {
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+
+      <!-- Total Earned -->
+      <div class="flex flex-col gap-4 rounded-xl border border-divider bg-surface p-6 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div class="flex flex-col gap-1">
+            <p class="m-0 text-sm font-medium uppercase tracking-wide text-muted">Total Earned</p>
+            <p class="m-0 text-3xl font-bold text-heading">${{ e.totalEarned | number: '1.2-2' }}</p>
+          </div>
+          <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
+            <lucide-angular name="circle-dollar-sign" class="h-6 w-6 text-green-600" />
+          </div>
+        </div>
+        <p class="m-0 text-xs text-muted">Net earnings from completed orders</p>
+      </div>
+
+      <!-- Pending -->
+      <div class="flex flex-col gap-4 rounded-xl border border-divider bg-surface p-6 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div class="flex flex-col gap-1">
+            <p class="m-0 text-sm font-medium uppercase tracking-wide text-muted">Pending</p>
+            <p class="m-0 text-3xl font-bold text-heading">${{ e.pendingEarnings | number: '1.2-2' }}</p>
+          </div>
+          <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100">
+            <lucide-angular name="clock" class="h-6 w-6 text-amber-600" />
+          </div>
+        </div>
+        <p class="m-0 text-xs text-muted">Expected from active orders (80% net)</p>
+      </div>
+
+      <!-- Platform Fees -->
+      <div class="flex flex-col gap-4 rounded-xl border border-divider bg-surface p-6 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div class="flex flex-col gap-1">
+            <p class="m-0 text-sm font-medium uppercase tracking-wide text-muted">Platform Fees</p>
+            <p class="m-0 text-3xl font-bold text-heading">${{ e.platformFeesTotal | number: '1.2-2' }}</p>
+          </div>
+          <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-alt">
+            <lucide-angular name="percent" class="h-6 w-6 text-muted" />
+          </div>
+        </div>
+        <p class="m-0 text-xs text-muted">20% service fee on completed orders</p>
+      </div>
+
+    </div>
+  }
+
+  <!-- Transactions Table -->
+  <div class="grid gap-5 rounded-xl border border-divider bg-surface p-5 shadow-sm md:p-6">
+    <div class="flex items-center justify-between">
+      <h2 class="m-0 text-xl font-semibold text-heading">Transaction History</h2>
+      @if (earnings()?.transactions?.length) {
+        <span class="rounded-full bg-surface-alt px-3 py-1 text-xs font-medium text-muted">
+          {{ earnings()!.transactions.length }} orders
+        </span>
+      }
+    </div>
+
+    @if (isLoading()) {
+      <div class="rounded-lg border border-divider bg-surface-alt p-5 text-sm text-muted">Loading transactions...</div>
+    } @else if (error()) {
+      <div class="rounded-lg border border-error/30 bg-red-50 p-5 text-sm text-error">{{ error() }}</div>
+    } @else if (!earnings()?.transactions?.length) {
+      <div class="flex flex-col items-center gap-3 py-12 text-center">
+        <div class="flex h-14 w-14 items-center justify-center rounded-full bg-surface-alt">
+          <lucide-angular name="receipt" class="h-7 w-7 text-muted" />
+        </div>
+        <p class="m-0 text-sm font-medium text-heading">No completed orders yet</p>
+        <p class="m-0 text-xs text-muted">Transactions will appear here once buyers accept your deliveries.</p>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="min-w-full border-collapse">
+          <thead>
+          <tr class="border-b border-divider text-left text-xs uppercase tracking-wide text-muted">
+            <th class="px-3 py-3 font-semibold">Gig / Package</th>
+            <th class="px-3 py-3 font-semibold">Buyer</th>
+            <th class="px-3 py-3 font-semibold">Date</th>
+            <th class="px-3 py-3 font-semibold text-right">Gross</th>
+            <th class="px-3 py-3 font-semibold text-right">Fee (20%)</th>
+            <th class="px-3 py-3 font-semibold text-right">You Receive</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (tx of earnings()!.transactions; track tx.orderId) {
+              <tr class="border-b border-divider text-sm text-heading last:border-0">
+                <td class="px-3 py-4">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="line-clamp-1 font-medium">{{ tx.gigTitle }}</span>
+                    <span class="text-xs text-muted">{{ tx.packageName }} · {{ tx.packageTier }}</span>
+                  </div>
+                </td>
+                <td class="px-3 py-4 text-muted">{{ tx.buyerUsername }}</td>
+                <td class="px-3 py-4 text-muted">{{ tx.completedAtUtc | date: 'MMM d, y' }}</td>
+                <td class="px-3 py-4 text-right">${{ tx.grossAmount | number: '1.2-2' }}</td>
+                <td class="px-3 py-4 text-right text-muted">-${{ tx.platformFee | number: '1.2-2' }}</td>
+                <td class="px-3 py-4 text-right font-semibold text-green-600">${{ tx.netAmount | number: '1.2-2' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+</section>

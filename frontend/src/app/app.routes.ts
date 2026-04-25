@@ -42,6 +42,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/seller-profile-edit/seller-profile-edit').then((m) => m.SellerProfileEdit),
   },
   {
+    path: 'dashboard/seller/earnings',
+    loadComponent: () => import('./pages/seller-dashboard/earnings/earnings').then((m) => m.Earnings),
+  },
+  {
     path: 'orders',
     loadComponent: () => import('./pages/my-orders/my-orders').then((m) => m.MyOrders),
   },

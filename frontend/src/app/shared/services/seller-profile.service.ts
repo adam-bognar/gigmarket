@@ -4,8 +4,10 @@ import {Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {Observable} from 'rxjs';
 import {
+  ConnectStripeAccountResult,
   CreateSellerProfilePayload,
   LanguageOption,
+  SellerEarningsDto,
   SellerProfileFullDto,
   SellerPublicProfileDto,
   UpdateSellerProfilePayload,
@@ -48,6 +50,25 @@ export class SellerProfileService {
   getPublicProfile(sellerProfileId: string): Observable<SellerPublicProfileDto> {
     return this.http.get<SellerPublicProfileDto>(
       `${this.baseUrl}/seller/${sellerProfileId}/public`
+    );
+  }
+
+  connectStripe(): Observable<ConnectStripeAccountResult> {
+    return this.http.post<ConnectStripeAccountResult>(
+      `${this.baseUrl}/seller/connect`,
+      {}
+    );
+  }
+
+  getStripeDashboardLink(): Observable<{ url: string }> {
+    return this.http.get<{ url: string }>(
+      `${this.baseUrl}/seller/connect/dashboard`
+    );
+  }
+
+  getEarnings(): Observable<SellerEarningsDto> {
+    return this.http.get<SellerEarningsDto>(
+      `${this.baseUrl}/seller/earnings`
     );
   }
 }

@@ -133,3 +133,30 @@ export interface SellerPublicProfileDto {
   gigs: GigSummaryDto[];
   reviews: SellerReviewDto[];
 }
+
+export type StripeAccountStatus = 'NotConnected' | 'Pending' | 'Active';
+
+export interface ConnectStripeAccountResult {
+  onboardingUrl: string | null;
+  status: StripeAccountStatus;
+}
+
+export interface EarningTransactionDto {
+  orderId: string;
+  gigTitle: string;
+  buyerUsername: string;
+  completedAtUtc: string;
+  grossAmount: number;
+  platformFee: number;
+  netAmount: number;
+  packageName: string;
+  packageTier: string;
+}
+
+export interface SellerEarningsDto {
+  totalEarned: number;
+  pendingEarnings: number;
+  platformFeesTotal: number;
+  stripeAccountStatus: StripeAccountStatus;
+  transactions: EarningTransactionDto[];
+}
