@@ -1,275 +1,384 @@
-<nav class="sticky top-0 z-50 bg-white shadow-sm w-full" aria-label="Main navigation">
-    <!-- Main row -->
-    <div class="flex items-center gap-4 px-6 py-3">
+<nav class="sticky top-0 z-50 bg-white shadow-sm w-full">
+  <!-- Main row -->
+  <div class="flex items-center gap-4 px-6 py-3">
 
-        <!-- Logo -->
-        <a routerLink="/browse" class="flex items-center gap-2 no-underline shrink-0" aria-label="GigMarket home">
-            <svg class="w-7 h-7" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <rect width="12" height="12" rx="2" fill="#1DBF73" />
-                <rect x="16" width="12" height="12" rx="2" fill="#FBBF24" />
-                <rect y="16" width="12" height="12" rx="2" fill="#8B5CF6" />
-                <rect x="16" y="16" width="12" height="12" rx="2" fill="#3B82F6" />
-            </svg>
-            <span class="text-xl font-bold text-slate-800 tracking-tight">GigMarket</span>
-        </a>
+    <!-- Logo -->
+    <a routerLink="/browse" class="flex items-center gap-2 no-underline shrink-0">
+      <svg class="w-7 h-7" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="12" height="12" rx="2" fill="#1DBF73" />
+        <rect x="16" width="12" height="12" rx="2" fill="#FBBF24" />
+        <rect y="16" width="12" height="12" rx="2" fill="#8B5CF6" />
+        <rect x="16" y="16" width="12" height="12" rx="2" fill="#3B82F6" />
+      </svg>
+      <span class="text-xl font-bold text-slate-800 tracking-tight">GigMarket</span>
+    </a>
 
-        @if (isDashboard()) {
-            <!-- Dashboard label + nav links -->
-            <div class="hidden md:flex items-center gap-6">
-                <div class="flex items-center gap-3">
-                    <div class="w-px h-5 bg-divider"></div>
-                    <span class="text-sm font-semibold text-muted tracking-wide uppercase">Seller Dashboard</span>
+    @if (isDashboard()) {
+      <!-- Dashboard label + nav links -->
+      <div class="hidden md:flex items-center gap-6">
+        <div class="flex items-center gap-3">
+          <div class="w-px h-5 bg-divider"></div>
+          <span class="text-sm font-semibold text-muted tracking-wide uppercase">Seller Dashboard</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <a routerLink="/dashboard/seller/manage-gigs"
+             class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+            My Gigs
+          </a>
+          <a routerLink="/dashboard/orders"
+             class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+            Orders
+          </a>
+          <a routerLink="/dashboard/messages"
+             class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+            Messages
+          </a>
+          <a routerLink="/dashboard/earnings"
+             class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+            Earnings
+          </a>
+        </div>
+      </div>
+    } @else {
+      <!-- Desktop search with dropdown -->
+      <div class="relative hidden md:flex flex-1 max-w-xl">
+        <form class="w-full" role="search" (ngSubmit)="onSearch()">
+          <div class="flex items-center w-full border border-divider bg-gray-500/10 overflow-hidden transition-all duration-150 focus-within:border-primary"
+               [class.rounded-md]="!showDropdown()"
+               [class.rounded-t-xl]="showDropdown()">
+            <input type="search"
+                   class="flex-1 px-4 py-2 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                   placeholder="What service are you looking for today?"
+                   autocomplete="off"
+                   [ngModel]="searchQuery()"
+                   (ngModelChange)="searchQuery.set($event)"
+                   name="search"
+                   (focus)="onInputFocus()"
+                   (blur)="onInputBlur()"
+                   (keydown)="onKeydown($event)" />
+            <button type="submit"
+                    class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer shrink-0"
+                    >
+              <lucide-icon [img]="SearchIcon" class="w-4 h-4" />
+            </button>
+          </div>
+        </form>
+
+        <!-- Dropdown -->
+        @if (showDropdown()) {
+          <div class="absolute top-full left-0 w-full bg-white border border-t-0 border-divider rounded-b-xl shadow-xl z-50 pb-1 overflow-hidden">
+
+            <!-- Recent searches -->
+            @if (recentSuggestions().length > 0) {
+              <div class="px-4 pt-3 pb-1.5">
+                <span class="text-[10px] font-semibold text-muted uppercase tracking-widest">Recent</span>
+              </div>
+              @for (s of recentSuggestions(); track s.label; let i = $index) {
+                <div class="flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors group"
+                     [class.bg-surface-alt]="highlightedIndex() === i"
+                     [class.hover:bg-surface-alt]="highlightedIndex() !== i"
+                     (mousedown)="selectSuggestion(s)">
+                  <lucide-icon [img]="ClockIcon" class="w-4 h-4 text-muted shrink-0" />
+                  <span class="flex-1 text-sm text-heading truncate">{{ s.label }}</span>
+                  <button type="button"
+                          class="flex items-center justify-center w-5 h-5 rounded-full text-muted hover:text-heading hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 shrink-0"
+                          (mousedown)="removeRecentSearch(s.label, $event)">
+                    <lucide-icon [img]="XIcon" class="w-3 h-3" />
+                  </button>
                 </div>
-                <div class="flex items-center gap-1">
-                    <a routerLink="/dashboard/seller/manage-gigs"
-                       class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
-                        My Gigs
-                    </a>
-                    <a routerLink="/dashboard/orders"
-                       class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
-                        Orders
-                    </a>
-                    <a routerLink="/dashboard/messages"
-                       class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
-                        Messages
-                    </a>
-                    <a routerLink="/dashboard/earnings"
-                       class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
-                        Earnings
-                    </a>
+              }
+            }
+
+            <!-- Category suggestions -->
+            @if (categorySuggestions().length > 0) {
+              <div class="px-4 pb-1.5"
+                   [class.pt-3]="recentSuggestions().length === 0"
+                   [class.pt-2]="recentSuggestions().length > 0"
+                   [class.border-t]="recentSuggestions().length > 0"
+                   [class.border-divider]="recentSuggestions().length > 0"
+                   [class.mt-1]="recentSuggestions().length > 0">
+                <span class="text-[10px] font-semibold text-muted uppercase tracking-widest">Categories</span>
+              </div>
+              @for (s of categorySuggestions(); track s.id; let i = $index) {
+                <div class="flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors"
+                     [class.bg-surface-alt]="highlightedIndex() === categoryOffset() + i"
+                     [class.hover:bg-surface-alt]="highlightedIndex() !== categoryOffset() + i"
+                     (mousedown)="selectSuggestion(s)">
+                  <lucide-icon [img]="TagIcon" class="w-4 h-4 text-muted shrink-0" />
+                  <span class="text-sm text-heading truncate">{{ s.label }}</span>
                 </div>
-            </div>
-        } @else {
-            <!-- Search bar: hidden on mobile -->
-            <form class="hidden md:flex flex-1 items-center" role="search" (ngSubmit)="onSearch()">
-                <div class="flex items-center flex-1 max-w-xl border border-divider bg-gray-500/10 rounded-md overflow-hidden focus-within:border-primary transition-colors">
-                    <input type="search"
-                        class="flex-1 px-4 py-2 text-sm text-heading placeholder-muted bg-transparent outline-none"
-                        placeholder="What service are you looking for today?" aria-label="Search services"
-                        [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" name="search" />
-                    <button type="submit"
-                        class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer"
-                        aria-label="Search">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <circle cx="11" cy="11" r="8" />
-                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                        </svg>
-                    </button>
-                </div>
-            </form>
+              }
+            }
+
+            <!-- Search action -->
+            @if (actionQuery()) {
+              <div class="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors border-t border-divider mt-1"
+                   [class.bg-surface-alt]="highlightedIndex() === actionIndex()"
+                   [class.hover:bg-surface-alt]="highlightedIndex() !== actionIndex()"
+                   (mousedown)="selectSuggestion({ kind: 'action', label: actionQuery() })">
+                <lucide-icon [img]="SearchIcon" class="w-4 h-4 text-primary shrink-0" />
+                <span class="text-sm text-heading">
+                                    Search for <strong class="font-semibold">"{{ actionQuery() }}"</strong>
+                                </span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- User actions: hidden on mobile -->
+    <div class="hidden md:flex items-center gap-3 ml-auto shrink-0">
+      @if (isAuthenticated()) {
+        @if (!isSeller() && !isDashboard()) {
+          <a routerLink="/become"
+             class="px-4 py-2 text-sm font-medium text-heading hover:text-primary transition-colors no-underline">
+            Become a Seller
+          </a>
         }
 
-        <!-- User actions: hidden on mobile -->
-        <div class="hidden md:flex items-center gap-3 ml-auto shrink-0">
-            @if (isAuthenticated()) {
-                @if (!isSeller() && !isDashboard()) {
-                    <a routerLink="/become"
-                       class="px-4 py-2 text-sm font-medium text-heading hover:text-primary transition-colors no-underline">
-                        Become a Seller
-                    </a>
-                }
+        @if (!isDashboard()) {
+          <!-- Notifications -->
+          <a routerLink="/notifications" class="relative p-2 rounded-full text-heading hover:text-primary transition-colors">
+            <lucide-icon [img]="BellIcon" class="w-5 h-5" />
+          </a>
 
-                @if (!isDashboard()) {
-                    <!-- Notifications -->
-                    <a routerLink="/notifications" class="relative p-2 rounded-full text-heading hover:text-primary transition-colors"
-                       aria-label="Notifications">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                        </svg>
-                    </a>
-
-                    <!-- Inbox -->
-                    <a
-                      routerLink="/inbox"
-                      class="relative flex items-center justify-center rounded-full p-2 text-muted transition-colors hover:bg-surface-alt hover:text-heading"
-                      aria-label="Inbox"
-                    >
-                      <lucide-icon [img]="MessageSquareIcon" class="h-5 w-5" />
-                      @if (unreadCount() > 0) {
-                        <span class="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-on-primary">
+          <!-- Inbox -->
+          <a
+            routerLink="/inbox"
+            class="relative flex items-center justify-center rounded-full p-2 text-muted transition-colors hover:bg-surface-alt hover:text-heading"
+          >
+            <lucide-icon [img]="MessageSquareIcon" class="h-5 w-5" />
+            @if (unreadCount() > 0) {
+              <span class="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-on-primary">
                           {{ unreadCount() > 9 ? '9+' : unreadCount() }}
                         </span>
-                      }
-                    </a>
-                }
+            }
+          </a>
+        }
 
-                <!-- Profile avatar with dropdown -->
-                <div class="relative">
-                    <button type="button"
-                            class="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border-2 border-primary cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                            (click)="toggleProfileMenu()">
-                        @if (user()?.profileUrl) {
-                            <img [src]="user()?.profileUrl" [alt]="user()?.customUsername ?? ''"
-                                 class="w-full h-full object-cover" />
-                        } @else {
-                            <span class="text-xs font-bold text-on-primary bg-primary w-full h-full flex items-center justify-center">
+        <!-- Profile avatar with dropdown -->
+        <div class="relative">
+          <button type="button"
+                  class="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border-2 border-primary cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  (click)="toggleProfileMenu()">
+            @if (user()?.profileUrl) {
+              <img [src]="user()?.profileUrl" [alt]="user()?.customUsername ?? ''"
+                   class="w-full h-full object-cover" />
+            } @else {
+              <span class="text-xs font-bold text-on-primary bg-primary w-full h-full flex items-center justify-center">
                                 {{ userInitials() }}
                             </span>
-                        }
-                    </button>
-
-                    @if (profileMenuOpen()) {
-                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-divider py-1 z-50"
-                             role="menu" aria-label="User menu">
-                            <a routerLink="/profile" (click)="closeProfileMenu()" role="menuitem"
-                               class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
-                                Profile
-                            </a>
-                            <a routerLink="/dashboard/seller/manage-gigs" (click)="closeProfileMenu()" role="menuitem"
-                               class="blockerLi px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
-                                Dashboard
-                            </a>
-                            <hr class="my-1 border-divider" />
-                            <button type="button" (click)="onLogout()" role="menuitem"
-                                    class="w-full text-left px-4 py-2 text-sm text-heading hover:bg-gray-100 cursor-pointer">
-                                Logout
-                            </button>
-                        </div>
-                    }
-                </div>
-            } @else {
-                <button type="button" routerLink="/login"
-                        class="px-4 py-2 text-sm font-medium text-heading hover:text-primary transition-colors cursor-pointer">
-                    Sign In
-                </button>
-                <button type="button" routerLink="/login"
-                        class="px-4 py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">
-                    Join
-                </button>
             }
+          </button>
+
+          @if (profileMenuOpen()) {
+            <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-divider py-1 z-50"
+                 role="menu">
+              <a routerLink="/profile" (click)="closeProfileMenu()" role="menuitem"
+                 class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
+                Profile
+              </a>
+              <a routerLink="/dashboard/seller/manage-gigs" (click)="closeProfileMenu()" role="menuitem"
+                 class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
+                Dashboard
+              </a>
+              <hr class="my-1 border-divider" />
+              <button type="button" (click)="onLogout()" role="menuitem"
+                      class="w-full text-left px-4 py-2 text-sm text-heading hover:bg-gray-100 cursor-pointer">
+                Logout
+              </button>
+            </div>
+          }
         </div>
-
-        <!-- Hamburger button: visible only on mobile -->
-        <button type="button" class="md:hidden ml-auto p-2 rounded-md text-heading hover:text-primary transition-colors cursor-pointer"
-            (click)="toggleMobileMenu()">
-            @if (mobileMenuOpen()) {
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-            } @else {
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <line x1="3" y1="12" x2="21" y2="12" />
-                    <line x1="3" y1="18" x2="21" y2="18" />
-                </svg>
-            }
-        </button>
+      } @else {
+        <a routerLink="/login"
+           class="px-4 py-2 text-sm font-medium text-heading hover:text-primary transition-colors no-underline">
+          Sign In
+        </a>
+        <a routerLink="/login"
+           class="px-4 py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors no-underline">
+          Join
+        </a>
+      }
     </div>
 
-    <!-- Mobile drawer -->
-    @if (mobileMenuOpen()) {
-        <div class="md:hidden border-t border-divider px-6 py-4 flex flex-col gap-4">
+    <!-- Mobile hamburger -->
+    <button type="button"
+            class="md:hidden ml-auto p-2 rounded-md text-heading hover:text-primary hover:bg-surface-alt transition-colors cursor-pointer"
+            (click)="toggleMobileMenu()"
+            >
+      @if (mobileMenuOpen()) {
+        <lucide-icon [img]="XIcon" class="w-6 h-6" />
+      } @else {
+        <lucide-icon [img]="MenuIcon" class="w-6 h-6" />
+      }
+    </button>
+  </div>
 
-            @if (isDashboard()) {
-                <!-- Dashboard label + links on mobile -->
-                <div class="flex items-center gap-3 pb-1 border-b border-divider">
-                    <div class="w-px h-4 bg-primary"></div>
-                    <span class="text-xs font-semibold text-muted tracking-wide uppercase">Seller Dashboard</span>
-                </div>
-                <div class="flex flex-col gap-1">
-                    <a routerLink="/dashboard/gigs" (click)="closeMobileMenu()"
-                       class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
-                        My Gigs
-                    </a>
-                    <a routerLink="/dashboard/orders" (click)="closeMobileMenu()"
-                       class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
-                        Orders
-                    </a>
-                    <a routerLink="/dashboard/messages" (click)="closeMobileMenu()"
-                       class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
-                        Messages
-                    </a>
-                    <a routerLink="/dashboard/earnings" (click)="closeMobileMenu()"
-                       class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
-                        Earnings
-                    </a>
-                </div>
-            } @else {
-                <form role="search" (ngSubmit)="onSearch()">
-                    <div class="flex items-center border border-divider bg-gray-500/10 rounded-md overflow-hidden focus-within:border-primary transition-colors">
-                        <input type="search"
-                            class="flex-1 px-4 py-2 text-sm text-heading placeholder-muted bg-transparent outline-none"
-                            placeholder="What service are you looking for today?" aria-label="Search services"
-                            [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" name="searchMobile" />
-                        <button type="submit"
-                            class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer"
-                            aria-label="Search">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="11" cy="11" r="8" />
-                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                            </svg>
-                        </button>
-                    </div>
-                </form>
-            }
+  <!-- Mobile drawer -->
+  @if (mobileMenuOpen()) {
+    <div class="md:hidden border-t border-divider px-6 py-4 flex flex-col gap-4">
 
-            <div class="flex flex-col gap-2">
-                @if (isAuthenticated()) {
-                    <!-- User info -->
-                    <div class="flex items-center gap-3 py-2">
+      @if (isDashboard()) {
+        <!-- Dashboard label + links on mobile -->
+        <div class="flex items-center gap-3 pb-1 border-b border-divider">
+          <div class="w-px h-4 bg-primary"></div>
+          <span class="text-xs font-semibold text-muted tracking-wide uppercase">Seller Dashboard</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <a routerLink="/dashboard/gigs" (click)="closeMobileMenu()"
+             class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+            My Gigs
+          </a>
+          <a routerLink="/dashboard/orders" (click)="closeMobileMenu()"
+             class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+            Orders
+          </a>
+          <a routerLink="/dashboard/messages" (click)="closeMobileMenu()"
+             class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+            Messages
+          </a>
+          <a routerLink="/dashboard/earnings" (click)="closeMobileMenu()"
+             class="px-4 py-2.5 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
+            Earnings
+          </a>
+        </div>
+      } @else {
+        <!-- Mobile search with dropdown -->
+        <div class="relative">
+          <form role="search" (ngSubmit)="onSearch()">
+            <div class="flex items-center border border-divider bg-gray-500/10 overflow-hidden transition-all duration-150 focus-within:border-primary"
+                 [class.rounded-md]="!showDropdown()"
+                 [class.rounded-t-xl]="showDropdown()">
+              <input type="search"
+                     class="flex-1 px-4 py-2 text-sm text-heading placeholder-muted bg-transparent outline-none"
+                     placeholder="What service are you looking for today?"
+                     autocomplete="off"
+                     [ngModel]="searchQuery()"
+                     (ngModelChange)="searchQuery.set($event)"
+                     name="searchMobile"
+                     (focus)="onInputFocus()"
+                     (blur)="onInputBlur()"
+                     (keydown)="onKeydown($event)" />
+              <button type="submit"
+                      class="flex items-center justify-center w-10 h-10 bg-primary hover:bg-primary-dark text-on-primary transition-colors cursor-pointer shrink-0"
+                      >
+                <lucide-icon [img]="SearchIcon" class="w-4 h-4" />
+              </button>
+            </div>
+          </form>
+
+          <!-- Mobile dropdown -->
+          @if (showDropdown()) {
+            <div class="absolute top-full left-0 w-full bg-white border border-t-0 border-divider rounded-b-xl shadow-xl z-50 pb-1 overflow-hidden">
+
+              @if (recentSuggestions().length > 0) {
+                <div class="px-4 pt-3 pb-1.5">
+                  <span class="text-[10px] font-semibold text-muted uppercase tracking-widest">Recent</span>
+                </div>
+                @for (s of recentSuggestions(); track s.label; let i = $index) {
+                  <div class="flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors group"
+                       [class.bg-surface-alt]="highlightedIndex() === i"
+                       (mousedown)="selectSuggestion(s)">
+                    <lucide-icon [img]="ClockIcon" class="w-4 h-4 text-muted shrink-0" />
+                    <span class="flex-1 text-sm text-heading truncate">{{ s.label }}</span>
+                    <button type="button"
+                            class="flex items-center justify-center w-5 h-5 rounded-full text-muted hover:text-heading hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+                            (mousedown)="removeRecentSearch(s.label, $event)">
+                      <lucide-icon [img]="XIcon" class="w-3 h-3" />
+                    </button>
+                  </div>
+                }
+              }
+
+              @if (categorySuggestions().length > 0) {
+                <div class="px-4 pb-1.5"
+                     [class.pt-3]="recentSuggestions().length === 0"
+                     [class.pt-2]="recentSuggestions().length > 0"
+                     [class.border-t]="recentSuggestions().length > 0"
+                     [class.border-divider]="recentSuggestions().length > 0"
+                     [class.mt-1]="recentSuggestions().length > 0">
+                  <span class="text-[10px] font-semibold text-muted uppercase tracking-widest">Categories</span>
+                </div>
+                @for (s of categorySuggestions(); track s.id; let i = $index) {
+                  <div class="flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors"
+                       [class.bg-surface-alt]="highlightedIndex() === categoryOffset() + i"
+                       (mousedown)="selectSuggestion(s)">
+                    <lucide-icon [img]="TagIcon" class="w-4 h-4 text-muted shrink-0" />
+                    <span class="text-sm text-heading truncate">{{ s.label }}</span>
+                  </div>
+                }
+              }
+
+              @if (actionQuery()) {
+                <div class="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors border-t border-divider mt-1"
+                     [class.bg-surface-alt]="highlightedIndex() === actionIndex()"
+                     (mousedown)="selectSuggestion({ kind: 'action', label: actionQuery() })">
+                  <lucide-icon [img]="SearchIcon" class="w-4 h-4 text-primary shrink-0" />
+                  <span class="text-sm text-heading">
+                                        Search for <strong class="font-semibold">"{{ actionQuery() }}"</strong>
+                                    </span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <div class="flex flex-col gap-2">
+        @if (isAuthenticated()) {
+          <!-- User info -->
+          <div class="flex items-center gap-3 py-2">
                         <span class="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border-2 border-primary shrink-0">
                             @if (user()?.profileUrl) {
-                                <img [src]="user()?.profileUrl" [alt]="user()?.customUsername ?? ''"
-                                     class="w-full h-full object-cover" />
+                              <img [src]="user()?.profileUrl" [alt]="user()?.customUsername ?? ''"
+                                   class="w-full h-full object-cover" />
                             } @else {
-                                <span class="text-xs font-bold text-on-primary bg-primary w-full h-full flex items-center justify-center">
+                              <span class="text-xs font-bold text-on-primary bg-primary w-full h-full flex items-center justify-center">
                                     {{ userInitials() }}
                                 </span>
                             }
                         </span>
-                        <span class="text-sm font-medium text-heading">{{ user()?.customUsername }}</span>
-                    </div>
+            <span class="text-sm font-medium text-heading">{{ user()?.customUsername }}</span>
+          </div>
 
-                    @if (!isSeller() && !isDashboard()) {
-                        <a routerLink="/become" (click)="closeMobileMenu()"
-                           class="w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline text-center">
-                            Become a Seller
-                        </a>
-                    }
+          @if (!isSeller() && !isDashboard()) {
+            <a routerLink="/become" (click)="closeMobileMenu()"
+               class="w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline text-center">
+              Become a Seller
+            </a>
+          }
 
-                    @if (!isDashboard()) {
-                        <a routerLink="/messages" (click)="closeMobileMenu()"
-                           class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                            </svg>
-                            Messages
-                        </a>
+          @if (!isDashboard()) {
+            <a routerLink="/messages" (click)="closeMobileMenu()"
+               class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
+              <lucide-icon [img]="MessageSquareIcon" class="w-5 h-5" />
+              Messages
+            </a>
 
-                        <a routerLink="/notifications" (click)="closeMobileMenu()"
-                           class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                            </svg>
-                            Notifications
-                        </a>
-                    }
+            <a routerLink="/notifications" (click)="closeMobileMenu()"
+               class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
+              <lucide-icon [img]="BellIcon" class="w-5 h-5" />
+              Notifications
+            </a>
+          }
 
-                    <button type="button" (click)="onLogout()"
-                            class="w-full py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">
-                        Logout
-                    </button>
-                } @else {
-                    <button routerLink="/login" (click)="closeMobileMenu()"
-                            class="w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors cursor-pointer">
-                        Sign In
-                    </button>
-                    <button routerLink="/login" (click)="closeMobileMenu()"
-                            class="w-full py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">
-                        Join
-                    </button>
-                }
-            </div>
-        </div>
-    }
+          <button type="button" (click)="onLogout()"
+                  class="w-full py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">
+            Logout
+          </button>
+        } @else {
+          <button routerLink="/login" (click)="closeMobileMenu()"
+                  class="w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors cursor-pointer">
+            Sign In
+          </button>
+          <button routerLink="/login" (click)="closeMobileMenu()"
+                  class="w-full py-2 text-sm font-semibold text-on-primary bg-primary hover:bg-primary-dark rounded-md transition-colors cursor-pointer">
+            Join
+          </button>
+        }
+      </div>
+    </div>
+  }
 </nav>
