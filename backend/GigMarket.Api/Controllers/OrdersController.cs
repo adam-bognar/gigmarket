@@ -5,6 +5,7 @@ using GigMarket.Application.Features.Orders.Commands.FulfillOrder;
 using GigMarket.Application.Features.Orders.Commands.RequestRevision;
 using GigMarket.Application.Features.Orders.Models;
 using GigMarket.Application.Features.Orders.Queries.GetMyOrders;
+using GigMarket.Application.Features.Orders.Queries.GetMySellerOrders;
 using GigMarket.Application.Features.Orders.Queries.GetOrderById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -38,6 +39,15 @@ public class OrdersController(
     public async Task<IActionResult> GetMyOrders(CancellationToken ct)
     {
         var result = await mediator.Send(new GetMyOrdersQuery(), ct);
+        return Ok(result);
+    }
+
+    [HttpGet("seller")]
+    [Authorize]
+    [ProducesResponseType(typeof(List<OrderDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMySellerOrders(CancellationToken ct)
+    {
+        var result = await mediator.Send(new GetMySellerOrdersQuery(), ct);
         return Ok(result);
     }
 

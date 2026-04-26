@@ -15,6 +15,10 @@ export class OrderService extends ApiService {
     return this.http.get<OrderSummaryDto[]>(`${this.base}/orders`);
   }
 
+  getSellerOrders(): Observable<OrderSummaryDto[]> {
+    return this.http.get<OrderSummaryDto[]>(`${this.base}/orders/seller`);
+  }
+
   getOrderById(id: string): Observable<OrderDetailDto> {
     return this.http.get<OrderDetailDto>(`${this.base}/orders/${id}`);
   }
