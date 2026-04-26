@@ -39,7 +39,7 @@ public sealed class SellerService(ICurrentUserService currentUser, IApplicationD
             .ToList();
 
         db.Skills.AddRange(newSkills);
-        
+
         var allSkills = existingSkills.Concat(newSkills).ToList();
 
         var seller = new SellerProfile
@@ -89,14 +89,14 @@ public sealed class SellerService(ICurrentUserService currentUser, IApplicationD
 
         return new SellerProfileDto(seller.Id, seller.UserId, seller.CreatedAtUtc);
     }
-    
+
     public async Task UpdateSellerAsync(UpdateSellerProfileRequest request, CancellationToken ct)
     {
         if (!currentUser.IsAuthenticated || string.IsNullOrWhiteSpace(currentUser.UserId.ToString()))
             throw new UnauthorizedException("Not authenticated.");
- 
+
         var userId = currentUser.UserId!;
- 
+
         var seller = await db.SellerProfiles
             .Include(s => s.Occupation)
             .Include(s => s.Languages)
@@ -104,55 +104,73 @@ public sealed class SellerService(ICurrentUserService currentUser, IApplicationD
             .Include(s => s.Educations)
             .Include(s => s.Certifications)
             .FirstOrDefaultAsync(x => x.UserId == userId, ct);
- 
-        if (seller is null) throw new NotFoundException("Seller profile not found.");
- 
-        db.SellerOccupations.Remove(seller.Occupation);
-        db.SellerLanguages.RemoveRange(seller.Languages);
-        db.SellerSkills.RemoveRange(seller.Skills);
-        db.SellerEducations.RemoveRange(seller.Educations);
-        db.SellerCertifications.RemoveRange(seller.Certifications);
- 
-        await db.SaveChangesAsync(ct);
- 
+
+        if (seller is null)
+            throw new NotFoundException("Seller profile not found.");
+
+        var languageIds = request.LanguageIds
+            .Distinct()
+            .ToList();
+
+        var languages = await db.Languages
+            .Where(l => languageIds.Contains(l.Id))
+            .ToListAsync(ct);
+
+        if (languages.Count != languageIds.Count)
+            throw new BadRequestException("One or more language IDs are invalid.");
+
+        var skillNames = request.Skills
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Select(s => s.Trim().ToLowerInvariant())
+            .Distinct()
+            .ToList();
+
+        var existingSkills = await db.Skills
+            .Where(s => skillNames.Contains(s.Name.ToLower()))
+            .ToListAsync(ct);
+
+        var existingSkillNames = existingSkills
+            .Select(s => s.Name.ToLower())
+            .ToHashSet();
+
+        var newSkills = skillNames
+            .Where(name => !existingSkillNames.Contains(name))
+            .Select(name => new Skill
+            {
+                Id = Guid.NewGuid(),
+                Name = name
+            })
+            .ToList();
+
+        db.Skills.AddRange(newSkills);
+
+        var allSkills = existingSkills.Concat(newSkills).ToList();
+
         seller.FirstName = request.FirstName;
         seller.LastName = request.LastName;
         seller.Description = request.Description;
         seller.ProfileImageUrl = request.ProfilePicUrl;
         seller.PersonalWebsite = request.PersonalWebsite;
- 
-        var languages = await db.Languages
-            .Where(l => request.LanguageIds.Contains(l.Id))
-            .ToListAsync(ct);
- 
-        if (languages.Count != request.LanguageIds.Count)
-            throw new BadRequestException("One or more language IDs are invalid.");
- 
-        var skillNames = request.Skills.Select(s => s.ToLower()).ToList();
-        var existingSkills = await db.Skills
-            .Where(s => skillNames.Contains(s.Name.ToLower()))
-            .ToListAsync(ct);
- 
-        var existingSkillNames = existingSkills.Select(s => s.Name.ToLower()).ToHashSet();
-        var newSkills = skillNames
-            .Where(name => !existingSkillNames.Contains(name))
-            .Select(name => new Skill { Id = Guid.NewGuid(), Name = name })
-            .ToList();
- 
-        db.Skills.AddRange(newSkills);
- 
-        var allSkills = existingSkills.Concat(newSkills).ToList();
- 
-        seller.Occupation = new SellerOccupation
+
+        seller.Occupation.Name = request.Occupation.OccupationName;
+        seller.Occupation.FromYear = request.Occupation.OccupationFromYear;
+        seller.Occupation.ToYear = request.Occupation.OccupationToYear;
+
+        db.SellerLanguages.RemoveRange(seller.Languages);
+        db.SellerSkills.RemoveRange(seller.Skills);
+        db.SellerEducations.RemoveRange(seller.Educations);
+        db.SellerCertifications.RemoveRange(seller.Certifications);
+
+        seller.Languages = languages.Select(l => new SellerLanguage
         {
-            Id = Guid.NewGuid(),
-            Name = request.Occupation.OccupationName,
-            FromYear = request.Occupation.OccupationFromYear,
-            ToYear = request.Occupation.OccupationToYear
-        };
- 
-        seller.Languages = languages.Select(l => new SellerLanguage { LanguageId = l.Id }).ToList();
-        seller.Skills = allSkills.Select(s => new SellerSkill { SkillId = s.Id }).ToList();
+            LanguageId = l.Id
+        }).ToList();
+
+        seller.Skills = allSkills.Select(s => new SellerSkill
+        {
+            SkillId = s.Id
+        }).ToList();
+
         seller.Educations = request.Educations?.Select(e => new SellerEducation
         {
             Id = Guid.NewGuid(),
@@ -162,7 +180,7 @@ public sealed class SellerService(ICurrentUserService currentUser, IApplicationD
             Major = e.Major,
             GraduationYear = e.GraduationYear
         }).ToList() ?? [];
- 
+
         seller.Certifications = request.Certifications?.Select(c => new SellerCertification
         {
             Id = Guid.NewGuid(),
@@ -170,7 +188,7 @@ public sealed class SellerService(ICurrentUserService currentUser, IApplicationD
             IssuingOrganization = c.IssuingOrganization,
             Year = c.Year
         }).ToList() ?? [];
- 
+
         await db.SaveChangesAsync(ct);
     }
 }
