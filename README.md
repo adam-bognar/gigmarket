@@ -63,18 +63,17 @@
 **Goal:** Users can talk in real-time and leave reviews.
 
 **Week 9:**
-- [ ] Frontend: Order Page (Timeline view: "Order Started" -> "Delivery Submitted").
+- [x] Frontend: Order Page (Timeline view: "Order Started" -> "Delivery Submitted").
 
 **Week 10 (04.30):**
-- [ ] Feature: Review System (Stars + Comment).
-- [ ] Logic: Only allow review if Order Status == Completed.
-- [ ] Logic: Calculate Seller's average rating automatically.
+- [x] Feature: Review System (Stars + Comment).
+- [x] Must have pages that did not already exist (edit pages)
 
 #### Sprint 6: Differentiators & Polish
-**Goal:** Implement one standout feature and finalize production hardening.
+**Goal:** Implement tests
 
-**Week 11 (Optional Features):**
-- [ ] Bug Fixes
+**Week 11:**
+- [ ] Tests on frontend and backend
 
 **Week 12 (05.14):**
 - [ ] Bug Fixes
