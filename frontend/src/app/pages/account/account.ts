@@ -19,7 +19,7 @@ function passwordMatchValidator(group: AbstractControl) {
 
 @Component({
   selector: 'app-account',
-  imports: [ReactiveFormsModule, LucideAngularModule, RouterLink],
+  imports: [ReactiveFormsModule, LucideAngularModule],
   templateUrl: './account.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

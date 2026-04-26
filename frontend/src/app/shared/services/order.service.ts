@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import {
+  CheckoutRequest, CheckoutResponse,
   DeliverOrderPayload,
   OrderDetailDto,
   OrderSummaryDto,
@@ -10,6 +11,10 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class OrderService extends ApiService {
+
+  createCheckoutSession(payload: CheckoutRequest): Observable<CheckoutResponse> {
+    return this.http.post<CheckoutResponse>(`${this.base}/orders/checkout`, payload);
+  }
 
   getMyOrders(): Observable<OrderSummaryDto[]> {
     return this.http.get<OrderSummaryDto[]>(`${this.base}/orders`);

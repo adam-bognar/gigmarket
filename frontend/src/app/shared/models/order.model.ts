@@ -64,6 +64,15 @@ export interface RequestRevisionPayload {
   message: string;
 }
 
+export interface CheckoutRequest {
+  gigId: string;
+  packageId: string;
+}
+
+export interface CheckoutResponse {
+  sessionUrl: string;
+}
+
 export type ActivityItem =
   | { type: 'delivery'; data: OrderDeliveryDto }
   | { type: 'revision'; data: OrderRevisionRequestDto };
