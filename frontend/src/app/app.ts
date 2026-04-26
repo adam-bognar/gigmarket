@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component, effect, inject, OnInit} from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
-import { Navbar } from './shared/components/navbar/navbar';
+import {ChangeDetectionStrategy, Component, effect, inject} from '@angular/core';
+import {Router, RouterOutlet} from '@angular/router';
+import {Navbar} from './shared/components/navbar/navbar';
 import {AuthService} from './shared/services/auth.service';
 import {ChatService} from './shared/services/chat.service';
 
@@ -11,9 +11,9 @@ import {ChatService} from './shared/services/chat.service';
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App implements OnInit {
+export class App {
   private readonly router = inject(Router);
-  private authService = inject(AuthService);
+  private readonly authService = inject(AuthService);
   private readonly chatService = inject(ChatService);
 
   constructor() {
@@ -25,10 +25,6 @@ export class App implements OnInit {
         this.chatService.stopConnection();
       }
     });
-  }
-
-  ngOnInit(): void {
-    this.authService.getMe().subscribe();
   }
 
   get showNavbar(): boolean {

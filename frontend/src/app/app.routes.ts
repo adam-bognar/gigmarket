@@ -1,4 +1,5 @@
 import {Routes} from '@angular/router';
+import {authGuard} from './shared/auth-guard/auth.guard';
 
 export const routes: Routes = [
   {
@@ -19,10 +20,12 @@ export const routes: Routes = [
   },
   {
     path: 'create-gig',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/create-gig/create-gig').then((m) => m.CreateGig),
   },
   {
     path: 'create-gig/:id',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/create-gig/create-gig').then((m) => m.CreateGig),
   },
   {
@@ -34,43 +37,66 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/seller-profile/seller-profile').then((m) => m.SellerProfile),
   },
   {
-    path: 'dashboard/seller/manage-gigs',
-    loadComponent: () => import('./pages/seller-dashboard/manage-gigs/manage-gigs').then((m) => m.ManageGigs),
-  },
-  {
-    path: 'dashboard/seller/profile',
-    loadComponent: () => import('./pages/seller-profile-edit/seller-profile-edit').then((m) => m.SellerProfileEdit),
-  },
-  {
-    path: 'dashboard/seller/earnings',
-    loadComponent: () => import('./pages/seller-dashboard/earnings/earnings').then((m) => m.Earnings),
-  },
-  {
-    path: 'dashboard/seller/orders',
-    loadComponent: () => import('./pages/seller-dashboard/seller-orders/seller-orders').then((m) => m.SellerOrders),
+    path: 'dashboard',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'seller/manage-gigs',
+        loadComponent: () => import('./pages/seller-dashboard/manage-gigs/manage-gigs').then((m) => m.ManageGigs),
+      },
+      {
+        path: 'seller/profile',
+        loadComponent: () => import('./pages/seller-profile-edit/seller-profile-edit').then((m) => m.SellerProfileEdit),
+      },
+      {
+        path: 'seller/earnings',
+        loadComponent: () => import('./pages/seller-dashboard/earnings/earnings').then((m) => m.Earnings),
+      },
+      {
+        path: 'seller/orders',
+        loadComponent: () => import('./pages/seller-dashboard/seller-orders/seller-orders').then((m) => m.SellerOrders),
+      },
+    ],
   },
   {
     path: 'orders',
-    loadComponent: () => import('./pages/my-orders/my-orders').then((m) => m.MyOrders),
-  },
-  {
-    path: 'orders/success',
-    loadComponent: () => import('./pages/order-success/order-success').then((m) => m.OrderSuccess),
-  },
-  {
-    path: 'orders/:id',
-    loadComponent: () => import('./pages/order-detail/order-detail').then((m) => m.OrderDetail),
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/my-orders/my-orders').then((m) => m.MyOrders),
+      },
+      {
+        path: 'success',
+        loadComponent: () => import('./pages/order-success/order-success').then((m) => m.OrderSuccess),
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./pages/order-detail/order-detail').then((m) => m.OrderDetail),
+      },
+    ],
   },
   {
     path: 'inbox',
-    loadComponent: () => import('./pages/inbox/inbox').then((m) => m.InboxPage),
-  },
-  {
-    path: 'inbox/:conversationId',
-    loadComponent: () => import('./pages/inbox/conversation/conversation').then((m) => m.ConversationPage),
+    canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/inbox/inbox').then((m) => m.InboxPage),
+      },
+      {
+        path: ':conversationId',
+        loadComponent: () => import('./pages/inbox/conversation/conversation').then((m) => m.ConversationPage),
+      },
+    ],
   },
   {
     path: 'account',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/account/account').then((m) => m.Account),
+  },
+  {
+    path: '**',
+    loadComponent: () => import('./pages/not-found/not-found').then((m) => m.NotFound),
   },
 ];
