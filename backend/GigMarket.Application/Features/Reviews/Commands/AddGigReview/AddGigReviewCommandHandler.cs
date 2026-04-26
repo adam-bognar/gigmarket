@@ -34,6 +34,15 @@ public sealed class AddGigReviewCommandHandler(
         if (sellerProfile?.UserId == userId)
             throw new BadRequestException("You cannot review your own gig.");
 
+        var hasCompletedOrder = await db.Orders
+            .AnyAsync(o => o.GigId == request.GigId
+                        && o.BuyerUserId == userId
+                        && o.Status == OrderStatus.Completed,
+                      cancellationToken);
+
+        if (!hasCompletedOrder)
+            throw new BadRequestException("You can only review a gig after completing an order for it.");
+
         var alreadyReviewed = await db.GigReviews
             .AnyAsync(r => r.GigId == request.GigId && r.ReviewerUserId == userId, cancellationToken);
 
@@ -62,4 +71,3 @@ public sealed class AddGigReviewCommandHandler(
         return mapper.Map<ReviewDto>(review);
     }
 }
-
