@@ -13,7 +13,7 @@
         (click)="onOpenStripeDashboard()"
         class="inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl border border-divider bg-surface px-5 py-3 text-sm font-semibold text-heading shadow-sm transition hover:bg-surface-alt"
       >
-        <lucide-angular name="external-link" class="h-4 w-4" />
+        <lucide-icon [img]="ExternalLinkIcon" class="h-4 w-4" />
         Open Stripe Dashboard
       </button>
     }
@@ -22,26 +22,26 @@
   <!-- Stripe return banner -->
   @if (stripeReturnBanner() === 'success') {
     <div class="flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800">
-      <lucide-angular name="circle-check" class="mt-0.5 h-5 w-5 shrink-0 text-green-600" />
+      <lucide-icon [img]="CircleCheckIcon" class="mt-0.5 h-5 w-5 shrink-0 text-green-600" />
       <div class="flex flex-1 flex-col gap-0.5">
         <p class="m-0 font-semibold">Stripe setup complete!</p>
         <p class="m-0 text-green-700">Your account status has been refreshed. It may take a moment to go active.</p>
       </div>
       <button type="button" (click)="dismissBanner()" class="cursor-pointer text-green-600 hover:text-green-800">
-        <lucide-angular name="x" class="h-4 w-4" />
+        <lucide-icon [img]="XIcon" class="h-4 w-4" />
       </button>
     </div>
   }
 
   @if (stripeReturnBanner() === 'refresh') {
     <div class="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-      <lucide-angular name="triangle-alert" class="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+      <lucide-icon [img]="TriangleAlertIcon" class="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
       <div class="flex flex-1 flex-col gap-0.5">
         <p class="m-0 font-semibold">Onboarding session expired</p>
         <p class="m-0 text-amber-700">Click "Connect Stripe Account" below to restart the onboarding process.</p>
       </div>
       <button type="button" (click)="dismissBanner()" class="cursor-pointer text-amber-600 hover:text-amber-800">
-        <lucide-angular name="x" class="h-4 w-4" />
+        <lucide-icon [img]="XIcon" class="h-4 w-4" />
       </button>
     </div>
   }
@@ -61,8 +61,8 @@
           [class.bg-primary]="isNotConnected()"
           [class.bg-amber-100]="isPending()"
         >
-          <lucide-angular
-            name="credit-card"
+          <lucide-icon
+            [img]="CreditCardIcon"
             class="h-6 w-6"
             [class.text-on-primary]="isNotConnected()"
             [class.text-amber-700]="isPending()"
@@ -123,7 +123,7 @@
             <p class="m-0 text-3xl font-bold text-heading">${{ e.totalEarned | number: '1.2-2' }}</p>
           </div>
           <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
-            <lucide-angular name="circle-dollar-sign" class="h-6 w-6 text-green-600" />
+            <lucide-icon [img]="CircleDollarSignIcon" class="h-6 w-6 text-green-600" />
           </div>
         </div>
         <p class="m-0 text-xs text-muted">Net earnings from completed orders</p>
@@ -137,7 +137,7 @@
             <p class="m-0 text-3xl font-bold text-heading">${{ e.pendingEarnings | number: '1.2-2' }}</p>
           </div>
           <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100">
-            <lucide-angular name="clock" class="h-6 w-6 text-amber-600" />
+            <lucide-icon [img]="ClockIcon" class="h-6 w-6 text-amber-600" />
           </div>
         </div>
         <p class="m-0 text-xs text-muted">Expected from active orders (80% net)</p>
@@ -151,7 +151,7 @@
             <p class="m-0 text-3xl font-bold text-heading">${{ e.platformFeesTotal | number: '1.2-2' }}</p>
           </div>
           <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-alt">
-            <lucide-angular name="percent" class="h-6 w-6 text-muted" />
+            <lucide-icon [img]="PercentIcon" class="h-6 w-6 text-muted" />
           </div>
         </div>
         <p class="m-0 text-xs text-muted">20% service fee on completed orders</p>
@@ -178,7 +178,7 @@
     } @else if (!earnings()?.transactions?.length) {
       <div class="flex flex-col items-center gap-3 py-12 text-center">
         <div class="flex h-14 w-14 items-center justify-center rounded-full bg-surface-alt">
-          <lucide-angular name="receipt" class="h-7 w-7 text-muted" />
+          <lucide-icon [img]="ReceiptIcon" class="h-7 w-7 text-muted" />
         </div>
         <p class="m-0 text-sm font-medium text-heading">No completed orders yet</p>
         <p class="m-0 text-xs text-muted">Transactions will appear here once buyers accept your deliveries.</p>

@@ -1,1 +1,240 @@
-<p>seller-dashboard works!</p>
+<section class="mx-auto grid max-w-7xl gap-10 px-5 py-12 md:px-8 md:py-16">
+
+  <!-- Header -->
+  <div class="flex flex-col gap-1">
+    <h1 class="m-0 text-4xl font-bold tracking-tight text-heading">
+      Welcome back@if (user()?.customUsername) {, {{ user()!.customUsername }}}
+    </h1>
+    <p class="m-0 text-base text-muted">Here's what's happening with your business today.</p>
+  </div>
+
+  <!-- Stripe CTA -->
+  @if (!isLoading() && !isStripeActive()) {
+    <div
+      class="flex flex-col gap-4 rounded-xl border p-5 sm:flex-row sm:items-center sm:justify-between"
+      [class.border-primary]="stripeStatus() === 'NotConnected'"
+      [class.bg-blue-50]="stripeStatus() === 'NotConnected'"
+      [class.border-amber-300]="stripeStatus() === 'Pending'"
+      [class.bg-amber-50]="stripeStatus() === 'Pending'"
+    >
+      <div class="flex items-center gap-4">
+        <div
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+          [class.bg-primary]="stripeStatus() === 'NotConnected'"
+          [class.bg-amber-100]="stripeStatus() === 'Pending'"
+        >
+          <lucide-icon
+            [img]="CreditCardIcon"
+            class="h-5 w-5"
+            [class.text-on-primary]="stripeStatus() === 'NotConnected'"
+            [class.text-amber-700]="stripeStatus() === 'Pending'"
+          />
+        </div>
+        <div class="flex flex-col gap-0.5">
+          @if (stripeStatus() === 'NotConnected') {
+            <p class="m-0 text-sm font-semibold text-heading">Connect Stripe to receive payouts</p>
+            <p class="m-0 text-xs text-muted">You won't receive any earnings until your payout account is set up.</p>
+          } @else {
+            <p class="m-0 text-sm font-semibold text-heading">Stripe onboarding incomplete</p>
+            <p class="m-0 text-xs text-muted">Finish setting up your account to start receiving payouts.</p>
+          }
+        </div>
+      </div>
+      <a
+        routerLink="/dashboard/seller/earnings"
+        class="shrink-0 rounded-xl px-5 py-2.5 text-sm font-semibold transition no-underline text-center"
+        [class.bg-primary]="stripeStatus() === 'NotConnected'"
+        [class.text-on-primary]="stripeStatus() === 'NotConnected'"
+        [class.hover:bg-primary-dark]="stripeStatus() === 'NotConnected'"
+        [class.bg-amber-500]="stripeStatus() === 'Pending'"
+        [class.text-white]="stripeStatus() === 'Pending'"
+        [class.hover:bg-amber-600]="stripeStatus() === 'Pending'"
+      >
+        {{ stripeStatus() === 'NotConnected' ? 'Set up payouts' : 'Continue onboarding' }}
+      </a>
+    </div>
+  }
+
+  <!-- Stat Cards -->
+  @if (isLoading()) {
+    <div class="grid grid-cols-2 gap-5 lg:grid-cols-4">
+      @for (_ of [1,2,3,4]; track $index) {
+        <div class="h-28 animate-pulse rounded-xl bg-surface-alt"></div>
+      }
+    </div>
+  } @else if (error()) {
+    <div class="rounded-xl border border-error/30 bg-red-50 p-5 text-sm text-error">{{ error() }}</div>
+  } @else {
+    <div class="grid grid-cols-2 gap-5 lg:grid-cols-4">
+
+      <!-- Total Earned -->
+      <div class="flex flex-col gap-3 rounded-xl border border-divider bg-surface p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <p class="m-0 text-xs font-semibold uppercase tracking-wide text-muted">Total Earned</p>
+          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100">
+            <lucide-icon [img]="CircleDollarSignIcon" class="h-4 w-4 text-green-600" />
+          </div>
+        </div>
+        <p class="m-0 text-2xl font-bold text-heading">${{ (earnings()?.totalEarned ?? 0) | number:'1.2-2' }}</p>
+        <p class="m-0 text-xs text-muted">Net from completed orders</p>
+      </div>
+
+      <!-- Pending Payout -->
+      <div class="flex flex-col gap-3 rounded-xl border border-divider bg-surface p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <p class="m-0 text-xs font-semibold uppercase tracking-wide text-muted">Pending</p>
+          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-100">
+            <lucide-icon [img]="ClockIcon" class="h-4 w-4 text-amber-600" />
+          </div>
+        </div>
+        <p class="m-0 text-2xl font-bold text-heading">${{ (earnings()?.pendingEarnings ?? 0) | number:'1.2-2' }}</p>
+        <p class="m-0 text-xs text-muted">From active orders (80% net)</p>
+      </div>
+
+      <!-- Active Gigs -->
+      <div class="flex flex-col gap-3 rounded-xl border border-divider bg-surface p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <p class="m-0 text-xs font-semibold uppercase tracking-wide text-muted">Active Gigs</p>
+          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100">
+            <lucide-icon [img]="LayoutGridIcon" class="h-4 w-4 text-purple-600" />
+          </div>
+        </div>
+        <p class="m-0 text-2xl font-bold text-heading">{{ activeGigCount() }}</p>
+        <p class="m-0 text-xs text-muted">{{ gigs().length }} total gigs</p>
+      </div>
+
+      <!-- Active Orders -->
+      <div class="flex flex-col gap-3 rounded-xl border border-divider bg-surface p-5 shadow-sm">
+        <div class="flex items-center justify-between">
+          <p class="m-0 text-xs font-semibold uppercase tracking-wide text-muted">Active Orders</p>
+          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100">
+            <lucide-icon [img]="ClipboardListIcon" class="h-4 w-4 text-blue-600" />
+          </div>
+        </div>
+        <p class="m-0 text-2xl font-bold text-heading">{{ activeOrderCount() }}</p>
+        <p class="m-0 text-xs text-muted">In progress or under revision</p>
+      </div>
+
+    </div>
+  }
+
+  <!-- Quick Navigation -->
+  <div class="grid gap-5">
+    <h2 class="m-0 text-xl font-semibold text-heading">Quick Access</h2>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+      <a routerLink="/dashboard/seller/manage-gigs"
+         class="group flex flex-col gap-4 rounded-xl border border-divider bg-surface p-5 shadow-sm transition hover:border-primary hover:shadow-md no-underline">
+        <div class="flex items-center justify-between">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-100 transition group-hover:bg-purple-200">
+            <lucide-icon [img]="LayoutGridIcon" class="h-5 w-5 text-purple-600" />
+          </div>
+          <lucide-icon [img]="ArrowRightIcon" class="h-4 w-4 text-muted transition group-hover:translate-x-0.5 group-hover:text-primary" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <p class="m-0 text-sm font-semibold text-heading">Manage Gigs</p>
+          <p class="m-0 text-xs text-muted">Create, edit, and toggle your listings</p>
+        </div>
+      </a>
+
+      <a routerLink="/dashboard/seller/orders"
+         class="group flex flex-col gap-4 rounded-xl border border-divider bg-surface p-5 shadow-sm transition hover:border-primary hover:shadow-md no-underline">
+        <div class="flex items-center justify-between">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 transition group-hover:bg-blue-200">
+            <lucide-icon [img]="ClipboardListIcon" class="h-5 w-5 text-blue-600" />
+          </div>
+          <lucide-icon [img]="ArrowRightIcon" class="h-4 w-4 text-muted transition group-hover:translate-x-0.5 group-hover:text-primary" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <p class="m-0 text-sm font-semibold text-heading">Orders</p>
+          <p class="m-0 text-xs text-muted">Deliver work and manage revisions</p>
+        </div>
+      </a>
+
+      <a routerLink="/dashboard/seller/earnings"
+         class="group flex flex-col gap-4 rounded-xl border border-divider bg-surface p-5 shadow-sm transition hover:border-primary hover:shadow-md no-underline">
+        <div class="flex items-center justify-between">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-green-100 transition group-hover:bg-green-200">
+            <lucide-icon [img]="CircleDollarSignIcon" class="h-5 w-5 text-green-600" />
+          </div>
+          <lucide-icon [img]="ArrowRightIcon" class="h-4 w-4 text-muted transition group-hover:translate-x-0.5 group-hover:text-primary" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <p class="m-0 text-sm font-semibold text-heading">Earnings</p>
+          <p class="m-0 text-xs text-muted">Track revenue and manage Stripe payouts</p>
+        </div>
+      </a>
+
+      <a routerLink="/dashboard/seller/profile"
+         class="group flex flex-col gap-4 rounded-xl border border-divider bg-surface p-5 shadow-sm transition hover:border-primary hover:shadow-md no-underline">
+        <div class="flex items-center justify-between">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-surface-alt transition group-hover:bg-gray-200">
+            <lucide-icon [img]="UserRoundIcon" class="h-5 w-5 text-muted" />
+          </div>
+          <lucide-icon [img]="ArrowRightIcon" class="h-4 w-4 text-muted transition group-hover:translate-x-0.5 group-hover:text-primary" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <p class="m-0 text-sm font-semibold text-heading">Seller Profile</p>
+          <p class="m-0 text-xs text-muted">Update bio, skills, and experience</p>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Recent Transactions -->
+  <div class="grid gap-5 rounded-xl border border-divider bg-surface p-5 shadow-sm md:p-6">
+    <div class="flex items-center justify-between">
+      <h2 class="m-0 text-xl font-semibold text-heading">Recent Transactions</h2>
+      <a routerLink="/dashboard/seller/earnings"
+         class="text-sm font-medium text-primary hover:text-primary-dark no-underline transition">
+        View all
+      </a>
+    </div>
+
+    @if (isLoading()) {
+      <div class="flex flex-col gap-3">
+        @for (_ of [1,2,3]; track $index) {
+          <div class="h-14 animate-pulse rounded-lg bg-surface-alt"></div>
+        }
+      </div>
+    } @else if (recentTransactions().length === 0) {
+      <div class="flex flex-col items-center gap-3 py-10 text-center">
+        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-alt">
+          <lucide-icon [img]="ReceiptIcon" class="h-6 w-6 text-muted" />
+        </div>
+        <p class="m-0 text-sm font-medium text-heading">No transactions yet</p>
+        <p class="m-0 text-xs text-muted">Completed orders will appear here.</p>
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="min-w-full border-collapse">
+          <thead>
+          <tr class="border-b border-divider text-left text-xs uppercase tracking-wide text-muted">
+            <th class="px-3 py-3 font-semibold">Gig / Package</th>
+            <th class="px-3 py-3 font-semibold">Buyer</th>
+            <th class="px-3 py-3 font-semibold">Date</th>
+            <th class="px-3 py-3 font-semibold text-right">You Received</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (tx of recentTransactions(); track tx.orderId) {
+              <tr class="border-b border-divider text-sm text-heading last:border-0">
+                <td class="px-3 py-4">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="line-clamp-1 font-medium">{{ tx.gigTitle }}</span>
+                    <span class="text-xs text-muted">{{ tx.packageName }} · {{ tx.packageTier }}</span>
+                  </div>
+                </td>
+                <td class="px-3 py-4 text-muted">{{ tx.buyerUsername }}</td>
+                <td class="px-3 py-4 text-muted">{{ tx.completedAtUtc | date:'MMM d, y' }}</td>
+                <td class="px-3 py-4 text-right font-semibold text-green-600">${{ tx.netAmount | number:'1.2-2' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+</section>

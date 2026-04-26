@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, inject, OnInit, signal} from '@angular/core';
 import {DecimalPipe} from '@angular/common';
 import {Router} from '@angular/router';
-import {LucideAngularModule} from 'lucide-angular';
+import {CheckCircle, Eye, LucideAngularModule, Star} from 'lucide-angular';
 import {GigService} from '../../../shared/services/gig.service';
 import {GigSummaryDto} from '../../../shared/models/gig.model';
 
@@ -17,6 +17,10 @@ type GigFilter = 'all' | 'active';
 export class ManageGigs implements OnInit {
   private readonly gigService = inject(GigService);
   private readonly router = inject(Router);
+
+  protected readonly CheckCircleIcon = CheckCircle;
+  protected readonly EyeIcon = Eye;
+  protected readonly StarIcon = Star;
 
   gigs = signal<GigSummaryDto[]>([]);
   selectedFilter = signal<GigFilter>('all');

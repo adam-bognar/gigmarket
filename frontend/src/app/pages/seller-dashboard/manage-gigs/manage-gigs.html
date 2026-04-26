@@ -25,7 +25,7 @@
           <p class="m-0 text-3xl font-bold text-heading">{{ activeGigCount() | number: '1.0-0' }}</p>
         </div>
         <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-alt">
-          <lucide-angular name="check-circle" class="h-6 w-6 text-primary" />
+          <lucide-icon [img]="CheckCircleIcon" class="h-6 w-6 text-primary" />
         </div>
       </div>
       <p class="m-0 text-xs text-muted">Your current active service listings</p>
@@ -39,7 +39,7 @@
           <p class="m-0 text-3xl font-bold text-heading">{{ totalImpressions() | number: '1.0-0' }}</p>
         </div>
         <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-alt">
-          <lucide-angular name="eye" class="h-6 w-6 text-primary" />
+          <lucide-icon [img]="EyeIcon" class="h-6 w-6 text-primary" />
         </div>
       </div>
       <p class="m-0 text-xs text-muted">Total review impressions across your gigs</p>
@@ -109,7 +109,7 @@
                   </td>
                   <td class="px-3 py-4">
                     <div class="flex items-center gap-1.5">
-                      <lucide-angular name="star" class="h-4 w-4 text-warning"/>
+                      <lucide-icon [img]="StarIcon" class="h-4 w-4 text-warning" />
                       <span>{{ gig.averageRating | number: '1.1-1' }}</span>
                     </div>
                   </td>

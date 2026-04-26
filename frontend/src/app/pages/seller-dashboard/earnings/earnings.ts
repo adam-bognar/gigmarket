@@ -1,9 +1,20 @@
 import {ChangeDetectionStrategy, Component, computed, inject, OnInit, signal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {DecimalPipe, DatePipe} from '@angular/common';
-import {LucideAngularModule} from 'lucide-angular';
+import {
+  CircleCheck,
+  CircleDollarSign,
+  Clock,
+  CreditCard,
+  ExternalLink,
+  LucideAngularModule,
+  Percent,
+  Receipt,
+  TriangleAlert,
+  X,
+} from 'lucide-angular';
 import {SellerProfileService} from '../../../shared/services/seller-profile.service';
-import {EarningTransactionDto, SellerEarningsDto, StripeAccountStatus} from '../../../shared/models/seller.model';
+import {SellerEarningsDto, StripeAccountStatus} from '../../../shared/models/seller.model';
 
 @Component({
   selector: 'app-earnings',
@@ -14,6 +25,16 @@ import {EarningTransactionDto, SellerEarningsDto, StripeAccountStatus} from '../
 export class Earnings implements OnInit {
   private readonly sellerService = inject(SellerProfileService);
   private readonly route = inject(ActivatedRoute);
+
+  protected readonly ExternalLinkIcon = ExternalLink;
+  protected readonly CircleCheckIcon = CircleCheck;
+  protected readonly XIcon = X;
+  protected readonly TriangleAlertIcon = TriangleAlert;
+  protected readonly CreditCardIcon = CreditCard;
+  protected readonly CircleDollarSignIcon = CircleDollarSign;
+  protected readonly ClockIcon = Clock;
+  protected readonly PercentIcon = Percent;
+  protected readonly ReceiptIcon = Receipt;
 
   earnings = signal<SellerEarningsDto | null>(null);
   isLoading = signal(true);

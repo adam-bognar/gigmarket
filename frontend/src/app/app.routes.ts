@@ -41,6 +41,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: 'seller',
+        loadComponent: () => import('./pages/seller-dashboard/seller-dashboard').then((m) => m.SellerDashboard),
+      },
+      {
         path: 'seller/manage-gigs',
         loadComponent: () => import('./pages/seller-dashboard/manage-gigs/manage-gigs').then((m) => m.ManageGigs),
       },
