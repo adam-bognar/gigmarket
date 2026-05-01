@@ -3,16 +3,35 @@ import {Component, inject, signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
+import {
+  ArrowRight,
+  CircleArrowRight,
+  Eye,
+  EyeOff,
+  LoaderCircle,
+  LucideAngularModule,
+  Mail,
+  UserRound,
+} from 'lucide-angular';
 import {AuthService} from '../../shared/services/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, RouterLink, NgClass],
+  imports: [FormsModule, RouterLink, NgClass, LucideAngularModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login {
-  //TODO change svg to lucide angular
+  protected readonly icons = {
+    UserRound,
+    Mail,
+    Eye,
+    EyeOff,
+    LoaderCircle,
+    ArrowRight,
+    CircleArrowRight,
+  };
+
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 

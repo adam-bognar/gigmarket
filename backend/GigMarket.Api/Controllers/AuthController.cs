@@ -57,7 +57,7 @@ namespace GigMarket.Api.Controllers
         [ProducesResponseType(typeof(AuthUserDto), StatusCodes.Status200OK)]
         public async Task<ActionResult<AuthUserDto>> UpdateAccount([FromBody] UpdateAccountRequest request, CancellationToken ct)
         {
-            var result = await mediator.Send(new UpdateAccountCommand(request.CustomUsername, request.Email), ct);
+            var result = await mediator.Send(new UpdateAccountCommand(request.CustomUsername), ct);
             return Ok(result);
         }
 
@@ -73,6 +73,6 @@ namespace GigMarket.Api.Controllers
 
     public sealed record RegisterRequest(string CustomUsername, string Email, string Password);
     public sealed record LoginRequest(string Email, string Password, bool RememberMe);
-    public sealed record UpdateAccountRequest(string CustomUsername, string Email);
+    public sealed record UpdateAccountRequest(string CustomUsername);
     public sealed record ChangePasswordRequest(string CurrentPassword, string NewPassword);
 }
