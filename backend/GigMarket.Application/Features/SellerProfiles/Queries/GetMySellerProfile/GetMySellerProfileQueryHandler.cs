@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GigMarket.Application.Features.SellerProfiles.Queries.GetMySellerProfile
 {
-    public sealed class GetMySellerProfileQueryHandler(ICurrentUserService currentUser, IApplicationDbContext db)
+    public sealed class GetMySellerProfileQueryHandler(ICurrentUserService currentUser, IApplicationDbContext db, IBlobStorageService blobStorageService)
         : IRequestHandler<GetMySellerProfileQuery, SellerProfileFullDto>
     {
         public async Task<SellerProfileFullDto> Handle(GetMySellerProfileQuery request, CancellationToken ct)
@@ -26,6 +26,8 @@ namespace GigMarket.Application.Features.SellerProfiles.Queries.GetMySellerProfi
                 .FirstOrDefaultAsync(x => x.UserId == userId, ct);
 
             if (entity is null) throw new NotFoundException("Seller profile not found.");
+            
+            var imageUrl = await ResolveUrlAsync(entity.ProfileImageUrl, ct);
 
             return new SellerProfileFullDto(
                 entity.Id,
@@ -33,7 +35,7 @@ namespace GigMarket.Application.Features.SellerProfiles.Queries.GetMySellerProfi
                 entity.FirstName,
                 entity.LastName,
                 entity.Description,
-                entity.ProfileImageUrl,
+                imageUrl,
                 entity.PersonalWebsite,
                 new SellerOccupationDto(
                     entity.Occupation.Name,
@@ -46,6 +48,18 @@ namespace GigMarket.Application.Features.SellerProfiles.Queries.GetMySellerProfi
                 entity.Certifications.Select(c => new SellerCertificationDto(
                     c.Name, c.IssuingOrganization, c.Year)).ToList(),
                 entity.CreatedAtUtc);
+        }
+        
+        private async Task<string> ResolveUrlAsync(string? blobPath, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(blobPath)) return string.Empty;
+            if (blobPath.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+                blobPath.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                return blobPath;
+            }
+
+            return await blobStorageService.GetDownloadUrlAsync(blobPath, ct);
         }
     }
 }
