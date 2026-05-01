@@ -31,6 +31,8 @@ namespace GigMarket.Api.Controllers
         }
 
         [HttpPost("upload/gig/{gigId:guid}")]
+        [RequestSizeLimit(80_000_000)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 80_000_000)]
         public async Task<IActionResult> UploadGigMedia(Guid gigId, IFormFile file, CancellationToken ct)
         {
             await using var stream = file.OpenReadStream();

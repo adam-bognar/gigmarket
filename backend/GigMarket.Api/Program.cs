@@ -45,6 +45,11 @@ builder.Services.AddInfrastructure(builder.Configuration);
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 builder.Services.Configure<RouteOptions>(options => { });
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 80_000_000;
+});
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
