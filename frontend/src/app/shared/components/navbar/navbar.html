@@ -196,6 +196,11 @@
                 </a>
               }
 
+              <a routerLink="/orders" (click)="closeProfileMenu()" role="menuitem"
+                 class="block px-4 py-2 text-sm text-heading hover:bg-gray-100 no-underline">
+                My Orders
+              </a>
+
               <hr class="my-1 border-divider" />
               <button type="button" (click)="onLogout()" role="menuitem"
                       class="w-full text-left px-4 py-2 text-sm text-heading hover:bg-gray-100 cursor-pointer">
@@ -377,6 +382,11 @@
             <a routerLink="/account" (click)="closeMobileMenu()"
                class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
               Account Settings
+            </a>
+
+            <a routerLink="/orders" (click)="closeMobileMenu()"
+               class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
+              My Orders
             </a>
           }
 
