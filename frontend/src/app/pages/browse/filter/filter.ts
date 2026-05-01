@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import {ChangeDetectionStrategy, Component, computed, inject, input, OnInit, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input, OnInit, output, signal} from '@angular/core';
 import {GigCategoryDto} from '../../../shared/models/gig.model';
 import {CategoriesService} from '../../../shared/services/categories.service';
 
@@ -55,26 +55,6 @@ export class Filter implements OnInit {
 
   readonly deliveryTimeOptions = DELIVERY_TIME_OPTIONS;
   readonly ratingOptions = RATING_OPTIONS;
-
-  readonly priceFillStart = computed(() => {
-    const range = this.maxAllowedPrice() - this.minAllowedPrice();
-
-    if (range <= 0) {
-      return 0;
-    }
-
-    return ((this.state().minPrice - this.minAllowedPrice()) / range) * 100;
-  });
-
-  readonly priceFillWidth = computed(() => {
-    const range = this.maxAllowedPrice() - this.minAllowedPrice();
-
-    if (range <= 0) {
-      return 100;
-    }
-
-    return ((this.state().maxPrice - this.state().minPrice) / range) * 100;
-  });
 
   ngOnInit() {
     this.categoriesService.getCategories().subscribe(cats => this.categories.set(cats));

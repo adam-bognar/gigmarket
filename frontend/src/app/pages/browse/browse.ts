@@ -58,17 +58,22 @@ export class Browse implements OnInit {
   readonly isLoading = signal(true);
   readonly error = signal<string | null>(null);
   readonly filters = signal<BrowseFilterState>(DEFAULT_BROWSE_FILTERS);
+  readonly searchQuery = signal<string>('');
   readonly minPrice = PRICE_MIN;
   readonly maxPrice = PRICE_MAX;
 
   readonly availableServicesCount = computed(() => this.cards().length);
+  readonly categoryLabel = computed(() =>
+    this.filters().categoryId ? (this.cards()[0]?.category ?? null) : null
+  );
 
   ngOnInit(): void {
     this.route.queryParams.pipe(
       takeUntilDestroyed(this.destroyRef),
-      tap(() => {
+      tap((params) => {
         this.isLoading.set(true);
         this.error.set(null);
+        this.searchQuery.set(params['q'] ?? '');
       }),
       switchMap(params => {
         this.filters.set(this.paramsToFilters(params));
