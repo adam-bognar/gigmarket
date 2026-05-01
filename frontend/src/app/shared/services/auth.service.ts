@@ -44,9 +44,9 @@ export class AuthService {
     return this.getMe();
   }
 
-  updateAccount(customUsername: string, email: string): Observable<AuthUser> {
+  updateAccount(customUsername: string): Observable<AuthUser> {
     return this.http
-      .put<AuthUser>(`${this.baseUrl}/account`, {customUsername, email})
+      .put<AuthUser>(`${this.baseUrl}/account`, {customUsername})
       .pipe(tap({next: (user) => this.currentUser.set(user)}));
   }
 

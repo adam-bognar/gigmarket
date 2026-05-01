@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-2xl font-bold text-heading">Account Settings</h1>
-      <p class="text-sm text-muted mt-1">Manage your profile picture, display name, email and password.</p>
+      <p class="text-sm text-muted mt-1">Manage your profile picture, display name and password.</p>
     </div>
 
     <!-- Avatar card -->
@@ -75,27 +75,6 @@
               <p class="text-xs text-red-500">Maximum 30 characters.</p>
             } @else if (usernameCtrl.hasError('pattern')) {
               <p class="text-xs text-red-500">Only letters, numbers, underscores and hyphens.</p>
-            }
-          }
-        </div>
-
-        <!-- Email -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-sm font-medium text-heading" for="email">Email address</label>
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            class="px-3 py-2 text-sm rounded-lg border transition-colors outline-none"
-            [class.border-red-400]="emailCtrl.invalid && emailCtrl.touched"
-            [class.border-divider]="!(emailCtrl.invalid && emailCtrl.touched)"
-            placeholder="you@example.com"
-          />
-          @if (emailCtrl.touched) {
-            @if (emailCtrl.hasError('required')) {
-              <p class="text-xs text-red-500">Email is required.</p>
-            } @else if (emailCtrl.hasError('email')) {
-              <p class="text-xs text-red-500">Enter a valid email address.</p>
             }
           }
         </div>

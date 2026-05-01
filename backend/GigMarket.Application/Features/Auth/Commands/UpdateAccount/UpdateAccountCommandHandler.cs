@@ -28,17 +28,6 @@ public sealed class UpdateAccountCommandHandler(
                 throw new BadRequestException("Username is already taken.");
         }
 
-        if (!string.Equals(user.Email, request.Email, StringComparison.OrdinalIgnoreCase))
-        {
-            var existingByEmail = await userManager.FindByEmailAsync(request.Email);
-            if (existingByEmail is not null && existingByEmail.Id != user.Id)
-                throw new BadRequestException("Email is already taken.");
-
-            var emailResult = await userManager.SetEmailAsync(user, request.Email);
-            if (!emailResult.Succeeded)
-                throw new BadRequestException("Failed to update email.", emailResult.Errors.Select(e => e.Description).ToArray());
-        }
-
         if (!string.Equals(user.CustomUsername, request.CustomUsername, StringComparison.OrdinalIgnoreCase))
         {
             user.CustomUsername = request.CustomUsername;

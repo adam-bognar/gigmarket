@@ -39,7 +39,7 @@ const RATING_OPTIONS: ReadonlyArray<{ value: RatingFilter; label: string }> = [
 
 @Component({
   selector: 'app-filter',
-  imports: [DecimalPipe],
+  imports: [],
   templateUrl: './filter.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

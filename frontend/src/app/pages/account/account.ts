@@ -52,7 +52,6 @@ export class Account implements OnInit {
 
   readonly infoForm = this.fb.group({
     customUsername: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30), Validators.pattern(/^[a-zA-Z0-9_\-]+$/)]],
-    email: ['', [Validators.required, Validators.email]],
   });
 
   readonly pwForm = this.fb.group({
@@ -64,7 +63,7 @@ export class Account implements OnInit {
   ngOnInit(): void {
     const u = this.user();
     if (u) {
-      this.infoForm.patchValue({customUsername: u.customUsername, email: u.email});
+      this.infoForm.patchValue({customUsername: u.customUsername});
       this.avatarPreview.set(u.profileUrl ?? null);
     }
   }
@@ -103,8 +102,8 @@ export class Account implements OnInit {
     this.infoError.set(null);
     this.infoSuccess.set(false);
 
-    const {customUsername, email} = this.infoForm.getRawValue();
-    this.authService.updateAccount(customUsername!, email!).subscribe({
+    const {customUsername} = this.infoForm.getRawValue();
+    this.authService.updateAccount(customUsername!).subscribe({
       next: () => {
         this.infoSaving.set(false);
         this.infoSuccess.set(true);
@@ -141,7 +140,6 @@ export class Account implements OnInit {
   }
 
   get usernameCtrl() { return this.infoForm.controls.customUsername; }
-  get emailCtrl() { return this.infoForm.controls.email; }
   get currentPwCtrl() { return this.pwForm.controls.currentPassword; }
   get newPwCtrl() { return this.pwForm.controls.newPassword; }
   get confirmPwCtrl() { return this.pwForm.controls.confirmPassword; }
