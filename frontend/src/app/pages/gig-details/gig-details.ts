@@ -91,7 +91,7 @@ export class GigDetails implements OnInit {
   });
 
   displayedThumbnails = computed(() => {
-    return this.allImages().slice(1, 4);
+    return this.allImages();
   });
 
   activeImage = computed(() => {
@@ -134,6 +134,7 @@ export class GigDetails implements OnInit {
     this.gigService.getGigById(id).subscribe({
       next: (gig) => {
         this.gig.set(gig);
+        this.selectedImageIndex.set(0);
         this.alignSelectedTierWithApi(gig);
         this.isLoading.set(false);
       },
@@ -236,6 +237,11 @@ export class GigDetails implements OnInit {
   }
 
   selectImage(index: number) {
+    const images = this.allImages();
+    if (index < 0 || index >= images.length) {
+      return;
+    }
+
     this.selectedImageIndex.set(index);
   }
 
