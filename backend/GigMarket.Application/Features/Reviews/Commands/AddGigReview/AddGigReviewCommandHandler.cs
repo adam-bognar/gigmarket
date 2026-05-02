@@ -49,11 +49,6 @@ public sealed class AddGigReviewCommandHandler(
         if (alreadyReviewed)
             throw new BadRequestException("You have already reviewed this gig.");
 
-        var reviewer = await db.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken)
-            ?? throw new NotFoundException("Reviewer user not found.");
-
         var review = new GigReview
         {
             Id = Guid.NewGuid(),
@@ -61,8 +56,7 @@ public sealed class AddGigReviewCommandHandler(
             ReviewerUserId = userId,
             Rating = request.Rating,
             Description = request.Description,
-            CreatedAtUtc = DateTime.UtcNow,
-            Reviewer = reviewer
+            CreatedAtUtc = DateTime.UtcNow
         };
 
         db.GigReviews.Add(review);
