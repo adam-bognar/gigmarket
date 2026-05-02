@@ -9,6 +9,7 @@ import {ReviewService} from '../../shared/services/review.service';
 import {AuthService} from '../../shared/services/auth.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {LucideAngularModule, SendIcon, StarIcon} from 'lucide-angular';
+import {SellerProfileService} from '../../shared/services/seller-profile.service';
 
 type PackageTier = 'basic' | 'standard' | 'premium';
 
@@ -27,6 +28,7 @@ export class GigDetails implements OnInit {
   private readonly orderService = inject(OrderService);
   private readonly router = inject(Router);
   private readonly chatService = inject(ChatService);
+  private readonly sellerProfileService = inject(SellerProfileService);
 
   gig = signal<GigDetailDto | null>(null);
   isLoading = signal(true);
@@ -42,6 +44,7 @@ export class GigDetails implements OnInit {
 
   selectedImageIndex = signal(0);
   selectedPackageTier = signal<PackageTier>('basic');
+  ownSellerProfileId = signal<string | null>(null);
 
   selectedPackage = computed<GigDetailPackageDto | null>(() => {
     const g = this.gig();
@@ -112,6 +115,13 @@ export class GigDetails implements OnInit {
 
   protected readonly currentUser = this.authService.user;
   protected readonly isAuthenticated = this.authService.isAuthenticated;
+  protected readonly isOwnGig = computed(() => {
+    const user = this.currentUser();
+    const g = this.gig();
+    const ownSellerProfileId = this.ownSellerProfileId();
+
+    return !!user && !!g && !!ownSellerProfileId && ownSellerProfileId === g.sellerProfileId;
+  });
 
   protected readonly hasAlreadyReviewed = computed(() => {
     const user = this.currentUser();
@@ -125,6 +135,8 @@ export class GigDetails implements OnInit {
   );
 
   ngOnInit() {
+    this.loadCurrentSellerProfile();
+
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
       this.error.set('No gig ID provided.');
@@ -165,7 +177,7 @@ export class GigDetails implements OnInit {
 
   contactSeller() {
     const g = this.gig();
-    if (!g || this.isStartingConversation()) return;
+    if (!g || this.isOwnGig() || this.isStartingConversation()) return;
 
     this.isStartingConversation.set(true);
     this.error.set(null);
@@ -277,6 +289,19 @@ export class GigDetails implements OnInit {
       return 'Unknown';
     }
     return date.toLocaleString('en-US', {month: 'short', year: 'numeric'});
+  }
+
+  private loadCurrentSellerProfile(): void {
+    const user = this.currentUser();
+    if (!user?.isSeller) {
+      this.ownSellerProfileId.set(null);
+      return;
+    }
+
+    this.sellerProfileService.getMyProfile().subscribe({
+      next: (profile) => this.ownSellerProfileId.set(profile.id),
+      error: () => this.ownSellerProfileId.set(null),
+    });
   }
 
   protected readonly StarIcon = StarIcon;

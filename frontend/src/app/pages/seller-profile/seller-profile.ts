@@ -112,7 +112,7 @@ export class SellerProfile implements OnInit {
 
   contactSeller(): void {
     const p = this.profile();
-    if (!p || !this.hasActiveGigs() || this.isStartingConversation()) return;
+    if (!p || this.isOwnProfile() || !this.hasActiveGigs() || this.isStartingConversation()) return;
 
     if (!this.isAuthenticated()) {
       this.router.navigate(['/login']);
