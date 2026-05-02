@@ -265,7 +265,7 @@
               <button
                 type="button"
                 class="rounded-md bg-primary px-4 py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
-                [disabled]="isCheckingOut()"
+                [disabled]="isOwnGig() || isCheckingOut()"
                 (click)="checkout()"
               >
                 @if (isCheckingOut()) {
@@ -274,6 +274,10 @@
                   Continue (${{ pkg.price | number: '1.0-0' }})
                 }
               </button>
+
+              @if (isOwnGig()) {
+                <p class="text-sm text-muted">You can't purchase your own gig.</p>
+              }
             } @else {
               <p class="text-sm text-muted">No package details available for this gig.</p>
             }

@@ -160,7 +160,7 @@ export class GigDetails implements OnInit {
   checkout() {
     const g = this.gig();
     const pkg = this.selectedPackage();
-    if (!g || !pkg || this.isCheckingOut()) return;
+    if (!g || !pkg || this.isOwnGig() || this.isCheckingOut()) return;
 
     this.isCheckingOut.set(true);
 
