@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GigMarket.Application.Features.Orders.Queries.GetOrderById;
 
-public sealed class GetOrderByIdQueryHandler(IApplicationDbContext db, ICurrentUserService currentUser)
+public sealed class GetOrderByIdQueryHandler(IApplicationDbContext db, ICurrentUserService currentUser, IBlobUrlResolverService blobUrlResolver)
     : IRequestHandler<GetOrderByIdQuery, OrderDetailDto>
 {
     public async Task<OrderDetailDto> Handle(GetOrderByIdQuery request, CancellationToken ct)
@@ -42,12 +42,15 @@ public sealed class GetOrderByIdQueryHandler(IApplicationDbContext db, ICurrentU
             .Where(p => p.IsPrimary)
             .Select(p => p.Url)
             .FirstOrDefault() ?? string.Empty;
+        
+        var sellerImageUrl = blobUrlResolver.ResolveUrlAsync(seller.ProfileImageUrl, ct).Result;
+        var primaryUrl = blobUrlResolver.ResolveUrlAsync(primaryPhoto, ct).Result;
 
         return new OrderDetailDto(
             order.Id,
             order.GigId,
             order.Gig.Title,
-            primaryPhoto,
+            primaryUrl,
             order.PackageId,
             order.Package.Name,
             order.Package.Tier.ToString(),
@@ -65,7 +68,7 @@ public sealed class GetOrderByIdQueryHandler(IApplicationDbContext db, ICurrentU
             seller.Id,
             seller.FirstName,
             seller.LastName,
-            seller.ProfileImageUrl,
+            sellerImageUrl,
             order.Deliveries
                 .OrderBy(d => d.CreatedAtUtc)
                 .Select(d => new OrderDeliveryDto(

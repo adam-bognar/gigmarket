@@ -23,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<ISellerService, SellerService>();
         services.AddScoped<IGigService, GigService>();
         services.AddScoped<IBlobStorageService, BlobStorageService>();
+        services.AddScoped<IBlobUrlResolverService, BlobUrlResolverService>();
         services.AddSignalR();
 
         services.AddIdentity<User, IdentityRole<Guid>>(options =>

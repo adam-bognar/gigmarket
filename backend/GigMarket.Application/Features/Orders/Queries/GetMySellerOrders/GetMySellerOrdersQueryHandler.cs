@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GigMarket.Application.Features.Orders.Queries.GetMySellerOrders;
 
-public sealed class GetMySellerOrdersQueryHandler(IApplicationDbContext db, ICurrentUserService currentUser)
+public sealed class GetMySellerOrdersQueryHandler(IApplicationDbContext db, ICurrentUserService currentUser, IBlobUrlResolverService blobUrlResolver)
     : IRequestHandler<GetMySellerOrdersQuery, List<OrderDto>>
 {
     public async Task<List<OrderDto>> Handle(GetMySellerOrdersQuery request, CancellationToken ct)
@@ -26,7 +26,7 @@ public sealed class GetMySellerOrdersQueryHandler(IApplicationDbContext db, ICur
                 o.Id,
                 o.GigId,
                 o.Gig.Title,
-                o.Gig.Photos.Where(p => p.IsPrimary).Select(p => p.Url).FirstOrDefault() ?? string.Empty,
+                blobUrlResolver.ResolveUrlAsync(o.Gig.Photos.Where(p => p.IsPrimary).Select(p => p.Url).FirstOrDefault() ?? string.Empty, ct).Result,
                 o.PackageId,
                 o.Package.Name,
                 o.Package.Tier.ToString(),
