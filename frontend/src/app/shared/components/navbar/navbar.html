@@ -137,11 +137,6 @@
         }
 
         @if (!isDashboard()) {
-          <!-- Notifications -->
-          <a routerLink="/notifications" class="relative p-2 rounded-full text-heading hover:text-primary transition-colors">
-            <lucide-icon [img]="BellIcon" class="w-5 h-5" />
-          </a>
-
           <!-- Inbox -->
           <a
             routerLink="/inbox"
@@ -371,12 +366,6 @@
                class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
               <lucide-icon [img]="MessageSquareIcon" class="w-5 h-5" />
               Messages
-            </a>
-
-            <a routerLink="/notifications" (click)="closeMobileMenu()"
-               class="flex items-center gap-2 w-full py-2 text-sm font-medium text-heading hover:text-primary border border-divider rounded-md transition-colors no-underline px-4">
-              <lucide-icon [img]="BellIcon" class="w-5 h-5" />
-              Notifications
             </a>
 
             <a routerLink="/account" (click)="closeMobileMenu()"
