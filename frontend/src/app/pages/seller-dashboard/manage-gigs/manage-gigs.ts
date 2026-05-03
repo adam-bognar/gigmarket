@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, computed, inject, OnInit, signal} from '@angular/core';
 import {DecimalPipe} from '@angular/common';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {CheckCircle, Eye, LucideAngularModule, Star} from 'lucide-angular';
 import {GigService} from '../../../shared/services/gig.service';
 import {GigSummaryDto} from '../../../shared/models/gig.model';
@@ -9,7 +9,7 @@ type GigFilter = 'all' | 'active';
 
 @Component({
   selector: 'app-manage-gigs',
-  imports: [DecimalPipe, LucideAngularModule],
+  imports: [DecimalPipe, LucideAngularModule, RouterLink],
   templateUrl: './manage-gigs.html',
   styleUrl: './manage-gigs.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
