@@ -29,10 +29,6 @@
              class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
             Orders
           </a>
-          <a routerLink="/inbox"
-             class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
-            Messages
-          </a>
           <a routerLink="/dashboard/seller/earnings"
              class="px-3 py-2 text-sm font-medium text-heading hover:text-primary hover:bg-surface-alt rounded-md transition-colors no-underline">
             Earnings
@@ -136,20 +132,18 @@
           </a>
         }
 
-        @if (!isDashboard()) {
-          <!-- Inbox -->
-          <a
-            routerLink="/inbox"
-            class="relative flex items-center justify-center rounded-full p-2 text-muted transition-colors hover:bg-surface-alt hover:text-heading"
-          >
-            <lucide-icon [img]="MessageSquareIcon" class="h-5 w-5" />
-            @if (unreadCount() > 0) {
-              <span class="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-on-primary">
-                {{ unreadCount() > 9 ? '9+' : unreadCount() }}
-              </span>
-            }
-          </a>
-        }
+        <!-- Inbox -->
+        <a
+          routerLink="/inbox"
+          class="relative flex items-center justify-center rounded-full p-2 text-muted transition-colors hover:bg-surface-alt hover:text-heading"
+        >
+          <lucide-icon [img]="MessageSquareIcon" class="h-5 w-5" />
+          @if (unreadCount() > 0) {
+            <span class="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-on-primary">
+              {{ unreadCount() > 9 ? '9+' : unreadCount() }}
+            </span>
+          }
+        </a>
 
         <!-- Profile avatar with dropdown -->
         <div class="relative">
