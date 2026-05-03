@@ -24,6 +24,7 @@ import {
   X,
   FileText,
   Package,
+  Download,
 } from 'lucide-angular';
 import {OrderService} from '../../shared/services/order.service';
 import {AuthService} from '../../shared/services/auth.service';
@@ -54,6 +55,7 @@ export class OrderDetail implements OnInit {
   readonly X = X;
   readonly FileText = FileText;
   readonly Package = Package;
+  readonly Download = Download;
 
   readonly order = signal<OrderDetailDto | null>(null);
   readonly loading = signal(true);
@@ -265,6 +267,20 @@ export class OrderDetail implements OnInit {
   }
 
   fileName(url: string): string {
-    return url.split('/').pop() ?? url;
+    const path = url.split('?')[0];
+    return decodeURIComponent(path.split('/').pop() ?? url);
+  }
+
+  downloadFile(url: string): void {
+    const name = this.fileName(url);
+    fetch(url)
+      .then(r => r.blob())
+      .then(blob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = name;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
   }
 }

@@ -212,15 +212,15 @@
                           <ul class="flex flex-col gap-2">
                             @for (url of item.data.fileUrls; track url) {
                               <li>
-                                <a
-                                  [href]="url"
-                                  target="_blank"
-                                  rel="noopener"
-                                  class="inline-flex items-center gap-2 rounded-lg border border-divider bg-surface px-3 py-2 text-sm font-medium text-heading no-underline transition hover:bg-primary/5 hover:text-primary"
+                                <button
+                                  type="button"
+                                  (click)="downloadFile(url)"
+                                  class="inline-flex items-center gap-2 rounded-lg border border-divider bg-surface px-3 py-2 text-sm font-medium text-heading transition hover:bg-primary/5 hover:text-primary"
                                 >
                                   <lucide-icon [img]="Paperclip" class="size-4 text-muted" />
                                   {{ fileName(url) }}
-                                </a>
+                                  <lucide-icon [img]="Download" class="size-3.5 text-muted" />
+                                </button>
                               </li>
                             }
                           </ul>
