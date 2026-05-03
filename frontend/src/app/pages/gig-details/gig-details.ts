@@ -183,8 +183,7 @@ export class GigDetails implements OnInit {
     this.error.set(null);
 
     this.chatService.startConversation({
-      gigId: g.id,
-      initialMessage: `Hi! I'm interested in your gig: ${g.title}`
+      gigId: g.id
     }).subscribe({
       next: (conversation) => {
         this.isStartingConversation.set(false);

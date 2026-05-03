@@ -26,7 +26,6 @@ export interface ConversationSummaryDto {
 
 export interface StartConversationPayload {
   gigId: string;
-  initialMessage: string;
 }
 
 export interface SendMessagePayload {
