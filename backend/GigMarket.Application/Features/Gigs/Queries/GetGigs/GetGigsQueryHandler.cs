@@ -19,7 +19,7 @@ public sealed class GetGigsQueryHandler(IApplicationDbContext db, IBlobStorageSe
             _       => null,
         };
 
-        var rawGigs = await db.Gigs
+        var query = db.Gigs
             .AsNoTracking()
             .Where(g => string.IsNullOrEmpty(request.Search) || g.Title.Contains(request.Search))
             .Where(g => request.CategoryId == null || g.CategoryId == request.CategoryId)
@@ -27,7 +27,18 @@ public sealed class GetGigsQueryHandler(IApplicationDbContext db, IBlobStorageSe
             .Where(g => request.MaxPrice == null || (g.Packages.Any() && g.Packages.Min(p => p.Price) <= request.MaxPrice))
             .Where(g => maxDeliveryDays == null || (g.Packages.Any() && g.Packages.Min(p => p.DeliveryDays) <= maxDeliveryDays))
             .Where(g => request.MinRating == null || request.MinRating == 0 || (g.Reviews.Any() && g.Reviews.Average(r => r.Rating) >= request.MinRating))
-            .Where(g => g.Status == GigStatus.Active)
+            .Where(g => g.Status == GigStatus.Active);
+
+        var sortedQuery = request.SortBy switch
+        {
+            "price_asc"    => query.OrderBy(g => g.Packages.Any() ? g.Packages.Min(p => p.Price) : 0),
+            "price_desc"   => query.OrderByDescending(g => g.Packages.Any() ? g.Packages.Min(p => p.Price) : 0),
+            "rating_desc"  => query.OrderByDescending(g => g.Reviews.Any() ? g.Reviews.Average(r => r.Rating) : 0),
+            "reviews_desc" => query.OrderByDescending(g => g.Reviews.Count()),
+            _              => query.OrderByDescending(g => g.Reviews.Count()),
+        };
+
+        var rawGigs = await sortedQuery
             .Select(g => new
             {
                 g.Id,

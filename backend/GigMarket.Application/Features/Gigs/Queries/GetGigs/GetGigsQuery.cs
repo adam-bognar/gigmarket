@@ -9,5 +9,6 @@ public sealed record GetGigsQuery(
     decimal? MinPrice = null,
     decimal? MaxPrice = null,
     string? DeliveryTime = null,
-    double? MinRating = null
+    double? MinRating = null,
+    string? SortBy = null
 ) : IRequest<List<GigSummaryDto>>;

@@ -28,9 +28,10 @@ namespace GigMarket.Api.Controllers
             [FromQuery] decimal? maxPrice,
             [FromQuery] string? deliveryTime,
             [FromQuery] double? minRating,
+            [FromQuery] string? sortBy,
             CancellationToken ct)
         {
-            var result = await mediator.Send(new GetGigsQuery(search, categoryId, minPrice, maxPrice, deliveryTime, minRating), ct);
+            var result = await mediator.Send(new GetGigsQuery(search, categoryId, minPrice, maxPrice, deliveryTime, minRating, sortBy), ct);
             return Ok(result);
         }
 

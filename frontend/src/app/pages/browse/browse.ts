@@ -16,13 +16,26 @@ import {
   DeliveryTimeFilter,
   RatingFilter
 } from './filter/filter';
-import {GigFilterParams, GigService} from '../../shared/services/gig.service';
+import {GigFilterParams, GigService, GigSortBy} from '../../shared/services/gig.service';
 import { GigSummaryDto } from '../../shared/models/gig.model';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {switchMap, tap} from 'rxjs';
 
 const PRICE_MIN = 0;
 const PRICE_MAX = 1000;
+
+export interface SortOption {
+  value: GigSortBy;
+  label: string;
+}
+
+export const SORT_OPTIONS: ReadonlyArray<SortOption> = [
+  { value: 'recommended',  label: 'Recommended' },
+  { value: 'price_asc',    label: 'Price: Low to High' },
+  { value: 'price_desc',   label: 'Price: High to Low' },
+  { value: 'rating_desc',  label: 'Best Rated' },
+  { value: 'reviews_desc', label: 'Most Reviews' },
+];
 
 function mapToCardItem(dto: GigSummaryDto): BrowseCardItem {
   return {
@@ -59,8 +72,10 @@ export class Browse implements OnInit {
   readonly error = signal<string | null>(null);
   readonly filters = signal<BrowseFilterState>(DEFAULT_BROWSE_FILTERS);
   readonly searchQuery = signal<string>('');
+  readonly sortBy = signal<GigSortBy>('recommended');
   readonly minPrice = PRICE_MIN;
   readonly maxPrice = PRICE_MAX;
+  readonly sortOptions = SORT_OPTIONS;
 
   readonly availableServicesCount = computed(() => this.cards().length);
   readonly categoryLabel = computed(() =>
@@ -74,6 +89,7 @@ export class Browse implements OnInit {
         this.isLoading.set(true);
         this.error.set(null);
         this.searchQuery.set(params['q'] ?? '');
+        this.sortBy.set((params['sortBy'] as GigSortBy) ?? 'recommended');
       }),
       switchMap(params => {
         this.filters.set(this.paramsToFilters(params));
@@ -93,6 +109,7 @@ export class Browse implements OnInit {
 
   updateFilters(nextFilters: BrowseFilterState): void {
     const currentQ = this.route.snapshot.queryParams['q'];
+    const currentSort = this.route.snapshot.queryParams['sortBy'];
     this.router.navigate([], {
       queryParams: {
         ...(currentQ ? { q: currentQ } : {}),
@@ -101,6 +118,18 @@ export class Browse implements OnInit {
         maxPrice: nextFilters.maxPrice < PRICE_MAX ? nextFilters.maxPrice : null,
         deliveryTime: nextFilters.deliveryTime !== 'any' ? nextFilters.deliveryTime : null,
         minRating: nextFilters.minRating > 0 ? nextFilters.minRating : null,
+        sortBy: currentSort ?? null,
+      },
+      replaceUrl: true,
+    });
+  }
+
+  updateSort(value: string): void {
+    const sortBy = value as GigSortBy;
+    this.router.navigate([], {
+      queryParams: {
+        ...this.route.snapshot.queryParams,
+        sortBy: sortBy !== 'recommended' ? sortBy : null,
       },
       replaceUrl: true,
     });
@@ -124,6 +153,7 @@ export class Browse implements OnInit {
       maxPrice: params['maxPrice'] != null ? Number(params['maxPrice']) : undefined,
       deliveryTime: params['deliveryTime'] || undefined,
       minRating: params['minRating'] != null ? Number(params['minRating']) : undefined,
+      sortBy: (params['sortBy'] as GigSortBy) || 'recommended',
     };
   }
 }
