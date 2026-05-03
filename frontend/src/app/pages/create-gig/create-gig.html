@@ -16,18 +16,20 @@
           (continue)="onPricingContinue($event)"
         />
       } @else if (currentStep() === 3) {
-        <app-requirements
-          [initialValue]="requirementsDraft()"
-          (back)="goBack()"
-          (publish)="onRequirementsContinue($event)"
-        />
-      } @else if (currentStep() === 4) {
         <app-gallery
           [initialValue]="galleryDraft()"
           (back)="goBack()"
           (continue)="onGalleryContinue($event)"
         />
       }
+      <!--
+      } @else if (currentStep() === 3) {
+        <app-requirements
+          [initialValue]="requirementsDraft()"
+          (back)="goBack()"
+          (publish)="onRequirementsContinue($event)"
+        />
+      -->
     }
 
     @if (error()) {
