@@ -1,148 +1,116 @@
 <aside class="grid gap-8 rounded-3xl border border-divider bg-surface p-5 shadow-sm lg:sticky lg:top-24">
   <section class="grid gap-4 border-b border-divider pb-6">
-	<div class="flex items-center justify-between gap-3">
-	  <h2 class="m-0 text-lg font-semibold text-heading">Category</h2>
-	  <button
-		type="button"
-		class="text-sm font-medium text-primary transition hover:text-primary-dark"
-		(click)="resetFilters()"
-	  >
-		Reset
-	  </button>
-	</div>
+    <div class="flex items-center justify-between gap-3">
+      <h2 class="m-0 text-lg font-semibold text-heading">Category</h2>
+      <button
+        type="button"
+        class="text-sm font-medium text-primary transition hover:text-primary-dark"
+        (click)="resetFilters()"
+      >
+        Reset
+      </button>
+    </div>
 
-	<div class="grid gap-1.5">
-	  <button
-		type="button"
-		class="flex items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition"
-    [class.bg-slate-100]="state().categoryId === null"
-    [class.font-semibold]="state().categoryId === null"
-    [class.text-heading]="state().categoryId === null"
-    [class.text-muted]="state().categoryId !== null"
-    (click)="selectCategory(null)"
-	  >
-      <span>All categories</span>
-      @if (state().categoryId === null) {
-        <span class="text-primary">›</span>
-      }
-    </button>
+    <div class="grid gap-1.5">
+      <button
+        type="button"
+        class="flex items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition"
+        [class.bg-slate-100]="state().categoryId === null"
+        [class.font-semibold]="state().categoryId === null"
+        [class.text-heading]="state().categoryId === null"
+        [class.text-muted]="state().categoryId !== null"
+        (click)="selectCategory(null)"
+      >
+        <span>All categories</span>
+        @if (state().categoryId === null) {
+          <span class="text-primary">›</span>
+        }
+      </button>
 
-    @for (cat of categories(); track cat.id) {
-		<button
-		  type="button"
-		  class="flex items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition"
-      [class.bg-slate-100]="state().categoryId === cat.id"
-      [class.font-semibold]="state().categoryId === cat.id"
-      [class.text-heading]="state().categoryId === cat.id"
-      [class.text-muted]="state().categoryId !== cat.id"
-      (click)="selectCategory(cat.id)"
-		>
-      <span>{{ cat.name }}</span>
-      @if (state().categoryId === cat.id) {
-        <span class="text-primary">›</span>
+      @for (cat of categories(); track cat.id) {
+        <button
+          type="button"
+          class="flex items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition"
+          [class.bg-slate-100]="state().categoryId === cat.id"
+          [class.font-semibold]="state().categoryId === cat.id"
+          [class.text-heading]="state().categoryId === cat.id"
+          [class.text-muted]="state().categoryId !== cat.id"
+          (click)="selectCategory(cat.id)"
+        >
+          <span>{{ cat.name }}</span>
+          @if (state().categoryId === cat.id) {
+            <span class="text-primary">›</span>
+          }
+        </button>
       }
-		</button>
-	  }
-	</div>
+    </div>
   </section>
 
   <section class="grid gap-4 border-b border-divider pb-6">
-	<h2 class="m-0 text-lg font-semibold text-heading">Price Range</h2>
+    <h2 class="m-0 text-lg font-semibold text-heading">Price Range</h2>
 
-	<div class="grid grid-cols-2 gap-3">
-	  <label class="grid gap-1 rounded-2xl border border-divider px-3 py-2">
-		<span class="text-xs font-medium uppercase tracking-wide text-muted">Min</span>
-		<input
-		  class="w-full border-none bg-transparent text-sm text-heading outline-none"
-		  type="number"
-		  [value]="state().minPrice"
-		  [min]="minAllowedPrice()"
-		  [max]="state().maxPrice"
-		  (input)="updateMinPrice($event)"
-		/>
-	  </label>
+    <div class="grid grid-cols-2 gap-3">
+      <label class="grid gap-1 rounded-2xl border border-divider px-3 py-2">
+        <span class="text-xs font-medium uppercase tracking-wide text-muted">Min</span>
+        <input
+          class="w-full border-none bg-transparent text-sm text-heading outline-none"
+          type="number"
+          [value]="state().minPrice"
+          [min]="minAllowedPrice()"
+          [max]="state().maxPrice"
+          (input)="updateMinPrice($event)"
+        />
+      </label>
 
-	  <label class="grid gap-1 rounded-2xl border border-divider px-3 py-2">
-		<span class="text-xs font-medium uppercase tracking-wide text-muted">Max</span>
-		<input
-		  class="w-full border-none bg-transparent text-sm text-heading outline-none"
-		  type="number"
-		  [value]="state().maxPrice"
-		  [min]="state().minPrice"
-		  [max]="maxAllowedPrice()"
-		  (input)="updateMaxPrice($event)"
-		/>
-	  </label>
-	</div>
-
-	<div class="grid gap-2">
-	  <div class="relative h-6">
-		<div class="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-slate-200"></div>
-		<div
-		  class="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-primary"
-		  [style.left.%]="priceFillStart()"
-		  [style.width.%]="priceFillWidth()"
-		></div>
-
-		<input
-		  class="absolute inset-0 w-full cursor-pointer accent-primary"
-		  type="range"
-		  [min]="minAllowedPrice()"
-		  [max]="maxAllowedPrice()"
-		  [value]="state().minPrice"
-		  (input)="updateMinPrice($event)"
-		/>
-		<input
-		  class="absolute inset-0 w-full cursor-pointer accent-primary"
-		  type="range"
-		  [min]="minAllowedPrice()"
-		  [max]="maxAllowedPrice()"
-		  [value]="state().maxPrice"
-		  (input)="updateMaxPrice($event)"
-		/>
-	  </div>
-
-	  <p class="m-0 text-sm text-muted">
-		${{ state().minPrice | number: '1.0-0' }} - ${{ state().maxPrice | number: '1.0-0' }}
-	  </p>
-	</div>
+      <label class="grid gap-1 rounded-2xl border border-divider px-3 py-2">
+        <span class="text-xs font-medium uppercase tracking-wide text-muted">Max</span>
+        <input
+          class="w-full border-none bg-transparent text-sm text-heading outline-none"
+          type="number"
+          [value]="state().maxPrice"
+          [min]="state().minPrice"
+          [max]="maxAllowedPrice()"
+          (input)="updateMaxPrice($event)"
+        />
+      </label>
+    </div>
   </section>
 
   <section class="grid gap-4 border-b border-divider pb-6">
-	<h2 class="m-0 text-lg font-semibold text-heading">Delivery Time</h2>
+    <h2 class="m-0 text-lg font-semibold text-heading">Delivery Time</h2>
 
-	<div class="grid gap-3">
-	  @for (option of deliveryTimeOptions; track option.value) {
-		<label class="flex cursor-pointer items-center gap-3 text-sm text-muted">
-		  <input
-			class="h-4 w-4 accent-primary"
-			type="radio"
-			name="delivery-time"
-			[checked]="state().deliveryTime === option.value"
-			(change)="selectDeliveryTime(option.value)"
-		  />
-		  <span>{{ option.label }}</span>
-		</label>
-	  }
-	</div>
+    <div class="grid gap-3">
+      @for (option of deliveryTimeOptions; track option.value) {
+        <label class="flex cursor-pointer items-center gap-3 text-sm text-muted">
+          <input
+            class="h-4 w-4 accent-primary"
+            type="radio"
+            name="delivery-time"
+            [checked]="state().deliveryTime === option.value"
+            (change)="selectDeliveryTime(option.value)"
+          />
+          <span>{{ option.label }}</span>
+        </label>
+      }
+    </div>
   </section>
 
   <section class="grid gap-4">
-	<h2 class="m-0 text-lg font-semibold text-heading">Rating</h2>
+    <h2 class="m-0 text-lg font-semibold text-heading">Rating</h2>
 
-	<div class="grid gap-3">
-	  @for (option of ratingOptions; track option.value) {
-		<label class="flex cursor-pointer items-center gap-3 text-sm text-muted">
-		  <input
-			class="h-4 w-4 accent-primary"
-			type="radio"
-			name="rating-filter"
-			[checked]="state().minRating === option.value"
-			(change)="selectRating(option.value)"
-		  />
-		  <span>{{ option.label }}</span>
-		</label>
-	  }
-	</div>
+    <div class="grid gap-3">
+      @for (option of ratingOptions; track option.value) {
+        <label class="flex cursor-pointer items-center gap-3 text-sm text-muted">
+          <input
+            class="h-4 w-4 accent-primary"
+            type="radio"
+            name="rating-filter"
+            [checked]="state().minRating === option.value"
+            (change)="selectRating(option.value)"
+          />
+          <span>{{ option.label }}</span>
+        </label>
+      }
+    </div>
   </section>
 </aside>

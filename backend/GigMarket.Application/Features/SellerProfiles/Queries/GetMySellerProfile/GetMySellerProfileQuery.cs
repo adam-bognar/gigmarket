@@ -6,5 +6,5 @@ using System.Text;
 
 namespace GigMarket.Application.Features.SellerProfiles.Queries.GetMySellerProfile
 {
-    public sealed record GetMySellerProfileQuery : IRequest<SellerProfileDto>;
+    public sealed record GetMySellerProfileQuery : IRequest<SellerProfileFullDto>;
 }

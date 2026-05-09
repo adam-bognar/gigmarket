@@ -25,7 +25,7 @@
           <p class="m-0 text-3xl font-bold text-heading">{{ activeGigCount() | number: '1.0-0' }}</p>
         </div>
         <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-alt">
-          <lucide-angular name="check-circle" class="h-6 w-6 text-primary" />
+          <lucide-icon [img]="CheckCircleIcon" class="h-6 w-6 text-primary" />
         </div>
       </div>
       <p class="m-0 text-xs text-muted">Your current active service listings</p>
@@ -39,7 +39,7 @@
           <p class="m-0 text-3xl font-bold text-heading">{{ totalImpressions() | number: '1.0-0' }}</p>
         </div>
         <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-alt">
-          <lucide-angular name="eye" class="h-6 w-6 text-primary" />
+          <lucide-icon [img]="EyeIcon" class="h-6 w-6 text-primary" />
         </div>
       </div>
       <p class="m-0 text-xs text-muted">Total review impressions across your gigs</p>
@@ -98,18 +98,18 @@
               @for (gig of filteredGigs(); track gig.id) {
                 <tr class="border-b border-divider text-sm text-heading">
                   <td class="px-3 py-4">
-                    <div class="flex min-w-[18rem] items-center gap-3">
+                    <a [routerLink]="['/gigs', gig.id]" class="flex min-w-[18rem] items-center gap-3 hover:opacity-80 transition-opacity no-underline text-heading">
                       <img
                         [src]="gig.primaryPhotoUrl"
                         [alt]="gig.title + ' preview'"
                         class="h-12 w-16 rounded-md object-cover"
                       >
-                      <span class="line-clamp-2 font-medium">{{ gig.title }}</span>
-                    </div>
+                      <span class="line-clamp-2 font-medium hover:text-primary transition-colors">{{ gig.title }}</span>
+                    </a>
                   </td>
                   <td class="px-3 py-4">
                     <div class="flex items-center gap-1.5">
-                      <lucide-angular name="star" class="h-4 w-4 text-warning"/>
+                      <lucide-icon [img]="StarIcon" class="h-4 w-4 text-warning" />
                       <span>{{ gig.averageRating | number: '1.1-1' }}</span>
                     </div>
                   </td>
@@ -120,7 +120,7 @@
                       class="inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold"
                       [class.border-primary]="isActiveStatus(gig.status)"
                       [class.bg-primary]="isActiveStatus(gig.status)"
-                      [class.text-primary]="isActiveStatus(gig.status)"
+                      [class.text-on-primary]="isActiveStatus(gig.status)"
                       [class.border-divider]="!isActiveStatus(gig.status)"
                       [class.bg-surface-alt]="!isActiveStatus(gig.status)"
                       [class.text-muted]="!isActiveStatus(gig.status)"

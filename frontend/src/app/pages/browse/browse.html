@@ -1,10 +1,26 @@
-<section class="mx-auto grid max-w-7xl gap-10 px-5 py-12 md:px-8 md:py-16">
-  <div class="grid gap-3">
-    <p class="m-0 text-sm font-bold uppercase tracking-wide text-primary">Browse services</p>
-    <h1 class="m-0 max-w-4xl text-4xl leading-tight tracking-tight text-heading md:text-5xl">
-      Discover polished gig cards for your marketplace
-    </h1>
-    <p class="m-0 max-w-2xl text-base text-muted md:text-lg">Subtitle</p>
+<section class="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-14">
+
+  <!-- Contextual page header -->
+  <div class="mb-8">
+    @if (searchQuery()) {
+      <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h1 class="m-0 text-2xl font-bold tracking-tight text-heading md:text-3xl">
+          Results for <span class="text-primary">"{{ searchQuery() }}"</span>
+        </h1>
+        @if (!isLoading()) {
+          <span class="text-sm text-muted">{{ availableServicesCount() | number: '1.0-0' }} services found</span>
+        }
+      </div>
+    } @else {
+      <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h1 class="m-0 text-2xl font-bold tracking-tight text-heading md:text-3xl">
+          {{ categoryLabel() ?? 'All Services' }}
+        </h1>
+        @if (!isLoading()) {
+          <span class="text-sm text-muted">{{ availableServicesCount() | number: '1.0-0' }} services</span>
+        }
+      </div>
+    }
   </div>
 
   <div class="grid items-start gap-8 lg:grid-cols-[17rem_minmax(0,1fr)] xl:grid-cols-[18rem_minmax(0,1fr)]">
@@ -16,11 +32,20 @@
     />
 
     <div class="grid gap-6">
-      <div class="flex flex-col gap-2 border-b border-divider pb-4 sm:flex-row sm:items-center sm:justify-between">
-        <p class="m-0 text-sm font-medium text-heading">
-          {{ availableServicesCount() | number: '1.0-0' }} services available
-        </p>
-        <p class="m-0 text-sm text-muted">Sort by: <span class="font-semibold text-heading">Recommended</span></p>
+      <div class="flex items-center justify-between border-b border-divider pb-4">
+        <div class="flex items-center gap-2">
+          <label for="sort-select" class="m-0 text-sm text-muted whitespace-nowrap">Sort by:</label>
+          <select
+            id="sort-select"
+            [value]="sortBy()"
+            (change)="updateSort($any($event.target).value)"
+            class="rounded-xl border border-divider bg-surface px-3 py-1.5 text-sm font-semibold text-heading shadow-sm focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
+          >
+            @for (option of sortOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
       </div>
 
       @if (isLoading()) {

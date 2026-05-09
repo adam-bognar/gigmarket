@@ -2,7 +2,6 @@ import {Component, ChangeDetectionStrategy, signal, inject} from '@angular/core'
 import { StepIndicator } from './components/step-indicator/step-indicator';
 import {Personal, PersonalFormValue} from './components/personal/personal';
 import {Professional, ProfessionalFormValue} from './components/professional/professional';
-import {Security} from './components/security/security';
 import {FormsModule} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {SellerProfileService} from '../../shared/services/seller-profile.service';
@@ -11,7 +10,7 @@ import {SellerDraftService} from '../../shared/services/seller-draft.service';
 
 @Component({
   selector: 'app-become-a-freelancer',
-  imports: [StepIndicator, Personal, Professional, Security, FormsModule, RouterLink],
+  imports: [StepIndicator, Personal, Professional, FormsModule, RouterLink],
   templateUrl: './become-a-freelancer.html',
   styleUrl: './become-a-freelancer.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,7 +33,7 @@ export class BecomeAFreelancer {
   }
 
   onProfessionalContinue(data: ProfessionalFormValue): void {
-    this.currentStep.set(3);
+    this.onFinish();
   }
 
   onFinish(): void {
@@ -83,4 +82,3 @@ export class BecomeAFreelancer {
     });
   }
 }
-

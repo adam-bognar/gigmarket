@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit, signal} from '@angular/core';
 import { Overview, OverviewFormValue } from './overview/overview';
 import { Pricing, PricingFormValue } from './pricing/pricing';
-import { Requirements, RequirementsFormValue } from './requirements/requirements';
+// import { Requirements, RequirementsFormValue } from './requirements/requirements';
 import { Gallery, GalleryFormValue } from './gallery/gallery';
 import { GigService } from '../../shared/services/gig.service';
 import { forkJoin, of, switchMap } from 'rxjs';
@@ -11,7 +11,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-create-gig',
-  imports: [Overview, Pricing, Requirements, Gallery],
+  imports: [Overview, Pricing, /* Requirements, */ Gallery],
   templateUrl: './create-gig.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -66,10 +66,10 @@ export class CreateGig implements OnInit {
     this.currentStep.set(3);
   }
 
-  onRequirementsContinue(data: RequirementsFormValue): void {
-    this.draft.setRequirements(data);
-    this.currentStep.set(4);
-  }
+  // onRequirementsContinue(data: RequirementsFormValue): void {
+  //   this.draft.setRequirements(data);
+  //   this.currentStep.set(4);
+  // }
 
   onGalleryContinue(data: GalleryFormValue): void {
     this.draft.setGallery(data);
@@ -79,9 +79,9 @@ export class CreateGig implements OnInit {
   private submitCreate(): void {
     const overview = this.draft.overview();
     const pricing = this.draft.pricing();
-    const requirements = this.draft.requirements();
+    // const requirements = this.draft.requirements();
     const gallery = this.draft.gallery();
-    if (!overview || !pricing || !requirements || !gallery) return;
+    if (!overview || !pricing || !gallery) return;
 
     this.isSubmitting.set(true);
     this.error.set(null);
@@ -119,9 +119,8 @@ export class CreateGig implements OnInit {
               tags: overview.tags,
               description: overview.description,
               packages: pricing.packages,
-              requirements: requirements.requirements.length > 0
-                ? requirements.requirements
-                : null,
+              requirements: null,
+              // requirements: requirements.requirements.length > 0 ? requirements.requirements : null,
               primaryPhotoUrl,
               additionalPhotoUrls: (additionalResults as { blobPath: string }[]).map(r => r.blobPath),
               videoUrl: videoResult ? (videoResult as { blobPath: string }).blobPath : null,
@@ -147,9 +146,9 @@ export class CreateGig implements OnInit {
     const gigId = this.draft.editingGigId();
     const overview = this.draft.overview();
     const pricing = this.draft.pricing();
-    const requirements = this.draft.requirements();
+    // const requirements = this.draft.requirements();
     const gallery = this.draft.gallery();
-    if (!gigId || !overview || !pricing || !requirements || !gallery) return;
+    if (!gigId || !overview || !pricing || !gallery) return;
 
     this.isSubmitting.set(true);
     this.error.set(null);
@@ -186,9 +185,8 @@ export class CreateGig implements OnInit {
           tags: overview.tags,
           description: overview.description,
           packages: pricing.packages,
-          requirements: requirements.requirements.length > 0
-            ? requirements.requirements
-            : null,
+          requirements: null,
+          // requirements: requirements.requirements.length > 0 ? requirements.requirements : null,
           primaryPhotoUrl: (primaryResult as { blobPath: string }).blobPath,
           additionalPhotoUrls: (additionalResults as { blobPath: string }[]).map(r => r.blobPath),
           videoUrl: videoResult ? (videoResult as { blobPath: string }).blobPath : null,

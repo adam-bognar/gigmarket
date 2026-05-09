@@ -1,0 +1,392 @@
+<div class="min-h-screen bg-surface-alt px-4 py-8 md:px-8">
+  <div class="mx-auto max-w-6xl">
+
+    <!-- Back -->
+    <a
+      routerLink="/orders"
+      class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted no-underline transition hover:text-heading"
+    >
+      <lucide-icon [img]="ArrowLeft" class="size-4" />
+      Back to Orders
+    </a>
+
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="flex items-center justify-center py-24">
+        <div class="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    }
+
+    <!-- Error -->
+    @if (error()) {
+      <div class="rounded-2xl border border-red-200 bg-red-50 p-6 text-center text-sm font-medium text-red-600">
+        {{ error() }}
+      </div>
+    }
+
+    <!-- Content -->
+    @if (!loading() && order(); as o) {
+      <div class="grid gap-6 lg:grid-cols-3">
+
+        <!-- ── LEFT: Activity feed + action panels ── -->
+        <div class="flex flex-col gap-6 lg:col-span-2">
+
+          <!-- Order header -->
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 class="text-2xl font-bold text-heading">Order #{{ o.id.slice(0, 8).toUpperCase() }}</h1>
+              <p class="mt-1 text-sm text-muted">{{ o.gigTitle }}</p>
+            </div>
+            <span
+              class="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold"
+              [ngClass]="statusClasses(o.status)"
+            >
+              {{ statusLabel(o.status) }}
+            </span>
+          </div>
+
+          <!-- SELLER: Submit Delivery panel -->
+          @if (canDeliver()) {
+            <section class="rounded-3xl border border-divider bg-surface p-6">
+              <h2 class="mb-4 text-lg font-bold text-heading">Submit Delivery</h2>
+
+              <!-- Message -->
+              <div class="mb-4">
+                <label class="mb-2 block text-sm font-semibold text-heading">
+                  Message to buyer <span class="text-red-500">*</span>
+                </label>
+                <textarea
+                  class="min-h-28 w-full rounded-2xl border border-divider bg-surface-alt px-4 py-3 text-sm text-heading outline-none transition focus:border-primary/50 focus:bg-surface focus:ring-4 focus:ring-primary/15"
+                  placeholder="Describe what you've completed, include any notes or instructions..."
+                  [value]="deliverMessage()"
+                  (input)="deliverMessage.set($any($event.target).value)"
+                ></textarea>
+              </div>
+
+              <!-- File upload -->
+              <div class="mb-4">
+                <label class="mb-2 block text-sm font-semibold text-heading">Attachments</label>
+
+                @if (deliverFiles().length > 0) {
+                  <ul class="mb-3 flex flex-col gap-2">
+                    @for (file of deliverFiles(); track file.url; let i = $index) {
+                      <li class="flex items-center justify-between rounded-xl border border-divider bg-surface-alt px-4 py-2.5">
+                        <span class="flex items-center gap-2 truncate text-sm text-heading">
+                          <lucide-icon [img]="FileText" class="size-4 shrink-0 text-muted" />
+                          {{ file.name }}
+                        </span>
+                        <button
+                          type="button"
+                          class="ml-3 shrink-0 text-muted transition hover:text-red-500"
+                          (click)="removeFile(i)"
+                        >
+                          <lucide-icon [img]="X" class="size-4" />
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                }
+
+                <label
+                  class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-divider bg-surface px-4 py-2 text-sm font-semibold text-heading transition hover:bg-surface-alt"
+                  [class.opacity-50]="uploadingFile()"
+                >
+                  <lucide-icon [img]="uploadingFile() ? RotateCcw : Paperclip" class="size-4" />
+                  {{ uploadingFile() ? 'Uploading...' : 'Attach file' }}
+                  <input
+                    type="file"
+                    class="sr-only"
+                    [disabled]="uploadingFile()"
+                    (change)="onFileSelected($event)"
+                  />
+                </label>
+              </div>
+
+              @if (deliverError()) {
+                <p class="mb-3 text-sm font-medium text-red-500">{{ deliverError() }}</p>
+              }
+
+              <button
+                type="button"
+                class="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-bold text-on-primary transition hover:bg-primary-dark disabled:opacity-60"
+                [disabled]="submittingDeliver() || uploadingFile()"
+                (click)="submitDelivery()"
+              >
+                <lucide-icon [img]="UploadCloud" class="size-4" />
+                {{ submittingDeliver() ? 'Submitting...' : 'Submit Delivery' }}
+              </button>
+            </section>
+          }
+
+          <!-- BUYER: Accept / Request Revision panel -->
+          @if (canAcceptOrRevise()) {
+            <section class="rounded-3xl border border-amber-200 bg-amber-50 p-6">
+              <h2 class="mb-1 text-lg font-bold text-heading">Review Delivery</h2>
+              <p class="mb-5 text-sm text-muted">
+                The seller has submitted their work. Accept it to complete the order, or request a revision if changes are needed.
+              </p>
+
+              <!-- Revision message -->
+              <div class="mb-4">
+                <label class="mb-2 block text-sm font-semibold text-heading">
+                  Revision instructions
+                  <span class="ml-1 font-normal text-muted">(required to request a revision)</span>
+                </label>
+                <textarea
+                  class="min-h-24 w-full rounded-2xl border border-divider bg-surface px-4 py-3 text-sm text-heading outline-none transition focus:border-primary/50 focus:ring-4 focus:ring-primary/15"
+                  placeholder="Describe what you'd like changed or improved..."
+                  [value]="revisionMessage()"
+                  (input)="revisionMessage.set($any($event.target).value)"
+                ></textarea>
+              </div>
+
+              @if (revisionError()) {
+                <p class="mb-3 text-sm font-medium text-red-500">{{ revisionError() }}</p>
+              }
+
+              <div class="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-2 rounded-full bg-green-600 px-6 py-3 font-bold text-white transition hover:bg-green-700 disabled:opacity-60"
+                  [disabled]="submittingAccept()"
+                  (click)="acceptDelivery()"
+                >
+                  <lucide-icon [img]="CheckCircle" class="size-4" />
+                  {{ submittingAccept() ? 'Processing...' : 'Accept & Complete' }}
+                </button>
+
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-2 rounded-full border border-divider bg-surface px-6 py-3 font-bold text-heading transition hover:bg-surface-alt disabled:opacity-60"
+                  [disabled]="submittingRevision() || revisionsRemaining() === 0"
+                  (click)="submitRevision()"
+                >
+                  <lucide-icon [img]="RotateCcw" class="size-4" />
+                  @if (revisionsRemaining() === 0) {
+                    No revisions left
+                  } @else {
+                    {{ submittingRevision() ? 'Requesting...' : 'Request Revision (' + revisionsRemaining() + ' left)' }}
+                  }
+                </button>
+              </div>
+            </section>
+          }
+
+          <!-- Completed banner -->
+          @if (isCompleted()) {
+            <div class="flex items-center gap-3 rounded-2xl border border-green-200 bg-green-50 px-5 py-4">
+              <lucide-icon [img]="CheckCircle" class="size-5 shrink-0 text-green-600" />
+              <p class="text-sm font-semibold text-green-700">
+                This order has been completed. Thank you!
+              </p>
+            </div>
+          }
+
+          <!-- Activity feed -->
+          <section class="rounded-3xl border border-divider bg-surface p-6">
+            <h2 class="mb-5 text-lg font-bold text-heading">Activity</h2>
+
+            @if (activityFeed().length === 0) {
+              <p class="text-sm text-muted">No activity yet. The seller will deliver the work here.</p>
+            } @else {
+              <ol class="relative flex flex-col gap-0 border-l border-divider pl-6">
+                @for (item of activityFeed(); track item.data.id) {
+
+                  <!-- Delivery item -->
+                  @if (isDelivery(item)) {
+                    <li class="mb-8 last:mb-0">
+                      <span class="absolute -left-2 mt-1 flex size-4 items-center justify-center rounded-full bg-primary ring-4 ring-surface"></span>
+                      <div class="rounded-2xl border border-divider bg-surface-alt p-4">
+                        <div class="mb-2 flex items-center justify-between gap-2">
+                          <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-dark">
+                            <lucide-icon [img]="UploadCloud" class="size-4" />
+                            Delivery submitted
+                          </span>
+                          <time class="text-xs text-muted">
+                            {{ item.data.createdAtUtc | date: 'MMM d, y · HH:mm' }}
+                          </time>
+                        </div>
+                        <p class="mb-3 text-sm leading-relaxed text-heading whitespace-pre-wrap">{{ item.data.message }}</p>
+
+                        @if (item.data.fileUrls.length > 0) {
+                          <ul class="flex flex-col gap-2">
+                            @for (url of item.data.fileUrls; track url) {
+                              <li>
+                                <button
+                                  type="button"
+                                  (click)="downloadFile(url)"
+                                  class="inline-flex items-center gap-2 rounded-lg border border-divider bg-surface px-3 py-2 text-sm font-medium text-heading transition hover:bg-primary/5 hover:text-primary"
+                                >
+                                  <lucide-icon [img]="Paperclip" class="size-4 text-muted" />
+                                  {{ fileName(url) }}
+                                  <lucide-icon [img]="Download" class="size-3.5 text-muted" />
+                                </button>
+                              </li>
+                            }
+                          </ul>
+                        }
+                      </div>
+                    </li>
+                  }
+
+                  <!-- Revision request item -->
+                  @if (isRevision(item)) {
+                    <li class="mb-8 last:mb-0">
+                      <span class="absolute -left-2 mt-1 flex size-4 items-center justify-center rounded-full bg-orange-400 ring-4 ring-surface"></span>
+                      <div class="rounded-2xl border border-orange-200 bg-orange-50 p-4">
+                        <div class="mb-2 flex items-center justify-between gap-2">
+                          <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-orange-700">
+                            <lucide-icon [img]="RotateCcw" class="size-4" />
+                            Revision requested
+                          </span>
+                          <time class="text-xs text-muted">
+                            {{ item.data.createdAtUtc | date: 'MMM d, y · HH:mm' }}
+                          </time>
+                        </div>
+                        <p class="text-sm leading-relaxed text-heading whitespace-pre-wrap">{{ item.data.message }}</p>
+                      </div>
+                    </li>
+                  }
+
+                }
+              </ol>
+            }
+          </section>
+        </div>
+
+        <!-- RIGHT: Order summary sidebar -->
+        <aside class="flex flex-col gap-4 lg:sticky lg:top-6 lg:self-start">
+
+          <!-- Order stats -->
+          <section class="rounded-3xl border border-divider bg-surface p-5">
+            <h2 class="mb-4 text-base font-bold text-heading">Order Details</h2>
+
+            <ul class="flex flex-col gap-3">
+
+              <!-- Days remaining -->
+              <li class="flex items-center justify-between gap-2">
+                <span class="flex items-center gap-2 text-sm text-muted">
+                  <lucide-icon [img]="Clock" class="size-4 shrink-0" />
+                  Days remaining
+                </span>
+                @if (daysRemaining() !== null) {
+                  <span
+                    class="text-sm font-semibold"
+                    [class.text-red-500]="(daysRemaining() ?? 0) <= 2"
+                    [class.text-heading]="(daysRemaining() ?? 0) > 2"
+                  >
+                    {{ daysRemaining() }} day{{ daysRemaining() === 1 ? '' : 's' }}
+                  </span>
+                } @else {
+                  <span class="text-sm text-muted">—</span>
+                }
+              </li>
+
+              <!-- Revisions -->
+              <li class="flex items-center justify-between gap-2">
+                <span class="flex items-center gap-2 text-sm text-muted">
+                  <lucide-icon [img]="RefreshCw" class="size-4 shrink-0" />
+                  Revisions
+                </span>
+                <span class="text-sm font-semibold text-heading">
+                  {{ o.revisionsUsed }} / {{ o.revisionsAllowed }} used
+                </span>
+              </li>
+
+              <!-- Price -->
+              <li class="flex items-center justify-between gap-2">
+                <span class="flex items-center gap-2 text-sm text-muted">
+                  <lucide-icon [img]="DollarSign" class="size-4 shrink-0" />
+                  Order total
+                </span>
+                <span class="text-sm font-semibold text-heading">
+                  ${{ o.totalPrice | number: '1.2-2' }}
+                </span>
+              </li>
+
+              <!-- Deadline -->
+              @if (o.deadlineUtc) {
+                <li class="flex items-center justify-between gap-2">
+                  <span class="flex items-center gap-2 text-sm text-muted">
+                    <lucide-icon [img]="Calendar" class="size-4 shrink-0" />
+                    Deadline
+                  </span>
+                  <span class="text-sm font-semibold text-heading">
+                    {{ o.deadlineUtc | date: 'MMM d, y' }}
+                  </span>
+                </li>
+              }
+
+            </ul>
+          </section>
+
+          <!-- Package info -->
+          <section class="rounded-3xl border border-divider bg-surface p-5">
+            <h2 class="mb-3 text-base font-bold text-heading">Package</h2>
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <p class="text-sm font-semibold text-heading">{{ o.packageName }}</p>
+                <p class="text-xs text-muted">{{ o.packageTier }} · {{ o.deliveryDays }} day delivery</p>
+              </div>
+              <lucide-icon [img]="Package" class="size-5 shrink-0 text-muted" />
+            </div>
+          </section>
+
+          <!-- Gig card -->
+          <a
+            [routerLink]="['/gigs', o.gigId]"
+            class="block overflow-hidden rounded-3xl border border-divider bg-surface no-underline transition hover:border-primary/30"
+          >
+            @if (o.gigPrimaryPhotoUrl) {
+              <img
+                [src]="o.gigPrimaryPhotoUrl"
+                [alt]="o.gigTitle"
+                class="h-32 w-full object-cover"
+              />
+            }
+            <div class="p-4">
+              <p class="text-sm font-semibold leading-snug text-heading line-clamp-2">{{ o.gigTitle }}</p>
+            </div>
+          </a>
+
+          <!-- Counterpart info -->
+          <section class="rounded-3xl border border-divider bg-surface p-5">
+            @if (viewerRole() === 'buyer') {
+              <h2 class="mb-3 text-base font-bold text-heading">Seller</h2>
+              <a
+                [routerLink]="['/sellers', o.sellerProfileId]"
+                class="flex items-center gap-3 hover:opacity-80 transition-opacity"
+              >
+                @if (o.sellerAvatarUrl) {
+                  <img
+                    [src]="o.sellerAvatarUrl"
+                    [alt]="o.sellerFirstName"
+                    class="size-10 rounded-full object-cover"
+                  />
+                } @else {
+                  <span class="inline-grid size-10 shrink-0 place-items-center rounded-full bg-primary/10 text-sm font-bold text-primary-dark">
+                    {{ o.sellerFirstName.charAt(0) }}{{ o.sellerLastName.charAt(0) }}
+                  </span>
+                }
+                <div>
+                  <p class="text-sm font-semibold text-heading">{{ o.sellerFirstName }} {{ o.sellerLastName }}</p>
+                </div>
+              </a>
+            }
+
+            @if (viewerRole() === 'seller') {
+              <h2 class="mb-3 text-base font-bold text-heading">Buyer</h2>
+              <div class="flex items-center gap-3">
+                <span class="inline-grid size-10 shrink-0 place-items-center rounded-full bg-primary/10 text-sm font-bold text-primary-dark">
+                  {{ o.buyerUsername.charAt(0).toUpperCase() }}
+                </span>
+                <p class="text-sm font-semibold text-heading">{{ o.buyerUsername }}</p>
+              </div>
+            }
+          </section>
+
+        </aside>
+      </div>
+    }
+  </div>
+</div>

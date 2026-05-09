@@ -1,16 +1,21 @@
 import {ChangeDetectionStrategy, Component, computed, inject, OnInit, signal} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {DatePipe, DecimalPipe} from '@angular/common';
 import {GigService} from '../../shared/services/gig.service';
-import {GigDetailDto, GigDetailPackageDto} from '../../shared/models/gig.model';
+import {AddReviewPayload, GigDetailDto, GigDetailPackageDto, ReviewDto} from '../../shared/models/gig.model';
 import {OrderService} from '../../shared/services/order.service';
 import {ChatService} from '../../shared/services/chat.service';
+import {ReviewService} from '../../shared/services/review.service';
+import {AuthService} from '../../shared/services/auth.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {LucideAngularModule, SendIcon, StarIcon} from 'lucide-angular';
+import {SellerProfileService} from '../../shared/services/seller-profile.service';
 
 type PackageTier = 'basic' | 'standard' | 'premium';
 
 @Component({
   selector: 'app-gig-details',
-  imports: [DatePipe, DecimalPipe],
+  imports: [DatePipe, DecimalPipe, LucideAngularModule, RouterLink],
   templateUrl: './gig-details.html',
   styleUrl: './gig-details.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,9 +23,12 @@ type PackageTier = 'basic' | 'standard' | 'premium';
 export class GigDetails implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly gigService = inject(GigService);
+  private readonly reviewService = inject(ReviewService);
+  private readonly authService = inject(AuthService);
   private readonly orderService = inject(OrderService);
   private readonly router = inject(Router);
   private readonly chatService = inject(ChatService);
+  private readonly sellerProfileService = inject(SellerProfileService);
 
   gig = signal<GigDetailDto | null>(null);
   isLoading = signal(true);
@@ -28,8 +36,15 @@ export class GigDetails implements OnInit {
   isCheckingOut = signal(false);
   isStartingConversation = signal(false);
 
+  reviewRating = signal<number>(0);
+  reviewDescription = signal('');
+  isSubmittingReview = signal(false);
+  reviewSubmitError = signal<string | null>(null);
+  reviewSubmitted = signal(false);
+
   selectedImageIndex = signal(0);
   selectedPackageTier = signal<PackageTier>('basic');
+  ownSellerProfileId = signal<string | null>(null);
 
   selectedPackage = computed<GigDetailPackageDto | null>(() => {
     const g = this.gig();
@@ -79,7 +94,7 @@ export class GigDetails implements OnInit {
   });
 
   displayedThumbnails = computed(() => {
-    return this.allImages().slice(1, 4);
+    return this.allImages();
   });
 
   activeImage = computed(() => {
@@ -98,7 +113,30 @@ export class GigDetails implements OnInit {
     });
   });
 
+  protected readonly currentUser = this.authService.user;
+  protected readonly isAuthenticated = this.authService.isAuthenticated;
+  protected readonly isOwnGig = computed(() => {
+    const user = this.currentUser();
+    const g = this.gig();
+    const ownSellerProfileId = this.ownSellerProfileId();
+
+    return !!user && !!g && !!ownSellerProfileId && ownSellerProfileId === g.sellerProfileId;
+  });
+
+  protected readonly hasAlreadyReviewed = computed(() => {
+    const user = this.currentUser();
+    const g = this.gig();
+    if (!user || !g) return false;
+    return g.reviews.some(r => r.reviewerUserId === user.id);
+  });
+
+  protected readonly canShowReviewForm = computed(() =>
+    this.isAuthenticated() && !this.hasAlreadyReviewed() && !this.reviewSubmitted()
+  );
+
   ngOnInit() {
+    this.loadCurrentSellerProfile();
+
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) {
       this.error.set('No gig ID provided.');
@@ -108,6 +146,7 @@ export class GigDetails implements OnInit {
     this.gigService.getGigById(id).subscribe({
       next: (gig) => {
         this.gig.set(gig);
+        this.selectedImageIndex.set(0);
         this.alignSelectedTierWithApi(gig);
         this.isLoading.set(false);
       },
@@ -121,7 +160,7 @@ export class GigDetails implements OnInit {
   checkout() {
     const g = this.gig();
     const pkg = this.selectedPackage();
-    if (!g || !pkg || this.isCheckingOut()) return;
+    if (!g || !pkg || this.isOwnGig() || this.isCheckingOut()) return;
 
     this.isCheckingOut.set(true);
 
@@ -138,14 +177,13 @@ export class GigDetails implements OnInit {
 
   contactSeller() {
     const g = this.gig();
-    if (!g || this.isStartingConversation()) return;
+    if (!g || this.isOwnGig() || this.isStartingConversation()) return;
 
     this.isStartingConversation.set(true);
     this.error.set(null);
 
     this.chatService.startConversation({
-      gigId: g.id,
-      initialMessage: `Hi! I'm interested in your gig: ${g.title}`
+      gigId: g.id
     }).subscribe({
       next: (conversation) => {
         this.isStartingConversation.set(false);
@@ -158,7 +196,63 @@ export class GigDetails implements OnInit {
     });
   }
 
+  submitReview(): void {
+    const g = this.gig();
+    if (!g || this.isSubmittingReview()) return;
+
+    const rating = this.reviewRating();
+    const description = this.reviewDescription().trim();
+
+    if (rating < 1 || rating > 5) {
+      this.reviewSubmitError.set('Please select a star rating.');
+      return;
+    }
+    if (description.length < 10 || description.length > 2000) {
+      this.reviewSubmitError.set('Description must be between 10 and 2000 characters.');
+      return;
+    }
+
+    this.isSubmittingReview.set(true);
+    this.reviewSubmitError.set(null);
+
+    const payload: AddReviewPayload = { gigId: g.id, rating, description };
+
+    this.reviewService.submitReview(payload).subscribe({
+      next: (newReview: ReviewDto) => {
+        this.gig.update(current => {
+          if (!current) return current;
+          const updatedReviews = [newReview, ...current.reviews];
+          const totalReviews = updatedReviews.length;
+          const averageRating = Math.round(
+            (updatedReviews.reduce((s, r) => s + r.rating, 0) / totalReviews) * 10) / 10;
+          return { ...current, reviews: updatedReviews, totalReviews, averageRating };
+        });
+        this.reviewSubmitted.set(true);
+        this.isSubmittingReview.set(false);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isSubmittingReview.set(false);
+        if (err.status === 400) {
+          this.reviewSubmitError.set(err.error?.message ?? 'Cannot review this gig.');
+        } else if (err.status === 401) {
+          this.reviewSubmitError.set('Please log in to submit a review.');
+        } else {
+          this.reviewSubmitError.set('Failed to submit review. Please try again.');
+        }
+      },
+    });
+  }
+
+  protected setRating(star: number): void {
+    this.reviewRating.set(star);
+  }
+
   selectImage(index: number) {
+    const images = this.allImages();
+    if (index < 0 || index >= images.length) {
+      return;
+    }
+
     this.selectedImageIndex.set(index);
   }
 
@@ -195,4 +289,20 @@ export class GigDetails implements OnInit {
     }
     return date.toLocaleString('en-US', {month: 'short', year: 'numeric'});
   }
+
+  private loadCurrentSellerProfile(): void {
+    const user = this.currentUser();
+    if (!user?.isSeller) {
+      this.ownSellerProfileId.set(null);
+      return;
+    }
+
+    this.sellerProfileService.getMyProfile().subscribe({
+      next: (profile) => this.ownSellerProfileId.set(profile.id),
+      error: () => this.ownSellerProfileId.set(null),
+    });
+  }
+
+  protected readonly StarIcon = StarIcon;
+  protected readonly SendIcon = SendIcon;
 }

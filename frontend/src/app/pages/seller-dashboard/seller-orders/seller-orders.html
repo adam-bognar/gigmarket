@@ -1,0 +1,81 @@
+<div class="mx-auto max-w-4xl px-4 py-12">
+  <h1 class="mb-2 text-2xl font-bold text-heading">Incoming Orders</h1>
+  <p class="mb-8 text-muted">Orders placed for your gigs that need your attention.</p>
+
+  @if (isLoading()) {
+    <div class="flex flex-col gap-4">
+      @for (_ of [1, 2, 3]; track $index) {
+        <div class="h-28 animate-pulse rounded-xl bg-surface-alt"></div>
+      }
+    </div>
+  } @else if (error()) {
+    <div class="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-5 text-danger">
+      <lucide-icon [img]="alertIcon" class="h-5 w-5 shrink-0" />
+      <span>{{ error() }}</span>
+    </div>
+  } @else if (!orders().length) {
+    <div class="flex flex-col items-center gap-4 py-20 text-center">
+      <lucide-icon [img]="clipboardIcon" class="h-12 w-12 text-muted" />
+      <p class="text-lg font-semibold text-heading">No orders yet</p>
+      <p class="text-muted">When buyers purchase your gigs, their orders will appear here.</p>
+      <a
+        routerLink="/dashboard/seller/manage-gigs"
+        class="mt-2 rounded-full bg-primary px-6 py-3 font-bold text-on-primary transition hover:bg-primary-dark"
+      >
+        Manage my gigs
+      </a>
+    </div>
+  } @else {
+    <div class="flex flex-col gap-4">
+      @for (order of orders(); track order.id) {
+        <div
+          class="flex flex-col gap-4 rounded-xl border bg-surface p-5 transition hover:shadow-sm sm:flex-row sm:items-center sm:gap-5"
+          [class.border-blue-200]="isActionable(order.status)"
+          [class.border-divider]="!isActionable(order.status)"
+        >
+          <img
+            [src]="order.gigPrimaryPhotoUrl"
+            [alt]="order.gigTitle"
+            class="h-20 w-20 shrink-0 rounded-lg object-cover"
+          >
+
+          <div class="flex min-w-0 flex-1 flex-col gap-1">
+            <a
+              [routerLink]="['/orders', order.id]"
+              class="truncate font-semibold text-heading hover:underline"
+            >
+              {{ order.gigTitle }}
+            </a>
+            <p class="text-sm text-muted">{{ order.packageName }} · {{ order.packageTier }}</p>
+            <div class="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted">
+              <span class="flex items-center gap-1">
+                <lucide-icon [img]="clockIcon" class="h-3.5 w-3.5" />
+                {{ order.deliveryDays }} day{{ order.deliveryDays === 1 ? '' : 's' }} delivery
+              </span>
+              <span>·</span>
+              <span>Ordered {{ order.paidAtUtc ?? order.createdAtUtc | date: 'MMM d, y' }}</span>
+            </div>
+          </div>
+
+          <div class="flex shrink-0 flex-row items-center gap-3 sm:flex-col sm:items-end">
+            <span class="text-lg font-bold text-heading">${{ order.totalPrice | number: '1.2-2' }}</span>
+            <span
+              class="rounded-full px-3 py-1 text-xs font-semibold"
+              [class]="statusClass(order.status)"
+            >
+              {{ statusLabel(order.status) }}
+            </span>
+            @if (isActionable(order.status)) {
+              <a
+                [routerLink]="['/orders', order.id]"
+                class="rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-on-primary transition hover:bg-primary-dark"
+              >
+                {{ order.status === 'UnderRevision' ? 'View revision' : 'Deliver' }}
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -1,5 +1,6 @@
 using GigMarket.Application.Features.Files.Commands.DeleteFile;
 using GigMarket.Application.Features.Files.Commands.UploadGigMedia;
+using GigMarket.Application.Features.Files.Commands.UploadOrderDeliveryFile;
 using GigMarket.Application.Features.Files.Commands.UploadProfilePicture;
 using GigMarket.Application.Features.Files.Queries.GetFileUrl;
 using GigMarket.Application.Features.Files.Queries.ListGigMedia;
@@ -30,6 +31,8 @@ namespace GigMarket.Api.Controllers
         }
 
         [HttpPost("upload/gig/{gigId:guid}")]
+        [RequestSizeLimit(80_000_000)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 80_000_000)]
         public async Task<IActionResult> UploadGigMedia(Guid gigId, IFormFile file, CancellationToken ct)
         {
             await using var stream = file.OpenReadStream();
@@ -69,6 +72,21 @@ namespace GigMarket.Api.Controllers
         {
             await mediator.Send(new DeleteFileCommand(blobPath), ct);
             return NoContent();
+        }
+        
+        [HttpPost("upload/order/{orderId:guid}/delivery")]
+        [Authorize]
+        public async Task<IActionResult> UploadOrderDeliveryFile(Guid orderId, IFormFile file, CancellationToken ct)
+        {
+            await using var stream = file.OpenReadStream();
+            var result = await mediator.Send(new UploadOrderDeliveryFileCommand(
+                orderId,
+                stream,
+                file.FileName,
+                file.ContentType,
+                file.Length), ct);
+ 
+            return Ok(result);
         }
     }
 }

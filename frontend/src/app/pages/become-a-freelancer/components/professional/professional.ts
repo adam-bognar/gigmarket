@@ -87,7 +87,7 @@ export class Professional implements OnInit {
     skills: this.fb.array<string>([], Validators.required),
     education: this.fb.array<ReturnType<typeof this.createEducationGroup>>([]),
     certifications: this.fb.array<ReturnType<typeof this.createCertificationGroup>>([]),
-    personalWebsite: [''],
+    personalWebsite: ['', [Validators.maxLength(200), Validators.pattern(/^https?:\/\/.+/)]],
   }, { validators: yearRangeValidator });
 
   ngOnInit(): void {

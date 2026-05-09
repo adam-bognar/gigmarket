@@ -9,7 +9,7 @@ namespace GigMarket.Application.Features.Messaging.Commands.StartConversation;
 
 public sealed class StartConversationCommandHandler(
     IApplicationDbContext db,
-    ICurrentUserService currentUser)
+    ICurrentUserService currentUser, IBlobUrlResolverService blobUrlResolver)
     : IRequestHandler<StartConversationCommand, ConversationSummaryDto>
 {
     public async Task<ConversationSummaryDto> Handle(StartConversationCommand command, CancellationToken ct)
@@ -41,6 +41,9 @@ public sealed class StartConversationCommandHandler(
                 c.GigId == command.GigId, ct);
 
         string sellerUsername;
+        string? lastMessageContent = null;
+        DateTime? lastMessageSentAt = null;
+        int unreadCount = 0;
 
         if (conversation is null)
         {
@@ -60,28 +63,18 @@ public sealed class StartConversationCommandHandler(
             };
 
             db.Conversations.Add(conversation);
+            await db.SaveChangesAsync(ct);
         }
         else
         {
             sellerUsername = conversation.Seller.CustomUsername;
+            var last = conversation.Messages.FirstOrDefault();
+            lastMessageContent = last?.Content;
+            lastMessageSentAt = last?.SentAtUtc;
+            unreadCount = conversation.Messages.Count(m => !m.IsRead && m.SenderUserId != buyerUserId);
         }
 
-        var message = new Message
-        {
-            Id = Guid.NewGuid(),
-            ConversationId = conversation.Id,
-            SenderUserId = buyerUserId,
-            Content = command.InitialMessage,
-            SentAtUtc = DateTime.UtcNow,
-            IsRead = false
-        };
-
-        conversation.Messages.Add(message);
-        conversation.LastMessageAtUtc = message.SentAtUtc;
-
-        await db.SaveChangesAsync(ct);
-
-        var primaryPhoto = gig.Photos.FirstOrDefault(p => p.IsPrimary)?.Url ?? string.Empty;
+        var primaryPhoto = blobUrlResolver.ResolveUrlAsync(gig.Photos.FirstOrDefault(p => p.IsPrimary)?.Url ?? string.Empty, ct).Result;
 
         return new ConversationSummaryDto(
             Id: conversation.Id,
@@ -93,9 +86,9 @@ public sealed class StartConversationCommandHandler(
             OtherAvatarUrl: null,
             OrderId: conversation.OrderId,
             OrderStatus: null,
-            LastMessageContent: command.InitialMessage,
-            LastMessageSentAt: message.SentAtUtc,
-            UnreadCount: 0
+            LastMessageContent: lastMessageContent,
+            LastMessageSentAt: lastMessageSentAt,
+            UnreadCount: unreadCount
         );
     }
 }

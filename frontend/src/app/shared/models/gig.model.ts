@@ -124,11 +124,18 @@ export interface GigDetailRequirementDto {
 
 export interface ReviewDto {
   id: string;
+  gigId: string;
+  reviewerUserId: string;
+  reviewerUsername: string;
   rating: number;
-  comment: string;
+  description: string;
   createdAtUtc: string;
-  reviewerName: string;
-  reviewerAvatarUrl: string;
+}
+
+export interface AddReviewPayload {
+  gigId: string;
+  rating: number;
+  description: string;
 }
 
 export interface GigDto {

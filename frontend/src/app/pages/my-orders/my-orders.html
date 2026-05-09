@@ -24,7 +24,10 @@
   } @else {
     <div class="flex flex-col gap-4">
       @for (order of orders(); track order.id) {
-        <div class="flex flex-col gap-4 rounded-xl border border-divider bg-surface p-5 sm:flex-row sm:items-center sm:gap-5">
+        <a
+          [routerLink]="['/orders', order.id]"
+          class="flex flex-col gap-4 rounded-xl border border-divider bg-surface p-5 transition hover:shadow-sm sm:flex-row sm:items-center sm:gap-5"
+        >
 
           <img
             [src]="order.gigPrimaryPhotoUrl"
@@ -33,12 +36,9 @@
           >
 
           <div class="flex min-w-0 flex-1 flex-col gap-1">
-            <a
-              [routerLink]="['/gigs', order.gigId]"
-              class="truncate font-semibold text-heading hover:underline"
-            >
+            <span class="truncate font-semibold text-heading hover:underline">
               {{ order.gigTitle }}
-            </a>
+            </span>
             <p class="text-sm text-muted">{{ order.packageName }} · {{ order.packageTier }}</p>
             <div class="mt-1 flex items-center gap-3 text-xs text-muted">
               <span class="flex items-center gap-1">
@@ -60,7 +60,7 @@
             </span>
           </div>
 
-        </div>
+        </a>
       }
     </div>
   }

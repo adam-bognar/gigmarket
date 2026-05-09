@@ -2,7 +2,9 @@
 
 public enum OrderStatus
 {
-    Pending,
-    Paid,
+    InProgress,
+    Delivered,
+    UnderRevision,
+    Completed,
     Cancelled
 }

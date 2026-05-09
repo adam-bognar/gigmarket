@@ -311,12 +311,16 @@
       </div>
 
       <div class="flex flex-col gap-2 md:w-3/5">
-        <div class="relative flex items-center flex-1 border border-divider rounded-lg overflow-hidden transition-colors focus-within:border-primary">
-          <span class="px-3 py-2.5 text-sm text-muted border-r border-divider bg-muted/5 select-none">https://</span>
+        <div class="relative flex items-center flex-1 border rounded-lg overflow-hidden transition-colors"
+             [class.border-red-400]="form.controls.personalWebsite.invalid && form.controls.personalWebsite.touched"
+             [class.border-divider]="!(form.controls.personalWebsite.invalid && form.controls.personalWebsite.touched)">
           <input type="url" id="personalWebsite" formControlName="personalWebsite"
                  class="flex-1 px-4 py-2.5 text-sm text-heading placeholder-muted bg-transparent outline-none"
-                 placeholder="www.yourwebsite.com"/>
+                 placeholder="https://www.yourwebsite.com"/>
         </div>
+        @if (form.controls.personalWebsite.invalid && form.controls.personalWebsite.touched) {
+          <p class="text-xs text-red-500 mt-0.5" role="alert">Please enter a valid URL starting with https:// or http://</p>
+        }
       </div>
     </div>
 

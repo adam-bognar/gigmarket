@@ -1,6 +1,8 @@
-﻿using GigMarket.Application.Features.Auth.Commands.Login;
+﻿using GigMarket.Application.Features.Auth.Commands.ChangePassword;
+using GigMarket.Application.Features.Auth.Commands.Login;
 using GigMarket.Application.Features.Auth.Commands.Logout;
 using GigMarket.Application.Features.Auth.Commands.Register;
+using GigMarket.Application.Features.Auth.Commands.UpdateAccount;
 using GigMarket.Application.Features.Auth.Models;
 using GigMarket.Application.Features.Auth.Queries.Me;
 using MediatR;
@@ -49,9 +51,28 @@ namespace GigMarket.Api.Controllers
             var result = await mediator.Send(new MeQuery(), ct);
             return Ok(result);
         }
-    }
 
+        [HttpPut("account")]
+        [Authorize]
+        [ProducesResponseType(typeof(AuthUserDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<AuthUserDto>> UpdateAccount([FromBody] UpdateAccountRequest request, CancellationToken ct)
+        {
+            var result = await mediator.Send(new UpdateAccountCommand(request.CustomUsername), ct);
+            return Ok(result);
+        }
+
+        [HttpPut("account/password")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken ct)
+        {
+            await mediator.Send(new ChangePasswordCommand(request.CurrentPassword, request.NewPassword), ct);
+            return NoContent();
+        }
+    }
 
     public sealed record RegisterRequest(string CustomUsername, string Email, string Password);
     public sealed record LoginRequest(string Email, string Password, bool RememberMe);
+    public sealed record UpdateAccountRequest(string CustomUsername);
+    public sealed record ChangePasswordRequest(string CurrentPassword, string NewPassword);
 }

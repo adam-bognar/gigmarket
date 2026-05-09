@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { OrderService } from '../../shared/services/order.service';
-import { OrderDto } from '../../shared/models/order.model';
+import { OrderSummaryDto } from '../../shared/models/order.model';
 import { LucideAngularModule, Package, Clock, CircleCheck } from 'lucide-angular';
 
 @Component({
@@ -18,7 +18,7 @@ export class MyOrders implements OnInit {
   readonly clockIcon = Clock;
   readonly circleCheckIcon = CircleCheck;
 
-  orders = signal<OrderDto[]>([]);
+  orders = signal<OrderSummaryDto[]>([]);
   isLoading = signal(true);
   error = signal<string | null>(null);
 

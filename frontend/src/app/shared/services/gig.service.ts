@@ -4,6 +4,8 @@ import {CreateGigPayload, GigDetailDto, GigDto, GigSummaryDto, UpdateGigPayload}
 import {ApiService} from './api.service';
 import {HttpParams} from '@angular/common/http';
 
+export type GigSortBy = 'recommended' | 'price_asc' | 'price_desc' | 'rating_desc' | 'reviews_desc';
+
 export interface GigFilterParams {
   search?: string;
   categoryId?: string;
@@ -11,6 +13,7 @@ export interface GigFilterParams {
   maxPrice?: number;
   deliveryTime?: string;
   minRating?: number;
+  sortBy?: GigSortBy;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -35,13 +38,14 @@ export class GigService extends ApiService {
 
   getGigs(filters?: GigFilterParams): Observable<GigSummaryDto[]> {
     let params = new HttpParams();
-    if (filters?.search)       params = params.set('search', filters.search);
-    if (filters?.categoryId)   params = params.set('categoryId', filters.categoryId);
+    if (filters?.search) params = params.set('search', filters.search);
+    if (filters?.categoryId) params = params.set('categoryId', filters.categoryId);
     if (filters?.minPrice != null) params = params.set('minPrice', filters.minPrice);
     if (filters?.maxPrice != null) params = params.set('maxPrice', filters.maxPrice);
     if (filters?.deliveryTime) params = params.set('deliveryTime', filters.deliveryTime);
-    if (filters?.minRating)    params = params.set('minRating', filters.minRating);
-    return this.http.get<GigSummaryDto[]>(`${this.base}/gigs`, { params });
+    if (filters?.minRating) params = params.set('minRating', filters.minRating);
+    if (filters?.sortBy && filters.sortBy !== 'recommended') params = params.set('sortBy', filters.sortBy);
+    return this.http.get<GigSummaryDto[]>(`${this.base}/gigs`, {params});
   }
 
   getMyGigs(): Observable<GigSummaryDto[]> {

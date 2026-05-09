@@ -8,9 +8,5 @@ public sealed class StartConversationCommandValidator : AbstractValidator<StartC
     {
         RuleFor(x => x.GigId)
             .NotEmpty().WithMessage("GigId is required.");
- 
-        RuleFor(x => x.InitialMessage)
-            .NotEmpty().WithMessage("Message cannot be empty.")
-            .MaximumLength(4000).WithMessage("Message cannot exceed 4000 characters.");
     }
 }

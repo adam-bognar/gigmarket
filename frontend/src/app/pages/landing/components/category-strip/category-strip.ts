@@ -5,7 +5,8 @@ import { CategoriesService } from '../../../../shared/services/categories.servic
 import { GigCategoryDto } from '../../../../shared/models/gig.model';
 
 interface CategoryDisplay extends GigCategoryDto {
-  icon: LucideIconData;
+  icon: LucideIconData | null;
+  initials: string | null;
   colorClass: string;
   bgClass: string;
 }
@@ -27,9 +28,47 @@ const ICON_MAP: { keyword: string; icon: LucideIconData; colorClass: string; bgC
 
 const FALLBACK = { icon: Globe, colorClass: 'text-primary', bgClass: 'bg-primary/10' };
 
+const FALLBACK_STYLES = [
+  { colorClass: 'text-blue-600', bgClass: 'bg-blue-50' },
+  { colorClass: 'text-violet-600', bgClass: 'bg-violet-50' },
+  { colorClass: 'text-emerald-600', bgClass: 'bg-emerald-50' },
+  { colorClass: 'text-amber-600', bgClass: 'bg-amber-50' },
+  { colorClass: 'text-pink-600', bgClass: 'bg-pink-50' },
+  { colorClass: 'text-cyan-600', bgClass: 'bg-cyan-50' },
+];
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(word => word[0])
+    .join('')
+    .toUpperCase();
+}
+
+function getFallbackStyle(name: string) {
+  const index = name.length % FALLBACK_STYLES.length;
+
+  return {
+    icon: null,
+    initials: getInitials(name),
+    ...FALLBACK_STYLES[index],
+  };
+}
+
 function resolveIcon(name: string) {
   const lower = name.toLowerCase();
-  return ICON_MAP.find(m => lower.includes(m.keyword)) ?? FALLBACK;
+  const match = ICON_MAP.find(m => lower.includes(m.keyword));
+
+  if (match) {
+    return {
+      ...match,
+      initials: null,
+    };
+  }
+
+  return getFallbackStyle(name);
 }
 
 @Component({

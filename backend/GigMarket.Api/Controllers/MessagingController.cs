@@ -22,7 +22,7 @@ public sealed class MessagingController(
     [HttpPost]
     public async Task<IActionResult> StartConversation([FromBody] StartConversationRequest request, CancellationToken ct)
     {
-        var result = await mediator.Send(new StartConversationCommand(request.GigId, request.InitialMessage), ct);
+        var result = await mediator.Send(new StartConversationCommand(request.GigId), ct);
 
         await hub.Clients
             .Group($"user:{result.OtherUserId}")
@@ -76,5 +76,5 @@ public sealed class MessagingController(
     }
 }
 
-public sealed record StartConversationRequest(Guid GigId, string InitialMessage);
+public sealed record StartConversationRequest(Guid GigId);
 public sealed record SendMessageRequest(string Content);

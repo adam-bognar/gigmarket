@@ -19,8 +19,4 @@
       <PackageReference Include="Stripe.net" Version="51.1.0-beta.1" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Features\SellerProfiles\Commands\UpdateSeller\" />
-    </ItemGroup>
-
 </Project>
