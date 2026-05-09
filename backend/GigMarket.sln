@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GigMarket.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GigMarket.Api", "GigMarket.Api\GigMarket.Api.csproj", "{AFAB2ECC-0D95-49D1-A9F8-067BB2ED5D24}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{2490D468-8A08-4D91-BD3B-39E5D08DF7BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{AFAB2ECC-0D95-49D1-A9F8-067BB2ED5D24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFAB2ECC-0D95-49D1-A9F8-067BB2ED5D24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFAB2ECC-0D95-49D1-A9F8-067BB2ED5D24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2490D468-8A08-4D91-BD3B-39E5D08DF7BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2490D468-8A08-4D91-BD3B-39E5D08DF7BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2490D468-8A08-4D91-BD3B-39E5D08DF7BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2490D468-8A08-4D91-BD3B-39E5D08DF7BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,7 +12,7 @@ public sealed class UploadGigMediaCommandValidator : AbstractValidator<UploadGig
         RuleFor(x => x.FileName)
             .NotEmpty()
             .Must(HasSupportedExtension)
-            .WithMessage("Only JPG, PNG, MP4, or WEBM allowed.");
+            .WithMessage("Only JPG, PNG, MP4 allowed.");
 
         RuleFor(x => x)
             .Custom((command, context) =>
@@ -26,7 +26,7 @@ public sealed class UploadGigMediaCommandValidator : AbstractValidator<UploadGig
                 var ext = Path.GetExtension(command.FileName);
                 if (FileUploadRules.IsVideoExtension(ext) && command.FileLength > FileUploadRules.MaxVideoSize)
                 {
-                    context.AddFailure(nameof(command.FileLength), "File exceeds 100MB limit.");
+                    context.AddFailure(nameof(command.FileLength), "File exceeds 75MB limit.");
                 }
 
                 if (FileUploadRules.IsImageExtension(ext) && command.FileLength > FileUploadRules.MaxImageSize)
