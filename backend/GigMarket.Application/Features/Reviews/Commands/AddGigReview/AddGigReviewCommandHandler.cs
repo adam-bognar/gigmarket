@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using GigMarket.Application.Common.Exceptions;
+﻿using GigMarket.Application.Common.Exceptions;
 using GigMarket.Application.Common.Interfaces;
 using GigMarket.Application.Features.Reviews.Models;
 using GigMarket.Domain.Entities;
@@ -10,8 +9,7 @@ namespace GigMarket.Application.Features.Reviews.Commands.AddGigReview;
 
 public sealed class AddGigReviewCommandHandler(
     IApplicationDbContext db,
-    ICurrentUserService currentUser,
-    IMapper mapper)
+    ICurrentUserService currentUser)
     : IRequestHandler<AddGigReviewCommand, ReviewDto>
 {
     public async Task<ReviewDto> Handle(AddGigReviewCommand command, CancellationToken cancellationToken)
@@ -62,6 +60,18 @@ public sealed class AddGigReviewCommandHandler(
         db.GigReviews.Add(review);
         await db.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<ReviewDto>(review);
+        var reviewerUsername = await db.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.CustomUsername)
+            .FirstOrDefaultAsync(cancellationToken) ?? string.Empty;
+
+        return new ReviewDto(
+            review.Id,
+            review.GigId,
+            review.ReviewerUserId,
+            reviewerUsername,
+            review.Rating,
+            review.Description,
+            review.CreatedAtUtc);
     }
 }
