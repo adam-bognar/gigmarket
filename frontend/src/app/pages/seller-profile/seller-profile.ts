@@ -123,7 +123,6 @@ export class SellerProfile implements OnInit {
 
     this.chatService.startConversation({
       gigId: p.gigs[0].id,
-      initialMessage: `Hi! I'd like to learn more about your services.`,
     }).subscribe({
       next: (conversation) => {
         this.isStartingConversation.set(false);
