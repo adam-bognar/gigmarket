@@ -5,6 +5,8 @@ using GigMarket.Application.Common.Mappings;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using GigMarket.Application.Common.Interfaces;
+using GigMarket.Application.Features.Orders.Services;
 
 namespace GigMarket.Application
 {
@@ -17,6 +19,7 @@ namespace GigMarket.Application
             services.AddValidatorsFromAssembly(assembly);
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
+            services.AddScoped<IStripeWebhookService, StripeWebhookService>();
             return services;
         }
     }
