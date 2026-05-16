@@ -3,7 +3,7 @@ using Stripe.Checkout;
 
 namespace GigMarket.Infrastructure.Service;
 
-public class StripeCheckoutService : IStripeCheckoutService
+public class StripeCheckoutService(IStripeSessionService stripeSessionService) : IStripeCheckoutService
 {
     public async Task<string> CreateCheckoutSessionAsync(
         string gigTitle,
@@ -55,8 +55,7 @@ public class StripeCheckoutService : IStripeCheckoutService
             }
         };
 
-        var service = new SessionService();
-        var session = await service.CreateAsync(options, cancellationToken: cancellationToken);
+        var session = await stripeSessionService.CreateAsync(options, cancellationToken);
 
         return session.Url;
     }

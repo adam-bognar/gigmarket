@@ -1,3 +1,4 @@
+using GigMarket.Application.Common.Interfaces;
 using GigMarket.Application.Features.Orders.Commands.AcceptDelivery;
 using GigMarket.Application.Features.Orders.Commands.CreateCheckoutSession;
 using GigMarket.Application.Features.Orders.Commands.DeliverOrder;
@@ -20,7 +21,8 @@ namespace GigMarket.Api.Controllers;
 public class OrdersController(
     IMediator mediator,
     IConfiguration configuration,
-    ILogger<OrdersController> logger) : ControllerBase
+    ILogger<OrdersController> logger,
+    IStripeWebhookService stripeWebhookService) : ControllerBase
 {
     [HttpPost("checkout")]
     [Authorize]
@@ -113,29 +115,11 @@ public class OrdersController(
             return BadRequest(new { error = ex.Message });
         }
 
-        if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
+        var result = await stripeWebhookService.HandleAsync(stripeEvent, ct);
+
+        if (!result.Success)
         {
-            if (stripeEvent.Data.Object is not Session session) return BadRequest();
-
-            var metadata = session.Metadata;
-
-            if (!Guid.TryParse(metadata.GetValueOrDefault("gigId"),       out var gigId)     ||
-                !Guid.TryParse(metadata.GetValueOrDefault("packageId"),    out var packageId)  ||
-                !Guid.TryParse(metadata.GetValueOrDefault("buyerUserId"),  out var buyerUserId))
-            {
-                return BadRequest(new { error = "Missing or invalid metadata on Stripe session." });
-            }
-
-            var totalPrice = (session.AmountTotal ?? 0) / 100m;
-            var paidAt     = session.Created;
-
-            await mediator.Send(new FulfillOrderCommand(
-                session.Id,
-                gigId,
-                packageId,
-                buyerUserId,
-                totalPrice,
-                paidAt), ct);
+            return BadRequest(new { error = result.Error });
         }
 
         return Ok();

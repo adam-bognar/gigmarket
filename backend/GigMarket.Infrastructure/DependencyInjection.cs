@@ -24,6 +24,7 @@ public static class DependencyInjection
         services.AddScoped<IGigService, GigService>();
         services.AddScoped<IBlobStorageService, BlobStorageService>();
         services.AddScoped<IBlobUrlResolverService, BlobUrlResolverService>();
+        services.AddScoped<IStripeSessionService, StripeSessionService>();
         services.AddScoped<IStripeCheckoutService, StripeCheckoutService>();
         services.AddSignalR();
 
