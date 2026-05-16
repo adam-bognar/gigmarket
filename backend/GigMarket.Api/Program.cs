@@ -2,10 +2,13 @@ using System.Text.Json.Serialization;
 using Azure.Storage.Blobs;
 using GigMarket.API.Hubs;
 using GigMarket.Api.Middleware;
+using GigMarket.Api.Seeding;
 using GigMarket.Api.Services;
 using GigMarket.Application;
 using GigMarket.Application.Common.Interfaces;
+using GigMarket.Domain.Entities;
 using GigMarket.Infrastructure;
+using Microsoft.AspNetCore.Identity;
 using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -77,5 +80,17 @@ app.UseAuthorization();
 app.MapHub<ChatHub>("/hubs/chat");
 
 app.MapControllers();
+
+if (app.Environment.IsDevelopment() && args.Contains("--seed-users"))
+{
+    using var scope = app.Services.CreateScope();
+
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+    await DevelopmentUserSeeder.SeedAsync(userManager);
+
+    Console.WriteLine("Development users seeded successfully.");
+    return;
+}
 
 app.Run();
