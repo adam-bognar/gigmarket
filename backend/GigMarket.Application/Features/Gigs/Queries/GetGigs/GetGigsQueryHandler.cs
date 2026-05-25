@@ -1,4 +1,5 @@
-﻿using GigMarket.Application.Common.Interfaces;
+﻿using System.Diagnostics;
+using GigMarket.Application.Common.Interfaces;
 using GigMarket.Application.Features.Gigs.Models;
 using GigMarket.Domain.Entities;
 using MediatR;
@@ -31,12 +32,14 @@ public sealed class GetGigsQueryHandler(IApplicationDbContext db, IBlobStorageSe
 
         var sortedQuery = request.SortBy switch
         {
-            "price_asc"    => query.OrderBy(g => g.Packages.Any() ? g.Packages.Min(p => p.Price) : 0),
-            "price_desc"   => query.OrderByDescending(g => g.Packages.Any() ? g.Packages.Min(p => p.Price) : 0),
-            "rating_desc"  => query.OrderByDescending(g => g.Reviews.Any() ? g.Reviews.Average(r => r.Rating) : 0),
+            "price_asc" => query.OrderBy(g => g.Packages.Select(p => (decimal?)p.Price).Min() ?? 0m),
+            "price_desc" => query.OrderByDescending(g => g.Packages.Select(p => (decimal?)p.Price).Min() ?? 0m),
+            "rating_desc" => query.OrderByDescending(g => g.Reviews.Select(r => (double?)r.Rating).Average() ?? 0.0),
             "reviews_desc" => query.OrderByDescending(g => g.Reviews.Count()),
             _              => query.OrderByDescending(g => g.Reviews.Count()),
         };
+
+        var sw = Stopwatch.StartNew();
 
         var rawGigs = await sortedQuery
             .Select(g => new
@@ -44,8 +47,12 @@ public sealed class GetGigsQueryHandler(IApplicationDbContext db, IBlobStorageSe
                 g.Id,
                 g.Title,
                 PrimaryPhotoBlobPath = g.Photos.Where(p => p.IsPrimary).Select(p => p.Url).FirstOrDefault() ?? string.Empty,
-                StartingPrice = g.Packages.Any() ? g.Packages.Min(p => p.Price) : 0m,
-                MinDeliveryDays = g.Packages.Any() ? g.Packages.Min(p => p.DeliveryDays) : 999,
+                StartingPrice = g.Packages
+                    .Select(p => (decimal?)p.Price)
+                    .Min() ?? 0m,
+                MinDeliveryDays = g.Packages
+                    .Select(p => (int?)p.DeliveryDays)
+                    .Min() ?? 999,
                 g.SellerProfileId,
                 SellerFirstName = g.SellerProfile.FirstName,
                 SellerLastName = g.SellerProfile.LastName,
@@ -53,12 +60,18 @@ public sealed class GetGigsQueryHandler(IApplicationDbContext db, IBlobStorageSe
                 g.CategoryId,
                 CategoryName = g.Category.Name,
                 SubcategoryName = g.Subcategory.Name,
-                AverageRating = g.Reviews.Any() ? Math.Round(g.Reviews.Average(r => r.Rating), 1) : 0.0,
+                AverageRating = g.Reviews
+                    .Select(r => (double?)r.Rating)
+                    .Average() ?? 0.0,
                 TotalReviews = g.Reviews.Count(),
                 Tags = g.Tags.Select(t => t.Name).ToList(),
                 Status = g.Status.ToString()
             })
             .ToListAsync(cancellationToken);
+
+        Console.WriteLine($"GetGigs DB query took: {sw.ElapsedMilliseconds} ms");
+
+        sw.Restart();
 
         var cards = await Task.WhenAll(rawGigs.Select(async g => new GigSummaryDto(
             g.Id,
@@ -78,6 +91,8 @@ public sealed class GetGigsQueryHandler(IApplicationDbContext db, IBlobStorageSe
             g.Tags,
             g.Status
         )));
+
+        Console.WriteLine($"GetGigs URL resolving took: {sw.ElapsedMilliseconds} ms");
 
         return cards.ToList();
     }
