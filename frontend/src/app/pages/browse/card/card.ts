@@ -1,7 +1,7 @@
 import { DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import {LucideAngularModule, StarIcon} from 'lucide-angular';
+import {ClockIcon, LucideAngularModule, StarIcon} from 'lucide-angular';
 
 export interface BrowseCardItem {
   id: string;
@@ -29,4 +29,5 @@ export interface BrowseCardItem {
 export class Card {
   readonly item = input.required<BrowseCardItem>();
   protected readonly StarIcon = StarIcon;
+  protected readonly ClockIcon = ClockIcon;
 }

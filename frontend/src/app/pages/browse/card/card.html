@@ -28,6 +28,8 @@
       </p>
     </a>
 
+    <p class="m-0 text-xs font-semibold uppercase tracking-wide text-primary">{{ item().category }}</p>
+
     <h3
       class="m-0 text-xl font-medium leading-snug tracking-tight text-heading md:text-2xl"
     >
@@ -42,9 +44,14 @@
       >
     </p>
 
-    <div class="flex items-end justify-between gap-3 border-t border-divider pt-3">
-      <p class="m-0 text-xs font-semibold uppercase tracking-wide text-muted">Starting at</p>
-      <p class="m-0 text-lg font-bold text-heading">${{ item().basePrice | number: '1.0-0' }}</p>
+    <div class="flex items-center justify-between gap-3 border-t border-divider pt-3">
+      <div class="flex items-center gap-1.5 text-xs font-semibold text-muted">
+        <lucide-icon [img]="ClockIcon" [size]="13" />
+        <span>{{ item().deliveryDays }}d delivery</span>
+      </div>
+      <p class="m-0 text-sm font-bold text-heading">
+        <span class="text-xs font-semibold text-muted">Starting at </span>${{ item().basePrice | number: '1.0-0' }}
+      </p>
     </div>
   </div>
 </article>
