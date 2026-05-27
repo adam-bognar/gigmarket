@@ -99,10 +99,6 @@ public sealed class SellerService(ICurrentUserService currentUser, IApplicationD
 
         var seller = await db.SellerProfiles
             .Include(s => s.Occupation)
-            .Include(s => s.Languages)
-            .Include(s => s.Skills)
-            .Include(s => s.Educations)
-            .Include(s => s.Certifications)
             .FirstOrDefaultAsync(x => x.UserId == userId, ct);
 
         if (seller is null)
@@ -152,42 +148,60 @@ public sealed class SellerService(ICurrentUserService currentUser, IApplicationD
         seller.ProfileImageUrl = request.ProfilePicUrl;
         seller.PersonalWebsite = request.PersonalWebsite;
 
-        seller.Occupation.Name = request.Occupation.OccupationName;
-        seller.Occupation.FromYear = request.Occupation.OccupationFromYear;
-        seller.Occupation.ToYear = request.Occupation.OccupationToYear;
-
-        db.SellerLanguages.RemoveRange(seller.Languages);
-        db.SellerSkills.RemoveRange(seller.Skills);
-        db.SellerEducations.RemoveRange(seller.Educations);
-        db.SellerCertifications.RemoveRange(seller.Certifications);
-
-        seller.Languages = languages.Select(l => new SellerLanguage
+        if (seller.Occupation is null)
         {
+            seller.Occupation = new SellerOccupation
+            {
+                Id = Guid.NewGuid(),
+                SellerProfileId = seller.Id,
+                Name = request.Occupation.OccupationName,
+                FromYear = request.Occupation.OccupationFromYear,
+                ToYear = request.Occupation.OccupationToYear
+            };
+        }
+        else
+        {
+            seller.Occupation.Name = request.Occupation.OccupationName;
+            seller.Occupation.FromYear = request.Occupation.OccupationFromYear;
+            seller.Occupation.ToYear = request.Occupation.OccupationToYear;
+        }
+        
+        await db.SellerLanguages.Where(x => x.SellerProfileId == seller.Id).ExecuteDeleteAsync(ct);
+        await db.SellerSkills.Where(x => x.SellerProfileId == seller.Id).ExecuteDeleteAsync(ct);
+        await db.SellerEducations.Where(x => x.SellerProfileId == seller.Id).ExecuteDeleteAsync(ct);
+        await db.SellerCertifications.Where(x => x.SellerProfileId == seller.Id).ExecuteDeleteAsync(ct);
+
+        db.SellerLanguages.AddRange(languages.Select(l => new SellerLanguage
+        {
+            SellerProfileId = seller.Id,
             LanguageId = l.Id
-        }).ToList();
+        }));
 
-        seller.Skills = allSkills.Select(s => new SellerSkill
+        db.SellerSkills.AddRange(allSkills.Select(s => new SellerSkill
         {
+            SellerProfileId = seller.Id,
             SkillId = s.Id
-        }).ToList();
+        }));
 
-        seller.Educations = request.Educations?.Select(e => new SellerEducation
+        db.SellerEducations.AddRange(request.Educations?.Select(e => new SellerEducation
         {
             Id = Guid.NewGuid(),
+            SellerProfileId = seller.Id,
             Country = e.Country,
             InstitutionName = e.InstitutionName,
             Degree = e.Degree,
             Major = e.Major,
             GraduationYear = e.GraduationYear
-        }).ToList() ?? [];
+        }) ?? []);
 
-        seller.Certifications = request.Certifications?.Select(c => new SellerCertification
+        db.SellerCertifications.AddRange(request.Certifications?.Select(c => new SellerCertification
         {
             Id = Guid.NewGuid(),
+            SellerProfileId = seller.Id,
             Name = c.Name,
             IssuingOrganization = c.IssuingOrganization,
             Year = c.Year
-        }).ToList() ?? [];
+        }) ?? []);
 
         await db.SaveChangesAsync(ct);
     }

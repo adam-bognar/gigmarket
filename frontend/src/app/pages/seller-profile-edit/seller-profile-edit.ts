@@ -212,6 +212,7 @@ export class SellerProfileEdit implements OnInit {
   removeCertification(index: number): void { this.certificationsArray.removeAt(index); }
 
   onSave(): void {
+    if (this.isSaving()) return;
     this.form.markAllAsTouched();
     if (this.form.invalid || this.skillsArray.length === 0) return;
 
